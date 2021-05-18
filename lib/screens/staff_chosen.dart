@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:coviapp/utilities/constants.dart';
 import 'package:coviapp/utilities/alert_box.dart';
 import 'package:coviapp/utilities/birthday_widget.dart';
-import 'package:coviapp/dataSender.dart';
+import 'package:coviapp/general_data.dart';
 
 
 //import 'package:coviapp/screens/diet_plan_screen_2.dart';
@@ -226,7 +226,7 @@ class _StaffChosenState extends State<StaffChosen> {
                   Navigator.push(
                       context,
                       new MaterialPageRoute(
-                          builder: (BuildContext context) => DataSender(
+                          builder: (BuildContext context) => GeneralDataSender(
                             name: name,
                             birthday: birthday,
                             hall: hall,

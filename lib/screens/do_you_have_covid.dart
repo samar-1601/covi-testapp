@@ -1,89 +1,63 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:coviapp/utilities/constants.dart';
 import 'package:coviapp/utilities/alert_box.dart';
-import 'package:coviapp/utilities/birthday_widget.dart';
-import 'package:coviapp/general_data.dart';
+import 'package:coviapp/utilities/constants.dart';
+import 'package:coviapp/screens/covid_details_of_student.dart';
 
-//import 'package:coviapp/screens/diet_plan_screen_2.dart';
+class DoYouHaveCovid extends StatefulWidget {
+  final String selectedCategory;
+  final String name;
+  final String hall;
+  final String room;
+  final DateTime birthday;
+  final String mobileNo1;
+  final String mobileNo2;
+  final String rollNo ;
+  final String parentName ;
+  final String parentMobileNo ;
 
-class MiscChosen extends StatefulWidget {
-  final String chosenCategory;
-  MiscChosen({this.chosenCategory});
+  DoYouHaveCovid(
+      {this.selectedCategory,this.name, this.hall, this.room, this.birthday,
+        this.rollNo, this.mobileNo1, this.mobileNo2, this.parentName, this.parentMobileNo});
 
   @override
-  _MiscChosenState createState() => _MiscChosenState();
+  _DoYouHaveCovidState createState() => _DoYouHaveCovidState();
 }
 
-class _MiscChosenState extends State<MiscChosen> {
-
-  final formKey = GlobalKey<FormState>();
-  String name = '';
-  String hall = '';
-  String roomNo = '';
-  DateTime birthday;
+class _DoYouHaveCovidState extends State<DoYouHaveCovid> {
 
 
-  Widget buildName() => buildTitle(
-    title: 'Name',
-    child: TextFormField(
-      initialValue: name,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        hintText: 'Your Name',
-      ),
-      onChanged: (name) => setState(() => this.name = name),
-    ),
-  );
-  Widget buildAddress() => buildTitle(
-    title: 'Enter Address',
-    child: TextFormField(
-      initialValue: hall,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        hintText: 'Your Address',
-      ),
-      onChanged: (hall) => setState(() => this.hall = hall),
-    ),
-  );
-
-  Widget buildBirthday() => buildTitle(
-    title: 'Birthday',
-    child: BirthdayWidget(
-      birthday: birthday,
-      onChangedBirthday: (birthday) =>
-          setState(() => this.birthday = birthday),
-    ),
-  );
-
-
-  Widget buildTitle({
-    @required String title,
-    @required Widget child,
-  }) =>
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            title,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-          const SizedBox(height: 8),
-          child,
-        ],
-      );
   @override
   void initState() {
     super.initState();
-    buildBirthday();
-    buildName();
-    buildAddress();
+    print(widget.selectedCategory);
+    if(widget.selectedCategory == 'Student')
+    {
+      print(widget.name==''?'Name not entered':widget.name);
+      print(widget.rollNo==''?'roll not entered':widget.rollNo);
+      print(widget.hall==''?'hall not entered':widget.hall);
+      print(widget.mobileNo1==''?'mobile1 not entered':widget.mobileNo1);
+      print(widget.mobileNo2==''?'mobile2 not entered':widget.mobileNo2);
+      print(widget.parentName==''?'parent not entered':widget.parentName);
+      print(widget.parentMobileNo==''?'parent No. not entered':widget.parentMobileNo);
+      print(widget.birthday.toString()==''?'Name not entered':widget.birthday.toString());
+    }
+    else
+    {
+      print(widget.name==''?'Name not entered':widget.name);
+      print(widget.hall==''?'Hall not entered':widget.hall);
+      print(widget.selectedCategory=='Student'?widget.room:'');
+      print(widget.birthday.toString()==''?'Name not entered':widget.birthday.toString());
+    }
+
   }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        //margin: EdgeInsets.only(left: 12.0, right: 12.0, top: 12.0),
         child: ListView(
           shrinkWrap: true,
           children: <Widget>[
@@ -156,33 +130,19 @@ class _MiscChosenState extends State<MiscChosen> {
               ),
             ),
             SizedBox(
-              height: 50.0,
+              height: 150.0,
             ),
             Container(
-              margin: EdgeInsets.only(left: 15.0, right: 15),
-              child: Column(
-                children: <Widget>[
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Center(
-                      child: Text(
-                        'Enter Your Details',
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          fontSize: 24.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
+              child: Center(
+                child: Text(
+                  'Are you infected with Covid (or have symptoms)?',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.bold,
+                    color: kWeirdBlue,
                   ),
-                  const SizedBox(height: 32),
-                  buildName(),
-                  const SizedBox(height: 12),
-                  buildBirthday(),
-                  const SizedBox(height: 12),
-                  buildAddress(),
-                ],
+                ),
               ),
             ),
             SizedBox(
@@ -209,7 +169,7 @@ class _MiscChosenState extends State<MiscChosen> {
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Text(
-                        'Proceed',
+                        'YES',
                         style: TextStyle(
                           fontSize: 24.0,
                           color: Colors.white,
@@ -224,19 +184,69 @@ class _MiscChosenState extends State<MiscChosen> {
                   Navigator.push(
                       context,
                       new MaterialPageRoute(
-                          builder: (BuildContext context) => GeneralDataSender(
-                            name: name,
-                            birthday: birthday,
-                            hall: hall,
-                            room: roomNo,
-                            selectedCategory: widget.chosenCategory,
+                          builder: (BuildContext context) => CovidQuestionsForStudents(
+                            chosenCategory: widget.selectedCategory,
                           )));
                 });
               },
-            )
+            ),
+            SizedBox(
+              height: 50.0,
+            ),
+            GestureDetector(
+              child: Align(
+                alignment: Alignment.center,
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  decoration: BoxDecoration(
+                    color: kWeirdBlue,
+                    borderRadius: BorderRadius.circular(25.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26.withOpacity(0.3),
+                        spreadRadius: 1,
+                        blurRadius: 2,
+                        offset: Offset(0, 1), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text(
+                        'NO',
+                        style: TextStyle(
+                          fontSize: 24.0,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              onTap: () {
+                setState(() {
+                  AlertBox(
+                      context: context,
+                      alertContent:
+                      'Please update your status in the app if you feel any covid symptoms',
+                      alertTitle: 'Thank you for your cooperation ',
+                      rightActionText: 'Close',
+                      leftActionText: '',
+                      onPressingRightActionButton: () {
+                        Navigator.pop(context);
+                      }).showAlert();
+                });
+              },
+            ),
           ],
         ),
       ),
+
+      // bottomNavigationBar: SizedBox(
+      //   height: 80.0,
+      //   child: CommonCustomBottomNavBar(),
+      // ),
     );
   }
 }

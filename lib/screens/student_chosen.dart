@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:coviapp/utilities/constants.dart';
 import 'package:coviapp/utilities/alert_box.dart';
 import 'package:coviapp/utilities/birthday_widget.dart';
-import 'package:coviapp/dataSender.dart';
+import 'package:coviapp/general_data.dart';
 
 
-//import 'package:coviapp/screens/diet_plan_screen_2.dart';
+
 
 class StudentChosen extends StatefulWidget {
   final String chosenCategory;
@@ -22,6 +22,13 @@ class _StudentChosenState extends State<StudentChosen> {
   String name = '';
   String hall = '';
   String roomNo = '';
+  String mobileNo1 = '';
+  String mobileNo2 = '';
+  String rollNo = '';
+  String parentName = '';
+  String parentMobileNo = '';
+
+
   DateTime birthday;
 
 
@@ -34,6 +41,64 @@ class _StudentChosenState extends State<StudentChosen> {
         hintText: 'Your Name',
       ),
       onChanged: (name) => setState(() => this.name = name),
+    ),
+  );
+  Widget buildRollNo() => buildTitle(
+    title: 'Roll No',
+    child: TextFormField(
+      initialValue: rollNo,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Your Roll No',
+      ),
+      onChanged: (rollNo) => setState(() => this.rollNo = rollNo),
+    ),
+  );
+  Widget buildMobile1() => buildTitle(
+    title: 'Mobile number 1',
+    child: TextFormField(
+      initialValue: mobileNo1,
+      keyboardType: TextInputType.phone,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Primary mobile No',
+      ),
+      onChanged: (mobileNo1) => setState(() => this.mobileNo1 = mobileNo1),
+    ),
+  );
+  Widget buildMobile2() => buildTitle(
+    title: 'Mobile number 2',
+    child: TextFormField(
+      initialValue: mobileNo2,
+      keyboardType: TextInputType.phone,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Secondary mobile No',
+      ),
+      onChanged: (mobileNo2) => setState(() => this.mobileNo2 = mobileNo2),
+    ),
+  );
+  Widget buildParentName() => buildTitle(
+    title: 'Parent/Guardian Name',
+    child: TextFormField(
+      initialValue: parentName,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Parent/Guardian Name',
+      ),
+      onChanged: (parentName) => setState(() => this.parentName = parentName),
+    ),
+  );
+  Widget buildParentMobile() => buildTitle(
+    title: 'Parent Contact No',
+    child: TextFormField(
+      initialValue: name,
+      keyboardType: TextInputType.phone,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Parent Contact No',
+      ),
+      onChanged: (parentMobileNo) => setState(() => this.parentMobileNo = parentMobileNo),
     ),
   );
   Widget buildHall() => buildTitle(
@@ -89,8 +154,13 @@ class _StudentChosenState extends State<StudentChosen> {
     super.initState();
     buildBirthday();
     buildName();
+    buildRollNo();
     buildHall();
     buildRoom();
+    buildMobile1();
+    buildMobile2();
+    buildParentName();
+    buildParentMobile();
   }
 
   @override
@@ -192,11 +262,21 @@ class _StudentChosenState extends State<StudentChosen> {
                     const SizedBox(height: 32),
                     buildName(),
                     const SizedBox(height: 12),
-                    buildBirthday(),
+                    buildRollNo(),
+                    const SizedBox(height: 12),
+                    buildMobile1(),
+                    const SizedBox(height: 12),
+                    buildMobile2(),
                     const SizedBox(height: 12),
                     buildHall(),
                     const SizedBox(height: 12),
                     buildRoom(),
+                    const SizedBox(height: 12),
+                    buildBirthday(),
+                    const SizedBox(height: 12),
+                    buildParentName(),
+                    const SizedBox(height: 12),
+                    buildParentMobile(),
                   ],
                 ),
               ),
@@ -236,16 +316,37 @@ class _StudentChosenState extends State<StudentChosen> {
                 ),
                 onTap: () {
                   setState(() {
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (BuildContext context) => DataSender(
-                                  name: name,
-                                  birthday: birthday,
-                                  hall: hall,
-                                  room: roomNo,
-                                  selectedCategory: widget.chosenCategory,
-                                )));
+                    if(parentMobileNo.length != 10 || mobileNo1.length !=10 || name.length ==0)
+                    {
+                      AlertBox(
+                          context: context,
+                          alertContent:
+                          'Please Enter valid Name/Phone No',
+                          alertTitle: 'Invalid Entry !!',
+                          rightActionText: 'Close',
+                          leftActionText: '',
+                          onPressingRightActionButton: () {
+                            Navigator.pop(context);
+                          }).showAlert();
+                    }
+                    else
+                    {
+                      Navigator.push(
+                          context,
+                          new MaterialPageRoute(
+                              builder: (BuildContext context) => GeneralDataSender(
+                                name: name,
+                                birthday: birthday,
+                                hall: hall,
+                                room: roomNo,
+                                selectedCategory: widget.chosenCategory,
+                                parentMobileNo: parentMobileNo,
+                                parentName: parentName,
+                                mobileNo1: mobileNo1,
+                                mobileNo2: mobileNo2,
+                                rollNo: rollNo,
+                              )));
+                    }
                   });
                 },
               )

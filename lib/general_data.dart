@@ -2,32 +2,55 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:coviapp/utilities/alert_box.dart';
 import 'package:coviapp/utilities/constants.dart';
+import 'package:coviapp/screens/covid_details_of_student.dart';
+import 'package:coviapp/screens/do_you_have_covid.dart';
 
-class DataSender extends StatefulWidget {
+class GeneralDataSender extends StatefulWidget {
   final String selectedCategory;
   final String name;
   final String hall;
   final String room;
   final DateTime birthday;
+  final String mobileNo1;
+  final String mobileNo2;
+  final String rollNo ;
+  final String parentName ;
+  final String parentMobileNo ;
 
-  DataSender(
-      {this.selectedCategory,this.name, this.hall, this.room, this.birthday});
+  GeneralDataSender(
+      {this.selectedCategory,this.name, this.hall, this.room, this.birthday,
+        this.rollNo, this.mobileNo1, this.mobileNo2, this.parentName, this.parentMobileNo});
 
   @override
-  _DataSenderState createState() => _DataSenderState();
+  _GeneralDataSenderState createState() => _GeneralDataSenderState();
 }
 
-class _DataSenderState extends State<DataSender> {
+class _GeneralDataSenderState extends State<GeneralDataSender> {
 
 
   @override
   void initState() {
     super.initState();
     print(widget.selectedCategory);
-    print(widget.name==''?'Name not entered':widget.name);
-    print(widget.hall==''?'Hall not entered':widget.hall);
-    print(widget.selectedCategory=='Student'?widget.room:'');
-    print(widget.birthday.toString()==''?'Name not entered':widget.birthday.toString());
+    if(widget.selectedCategory == 'Student')
+      {
+        print(widget.name==''?'Name not entered':widget.name);
+        print(widget.rollNo==''?'roll not entered':widget.rollNo);
+        print(widget.hall==''?'hall not entered':widget.hall);
+        print(widget.mobileNo1==''?'mobile1 not entered':widget.mobileNo1);
+        print(widget.mobileNo2==''?'mobile2 not entered':widget.mobileNo2);
+        print(widget.parentName==''?'parent not entered':widget.parentName);
+        print(widget.parentMobileNo==''?'parent No. not entered':widget.parentMobileNo);
+        print(widget.birthday.toString()==''?'Name not entered':widget.birthday.toString());
+      }
+    else
+      {
+        print(widget.name==''?'Name not entered':widget.name);
+        print(widget.hall==''?'Hall not entered':widget.hall);
+        print(widget.selectedCategory=='Student'?widget.room:'');
+        print(widget.birthday.toString()==''?'Name not entered':widget.birthday.toString());
+      }
+
   }
 
 
@@ -124,7 +147,16 @@ class _DataSenderState extends State<DataSender> {
                       ),
                     ),
                     Text(
-                      widget.selectedCategory+'\n'+ widget.name + '\n' + widget.hall + '\n' + widget.room +'\n'+ widget.birthday.toString(),
+                          widget.selectedCategory+'\n'+
+                          widget.name + '\n' +
+                          widget.rollNo + '\n'+
+                          widget.hall + '\n' +
+                          widget.room +'\n'+
+                          widget.mobileNo1 + '\n'+
+                          widget.mobileNo2 + '\n'+
+                          widget.parentName +'\n'+
+                          widget.parentMobileNo+'\n'+
+                          widget.birthday.toString(),
                       style: TextStyle(
                       fontSize: 18.0,
                       color: Colors.black,
@@ -134,9 +166,55 @@ class _DataSenderState extends State<DataSender> {
                 ),
               ),
             ),
+            SizedBox(
+              height: 50.0,
+            ),
+            GestureDetector(
+              child: Align(
+                alignment: Alignment.center,
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  decoration: BoxDecoration(
+                    color: kWeirdBlue,
+                    borderRadius: BorderRadius.circular(25.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26.withOpacity(0.3),
+                        spreadRadius: 1,
+                        blurRadius: 2,
+                        offset: Offset(0, 1), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text(
+                        'Proceed',
+                        style: TextStyle(
+                          fontSize: 24.0,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              onTap: () {
+                setState(() {
+                  Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                          builder: (BuildContext context) => DoYouHaveCovid(
+                                selectedCategory: widget.selectedCategory,
+                          )));
+                });
+              },
+            ),
           ],
         ),
       ),
+
       // bottomNavigationBar: SizedBox(
       //   height: 80.0,
       //   child: CommonCustomBottomNavBar(),
