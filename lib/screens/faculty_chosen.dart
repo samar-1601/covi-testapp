@@ -21,7 +21,10 @@ class _FacultyChosenState extends State<FacultyChosen> {
   final formKey = GlobalKey<FormState>();
   String name = '';
   String hall = '';
-  String roomNo = '';
+  String mobileNo1 = '';
+  String mobileNo2 = '';
+  String ecNo = '';
+  String emailID ='';
   DateTime birthday;
 
 
@@ -48,16 +51,62 @@ class _FacultyChosenState extends State<FacultyChosen> {
     ),
   );
 
+  Widget buildEcNo() => buildTitle(
+    title: 'EC Number',
+    child: TextFormField(
+      initialValue: ecNo,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Enter EC Number',
+      ),
+      onChanged: (eclNo) => setState(() => this.ecNo = ecNo),
+    ),
+  );
+  Widget buildMobile1() => buildTitle(
+    title: 'Mobile number 1',
+    child: TextFormField(
+      initialValue: mobileNo1,
+      keyboardType: TextInputType.phone,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Primary mobile No',
+      ),
+      onChanged: (mobileNo1) => setState(() => this.mobileNo1 = mobileNo1),
+    ),
+  );
+  Widget buildMobile2() => buildTitle(
+    title: 'Mobile number 2',
+    child: TextFormField(
+      initialValue: mobileNo2,
+      keyboardType: TextInputType.phone,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Secondary mobile No',
+      ),
+      onChanged: (mobileNo2) => setState(() => this.mobileNo2 = mobileNo2),
+    ),
+  );
 
   Widget buildBirthday() => buildTitle(
-    title: 'Birthday',
+    title: 'Date of Birth',
     child: BirthdayWidget(
       birthday: birthday,
       onChangedBirthday: (birthday) =>
           setState(() => this.birthday = birthday),
     ),
   );
-
+  Widget buildEmail() => buildTitle(
+    title: 'Email ID',
+    child: TextFormField(
+      initialValue: emailID,
+      keyboardType: TextInputType.emailAddress,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Frequently used mail ID',
+      ),
+      onChanged: (emailID) => setState(() => this.emailID = emailID),
+    ),
+  );
 
   Widget buildTitle({
     @required String title,
@@ -80,6 +129,10 @@ class _FacultyChosenState extends State<FacultyChosen> {
     buildBirthday();
     buildName();
     buildAddress();
+    buildMobile1();
+    buildMobile2();
+    buildEcNo();
+    buildEmail();
   }
 
   @override
@@ -181,9 +234,18 @@ class _FacultyChosenState extends State<FacultyChosen> {
                   const SizedBox(height: 32),
                   buildName(),
                   const SizedBox(height: 12),
-                  buildBirthday(),
+                  buildEcNo(),
+                  const SizedBox(height: 12),
+                  buildEmail(),
+                  const SizedBox(height: 12),
+                  buildMobile1(),
+                  const SizedBox(height: 12),
+                  buildMobile2(),
                   const SizedBox(height: 12),
                   buildAddress(),
+                  const SizedBox(height: 12),
+                  buildBirthday(),
+
                 ],
               ),
             ),
@@ -223,16 +285,36 @@ class _FacultyChosenState extends State<FacultyChosen> {
               ),
               onTap: () {
                 setState(() {
-                  Navigator.push(
-                      context,
-                      new MaterialPageRoute(
-                          builder: (BuildContext context) => GeneralDataSender(
-                            name: name,
-                            birthday: birthday,
-                            hall: hall,
-                            room: roomNo,
-                            selectedCategory: widget.chosenCategory,
-                          )));
+                  if(mobileNo1.length !=10 || name.length ==0)
+                  {
+                    AlertBox(
+                        context: context,
+                        alertContent:
+                        'Please Enter valid Name/Phone No',
+                        alertTitle: 'Invalid Entry !!',
+                        rightActionText: 'Close',
+                        leftActionText: '',
+                        onPressingRightActionButton: () {
+                          Navigator.pop(context);
+                        }).showAlert();
+                  }
+                  else
+                    {
+                      Navigator.push(
+                          context,
+                          new MaterialPageRoute(
+                              builder: (BuildContext context) => GeneralDataSender(
+                                name: name,
+                                birthday: birthday,
+                                rollNo: ecNo,
+                                hall: hall,
+                                selectedCategory: widget.chosenCategory,
+                                mobileNo1: mobileNo1,
+                                mobileNo2: mobileNo2,
+                                email: emailID,
+                              )));
+                    }
+
                 });
               },
             )

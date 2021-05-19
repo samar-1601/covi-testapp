@@ -1,19 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:coviapp/utilities/constants.dart';
+import 'package:coviapp/utilities/birthday_widget.dart';
 import 'package:coviapp/utilities/alert_box.dart';
 import 'package:coviapp/utilities/customDropDownButton.dart';
 //import 'package:coviapp/general_data.dart';
 
-class CovidQuestionsForStudents extends StatefulWidget {
+class CovidQuestions extends StatefulWidget {
   final String chosenCategory;
-  CovidQuestionsForStudents({this.chosenCategory});
+  CovidQuestions({this.chosenCategory});
 
   @override
-  _CovidQuestionsForStudentsState createState() => _CovidQuestionsForStudentsState();
+  _CovidQuestionsState createState() => _CovidQuestionsState();
 }
 
-class _CovidQuestionsForStudentsState extends State<CovidQuestionsForStudents> {
+class _CovidQuestionsState extends State<CovidQuestions> {
 
 
   List<DropdownMenuItem> getDropDownItems(List dropDownList) {
@@ -41,8 +42,9 @@ class _CovidQuestionsForStudentsState extends State<CovidQuestionsForStudents> {
                mp.keys.toList()[index],
                 textAlign: TextAlign.left,
                 style: TextStyle(
-                  fontSize: 16.0,
+                  fontSize: 18.0,
                   color: Colors.black,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
@@ -92,7 +94,7 @@ class _CovidQuestionsForStudentsState extends State<CovidQuestionsForStudents> {
     return listItems;
   }
 
-    List<String> regularQuesList = [
+    List<String> areYouEquippedQuesList = [
       'Does you family know about you being COVID +VE?',
       'Do you have access to thermometer?',
       'Do you have arrangements to heat water for drinking, preparing tea etc.?' ,
@@ -103,7 +105,7 @@ class _CovidQuestionsForStudentsState extends State<CovidQuestionsForStudents> {
       'Do you have contact information for getting medical attention, if needed?' ,
       'Do you have your laptop/mobile in working condition?' ,
     ];
-  List<List<String>> regularQuesOptionsList = [
+  List<List<String>> areYouEquippedQuesOptionsList = [
     doParentsKnow,
     haveThermometer,
     waterArrangements,
@@ -139,15 +141,15 @@ class _CovidQuestionsForStudentsState extends State<CovidQuestionsForStudents> {
     assessCurrentHealth,
     talkingWithFriends,
   ];
-  static Map<String,List<String>> regularQuestionsMap = {};
+  static Map<String,List<String>> areYouEquippedQuestionsMap = {};
   static Map<String,List<String>> wellBeingQuestionsMap = {};
 
   void initializeRegularQuestions()
   {
-      for(int i=0; i<regularQuesList.length; i++)
+      for(int i=0; i<areYouEquippedQuesList.length; i++)
         {
           setState(() {
-            regularQuestionsMap[regularQuesList[i]] = regularQuesOptionsList[i];
+            areYouEquippedQuestionsMap[areYouEquippedQuesList[i]] = areYouEquippedQuesOptionsList[i];
           });
 
         }
@@ -289,6 +291,150 @@ class _CovidQuestionsForStudentsState extends State<CovidQuestionsForStudents> {
     'No',
   ];
 
+  final formKey = GlobalKey<FormState>();
+  String isolationAddress = '';
+  String supervisorName = '';
+  String dsaCouncilMemberName1 = '';
+  String dsaCouncilMemberName2 = '';
+  String dsaCouncilMember1MbNo = '';
+  String dsaCouncilMember2MbNo = '';
+  String supervisorMobileNo = '';
+  String seekHelp = '';
+  String suggestions = '';
+
+  DateTime isolationDate;
+
+
+  Widget buildIsolationAdd() => buildTitle(
+    title: 'Current Isolation Address',
+    child: TextFormField(
+      initialValue: isolationAddress,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Current isolation address',
+      ),
+      onChanged: (data) => setState(() => this.isolationAddress = data),
+    ),
+  );
+  Widget buildSuperVisorName() => buildTitle(
+    title: 'Name of Supervisor',
+    child: TextFormField(
+      initialValue: supervisorName,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Enter Name',
+      ),
+      onChanged: (data) => setState(() => this.supervisorName = data),
+    ),
+  );
+  Widget buildDsaCouncilMem1Name() => buildTitle(
+    title: 'Name of Dean SA Council Member - 1 in contact ',
+    child: TextFormField(
+      initialValue: dsaCouncilMemberName1,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Enter Name',
+      ),
+      onChanged: (data) => setState(() => this.dsaCouncilMemberName1 = data),
+    ),
+  );
+  Widget buildDsaCouncilMem2Name() => buildTitle(
+    title: 'Name of Dean SA Council Member - 2 in contact ',
+    child: TextFormField(
+      initialValue: dsaCouncilMemberName2,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Enter Name',
+      ),
+      onChanged: (data) => setState(() => this.dsaCouncilMemberName2 = data),
+    ),
+  );
+
+  Widget buildSeekHelp() => buildTitle(
+    title: 'What help do you seek?',
+    child: TextFormField(
+      initialValue: seekHelp,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Write your problems',
+      ),
+      onChanged: (data) => setState(() => this.seekHelp = data),
+    ),
+  );
+
+  Widget buildSuggestions() => buildTitle(
+    title: 'Additional Comments and Suggestions',
+    child: TextFormField(
+      initialValue: suggestions,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Enter your suggestions',
+      ),
+      onChanged: (data) => setState(() => this.suggestions = data),
+    ),
+  );
+  Widget buildSupervisorMbNo() => buildTitle(
+    title: 'SuperVisor Mobile No',
+    child: TextFormField(
+      initialValue: supervisorMobileNo,
+      keyboardType: TextInputType.phone,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'SuperVisor Mobile No',
+      ),
+      onChanged: (mobileNo) => setState(() => this.supervisorMobileNo = mobileNo),
+    ),
+  );
+  Widget buildDsaCouncilMem1Mb() => buildTitle(
+    title: 'Dean SA Council Member-1 Mobile No',
+    child: TextFormField(
+      initialValue: dsaCouncilMember1MbNo,
+      keyboardType: TextInputType.phone,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Enter Mobile No',
+      ),
+      onChanged: (mobileNo) => setState(() => this.dsaCouncilMember1MbNo = mobileNo),
+    ),
+  );
+  Widget buildDsaCouncilMem2Mb() => buildTitle(
+    title: 'Dean SA Council Member-1 Mobile No',
+    child: TextFormField(
+      initialValue: dsaCouncilMember2MbNo,
+      keyboardType: TextInputType.phone,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Enter Mobile No',
+      ),
+      onChanged: (mobileNo) => setState(() => this.dsaCouncilMember2MbNo = mobileNo),
+    ),
+  );
+  Widget buildIsolationDate() => buildTitle(
+    title: 'Date when found positive and started isolation?',
+    child: BirthdayWidget(
+      birthday: isolationDate,
+      hinText: 'Enter Date',
+      onChangedBirthday: (birthday) =>
+          setState(() => this.isolationDate = birthday),
+    ),
+  );
+
+  Widget buildTitle({
+    @required String title,
+    @required Widget child,
+  }) =>
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            title,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
+          const SizedBox(height: 8),
+          child,
+        ],
+      );
+
 void printValues(List<String> answers)
 {
   print("----------------- Answers Values ------------------\n");
@@ -296,6 +442,7 @@ void printValues(List<String> answers)
     {
       print(answers[i]);
     }
+  print([isolationAddress,supervisorName,dsaCouncilMemberName1,dsaCouncilMemberName2,dsaCouncilMember1MbNo,dsaCouncilMember2MbNo,supervisorMobileNo,seekHelp,suggestions,isolationDate]);
   print("----------------- Answers Values End ------------------\n");
 }
   List<String> regularQuesAnswersList = [], wellBeingQuesAnswersList=[];
@@ -328,6 +475,16 @@ void printValues(List<String> answers)
 
     initializeRegularQuestions();
     initializeWellBeingQuestions();
+    buildIsolationDate();
+    buildIsolationAdd();
+    buildSuperVisorName();
+    buildSupervisorMbNo();
+    buildDsaCouncilMem1Mb();
+    buildDsaCouncilMem1Name();
+    buildDsaCouncilMem2Name();
+    buildDsaCouncilMem2Mb();
+    buildSeekHelp();
+    buildSuggestions();
   }
 
   @override
@@ -427,6 +584,36 @@ void printValues(List<String> answers)
                         ),
                       ),
                     ),
+                    const SizedBox(height: 32),
+                    buildIsolationAdd(),
+                    const SizedBox(height: 12),
+                    buildIsolationDate(),
+                    const SizedBox(height: 12),
+                    buildSuperVisorName(),
+                    const SizedBox(height: 12),
+                    buildSupervisorMbNo(),
+                    const SizedBox(height: 12),
+                    buildDsaCouncilMem1Name(),
+                    const SizedBox(height: 12),
+                    buildDsaCouncilMem1Mb(),
+                    const SizedBox(height: 12),
+                    buildDsaCouncilMem2Name(),
+                    const SizedBox(height: 12),
+                    buildDsaCouncilMem2Mb(),
+                    const SizedBox(height: 30),
+                    Container(
+                      child: Center(
+                        child: Text(
+                          'Are You Equipped ?',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 22.0,
+                            fontWeight: FontWeight.bold,
+                            color: kWeirdBlue,
+                          ),
+                        ),
+                      ),
+                    ),
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Container(
@@ -434,7 +621,7 @@ void printValues(List<String> answers)
                         child: SingleChildScrollView(
                           child: Column(
                               children:
-                                listGenerator(regularQuestionsMap, regularQuesAnswersList),
+                                listGenerator(areYouEquippedQuestionsMap, regularQuesAnswersList),
                             ),
                         ),
                         ),
@@ -467,6 +654,10 @@ void printValues(List<String> answers)
                         ),
                       ),
                     ),
+                    const SizedBox(height: 12),
+                    buildSeekHelp(),
+                    const SizedBox(height: 12),
+                    buildSuggestions(),
                   ],
                 ),
               ),

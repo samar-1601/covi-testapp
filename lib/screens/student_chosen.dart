@@ -6,8 +6,6 @@ import 'package:coviapp/utilities/birthday_widget.dart';
 import 'package:coviapp/general_data.dart';
 
 
-
-
 class StudentChosen extends StatefulWidget {
   final String chosenCategory;
   StudentChosen({this.chosenCategory});
@@ -27,6 +25,7 @@ class _StudentChosenState extends State<StudentChosen> {
   String rollNo = '';
   String parentName = '';
   String parentMobileNo = '';
+  String emailID = '';
 
 
   DateTime birthday;
@@ -124,8 +123,21 @@ class _StudentChosenState extends State<StudentChosen> {
     ),
   );
 
+  Widget buildEmail() => buildTitle(
+    title: 'Email ID',
+    child: TextFormField(
+      initialValue: emailID,
+      keyboardType: TextInputType.emailAddress,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Frequently used mail ID',
+      ),
+      onChanged: (emailID) => setState(() => this.emailID = emailID),
+    ),
+  );
+
   Widget buildBirthday() => buildTitle(
-    title: 'Birthday',
+    title: 'Date Of Birth',
     child: BirthdayWidget(
       birthday: birthday,
       onChangedBirthday: (birthday) =>
@@ -161,6 +173,7 @@ class _StudentChosenState extends State<StudentChosen> {
     buildMobile2();
     buildParentName();
     buildParentMobile();
+    buildEmail();
   }
 
   @override
@@ -264,6 +277,8 @@ class _StudentChosenState extends State<StudentChosen> {
                     const SizedBox(height: 12),
                     buildRollNo(),
                     const SizedBox(height: 12),
+                    buildEmail(),
+                    const SizedBox(height: 12),
                     buildMobile1(),
                     const SizedBox(height: 12),
                     buildMobile2(),
@@ -345,6 +360,7 @@ class _StudentChosenState extends State<StudentChosen> {
                                 mobileNo1: mobileNo1,
                                 mobileNo2: mobileNo2,
                                 rollNo: rollNo,
+                                email: emailID,
                               )));
                     }
                   });

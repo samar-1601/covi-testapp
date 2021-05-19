@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:coviapp/utilities/alert_box.dart';
 import 'package:coviapp/utilities/constants.dart';
-import 'package:coviapp/screens/covid_details_of_student.dart';
+import 'package:coviapp/screens/general_covid_questions.dart';
 import 'package:coviapp/screens/do_you_have_covid.dart';
 
 class GeneralDataSender extends StatefulWidget {
@@ -16,10 +16,12 @@ class GeneralDataSender extends StatefulWidget {
   final String rollNo ;
   final String parentName ;
   final String parentMobileNo ;
+  final String email;
+
 
   GeneralDataSender(
-      {this.selectedCategory,this.name, this.hall, this.room, this.birthday,
-        this.rollNo, this.mobileNo1, this.mobileNo2, this.parentName, this.parentMobileNo});
+      {this.selectedCategory = 'NE',this.name = 'NE', this.hall = 'NE', this.room = 'NE', this.birthday,
+        this.rollNo = 'NE', this.mobileNo1 = 'NE', this.mobileNo2 ='NE', this.parentName = 'NE', this.parentMobileNo= 'NE', this.email = 'NE'});
 
   @override
   _GeneralDataSenderState createState() => _GeneralDataSenderState();
@@ -34,21 +36,25 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
     print(widget.selectedCategory);
     if(widget.selectedCategory == 'Student')
       {
-        print(widget.name==''?'Name not entered':widget.name);
-        print(widget.rollNo==''?'roll not entered':widget.rollNo);
-        print(widget.hall==''?'hall not entered':widget.hall);
-        print(widget.mobileNo1==''?'mobile1 not entered':widget.mobileNo1);
-        print(widget.mobileNo2==''?'mobile2 not entered':widget.mobileNo2);
-        print(widget.parentName==''?'parent not entered':widget.parentName);
-        print(widget.parentMobileNo==''?'parent No. not entered':widget.parentMobileNo);
-        print(widget.birthday.toString()==''?'Name not entered':widget.birthday.toString());
+        print(widget.name);
+        print(widget.rollNo);
+        print(widget.email);
+        print(widget.hall);
+        print(widget.mobileNo1);
+        print(widget.mobileNo2);
+        print(widget.parentName);
+        print(widget.parentMobileNo);
+        print(widget.birthday.toString());
       }
     else
       {
-        print(widget.name==''?'Name not entered':widget.name);
-        print(widget.hall==''?'Hall not entered':widget.hall);
-        print(widget.selectedCategory=='Student'?widget.room:'');
-        print(widget.birthday.toString()==''?'Name not entered':widget.birthday.toString());
+        print(widget.name);
+        print(widget.rollNo);
+        print(widget.email);
+        print(widget.hall);
+        print(widget.mobileNo1);
+        print(widget.mobileNo2);
+        print(widget.birthday.toString());
       }
 
   }

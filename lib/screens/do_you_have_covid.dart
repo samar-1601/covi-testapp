@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:coviapp/utilities/alert_box.dart';
 import 'package:coviapp/utilities/constants.dart';
-import 'package:coviapp/screens/covid_details_of_student.dart';
+import 'package:coviapp/screens/general_covid_questions.dart';
 
 class DoYouHaveCovid extends StatefulWidget {
   final String selectedCategory;
@@ -184,7 +184,7 @@ class _DoYouHaveCovidState extends State<DoYouHaveCovid> {
                   Navigator.push(
                       context,
                       new MaterialPageRoute(
-                          builder: (BuildContext context) => CovidQuestionsForStudents(
+                          builder: (BuildContext context) => CovidQuestions(
                             chosenCategory: widget.selectedCategory,
                           )));
                 });

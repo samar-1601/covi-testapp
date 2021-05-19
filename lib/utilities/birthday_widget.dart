@@ -3,12 +3,14 @@ import 'package:intl/intl.dart';
 
 class BirthdayWidget extends StatefulWidget {
   final DateTime birthday;
+  final String hinText;
   final ValueChanged<DateTime> onChangedBirthday;
 
   const BirthdayWidget({
     Key key,
     @required this.birthday,
     @required this.onChangedBirthday,
+    this.hinText,
   }) : super(key: key);
 
   @override
@@ -55,7 +57,7 @@ class _BirthdayWidgetState extends State<BirthdayWidget> {
           validator: (value) => value.isEmpty ? 'Is Required' : null,
           decoration: InputDecoration(
             prefixText: ' ',
-            hintText: 'Your birthday',
+            hintText: widget.hinText,
             prefixIcon: Icon(Icons.calendar_today_rounded),
             border: OutlineInputBorder(),
           ),
