@@ -284,11 +284,15 @@ class _DoYouHaveCovidState extends State<DoYouHaveCovid> {
                       alertTitle: 'Logout?',
                       rightActionText: 'Yes',
                       leftActionText: 'No',
+                      onPressingLeftActionButton: (){
+                        Navigator.pop(context);
+                      },
                       onPressingRightActionButton: () {
                         _checkLoggedIn.setVisitingFlag(false);
                         Navigator.of(context)
                             .pushNamedAndRemoveUntil('/welcome', (Route<dynamic> route) => false);
                       }).showAlert();
+
                 });
               },
             ),
