@@ -5,7 +5,9 @@ import 'package:coviapp/utilities/constants.dart';
 import 'package:coviapp/screens/do_you_have_covid.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:otp_text_field/otp_text_field.dart';
 import 'package:coviapp/shared_pref.dart';
+import 'package:otp_text_field/style.dart';
 
 class GeneralDataSender extends StatefulWidget {
   final String selectedCategory;
@@ -40,6 +42,7 @@ class GeneralDataSender extends StatefulWidget {
 class _GeneralDataSenderState extends State<GeneralDataSender> {
   CheckLoggedIn _checkLoggedIn = CheckLoggedIn();
   bool valueFromBack;
+  int idFromBack;
   Future putData() async {
     var url = Uri.parse('http://13.232.3.140:8080/submit_form');
     Map data = {
@@ -61,13 +64,48 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
         headers: {"Content-Type": "application/json"}, body: body);
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
+    Map responseBody = json.decode(response.body) as Map;
+    if (response.statusCode == 200) {
+      _checkLoggedIn.setVisitingFlag(true);
+
+    } else {
+      _checkLoggedIn.setVisitingFlag(false);
+    }
+    print("inside set state for ID response");
+    idFromBack = responseBody['studentID'];
+    print(idFromBack);
+    setState(() async{
+      valueFromBack = await _checkLoggedIn.getVisitingFlag();
+      idFromBack = responseBody['studentID'].toInt();
+    });
+    print("=======");
+    print(idFromBack);
+  }
+
+
+  String otp ="";
+  Future checkOTP(String otp, int id) async {
+    var url = Uri.parse('http://13.232.3.140:8080/verify');
+    print(id);
+    print(otp);
+    Map data = {
+      "otp": otp,
+      "id":id,
+    };
+    String body = json.encode(data);
+    print(body);
+    var response = await http.post(url,
+        headers: {"Content-Type": "application/json"}, body: body);
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
     if (response.statusCode == 200) {
       _checkLoggedIn.setVisitingFlag(true);
     } else {
       _checkLoggedIn.setVisitingFlag(false);
     }
-    setState(() {
-      valueFromBack = _checkLoggedIn.getVisitingFlag();
+    print(_checkLoggedIn.getVisitingFlag());
+    setState(() async{
+      valueFromBack = await _checkLoggedIn.getVisitingFlag();
     });
   }
 
@@ -96,6 +134,7 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
       print(widget.birthday.toString());
     }
     putData();
+
   }
 
   @override
@@ -179,7 +218,7 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
                     ),
                   ),
                   SizedBox(
-                    height: 120.0,
+                    height: 80.0,
                   ),
                   Container(
                     child: Center(
@@ -223,8 +262,38 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 30),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      child: Text(
+                         'Enter OTP',
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          fontSize: 22.0,
+                          fontWeight: FontWeight.bold,
+                          color: kWeirdBlue,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 25),
+                  OTPTextField(
+                    length: 6,
+                    width: MediaQuery.of(context).size.width*0.7,
+                    fieldWidth: 50,
+                    style: TextStyle(
+                        fontSize: 20,
+                    ),
+                    textFieldAlignment: MainAxisAlignment.center,
+                    fieldStyle: FieldStyle.underline,
+                    onCompleted: (pin) {
+                      print("Completed: " + pin);
+                      otp = pin;
+                    },
+                  ),
                   SizedBox(
-                    height: 50.0,
+                    height: 30.0,
                   ),
                   GestureDetector(
                     child: Align(
@@ -260,13 +329,36 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
                     ),
                     onTap: () {
                       setState(() {
-                        Navigator.push(
-                            context,
-                            new MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    DoYouHaveCovid(
+                          checkOTP(otp,idFromBack);
+                          if(valueFromBack==true)
+                            {
+                              _checkLoggedIn.setVisitingFlag(true);
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (BuildContext context) => DoYouHaveCovid(
                                       selectedCategory: widget.selectedCategory,
-                                    )));
+                                    )
+                                ),
+                                    (route) => false,
+                              );
+                            }
+                          else
+                            {
+                              _checkLoggedIn.setVisitingFlag(false);
+                              AlertBox(
+                                  context: context,
+                                  alertContent:
+                                  'Wrong OTP Entered',
+                                  alertTitle: 'Invalid OTP !!',
+                                  rightActionText: 'Close',
+                                  leftActionText: '',
+                                  onPressingRightActionButton: () {
+                                    Navigator.of(context)
+                                        .pushNamedAndRemoveUntil('/studentChosen', (Route<dynamic> route) => false);
+                                  }).showAlert();
+                            }
+
                       });
                     },
                   ),
