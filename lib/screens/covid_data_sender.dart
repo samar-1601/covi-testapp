@@ -2,79 +2,77 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:coviapp/utilities/alert_box.dart';
 import 'package:coviapp/utilities/constants.dart';
+// import 'package:coviapp/screens/general_covid_questions.dart';
 import 'package:coviapp/screens/do_you_have_covid.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+// import 'package:http/http.dart' as http;
 
-
-class GeneralDataSender extends StatefulWidget {
+class CovidDataSender extends StatefulWidget {
   final String selectedCategory;
-  final String name;
+  final String name;//
   final String hall;
   final String room;
-  final DateTime birthday;
-  final String mobileNo1;
+  final DateTime birthday;//
+  final String mobileNo1;//
   final String mobileNo2;
-  final String rollNo ;
+  final String rollNo ;//
   final String parentName ;
-  final String parentMobileNo ;
-  final String email;
+  final String parentMobileNo ;//
+  final String email;//
+  final String isolationAddress ;
+  final String supervisorName ;
+  final String dsaCouncilMemberName1 ;
+  final String dsaCouncilMemberName2;
+  final String dsaCouncilMember1MbNo ;
+  final String dsaCouncilMember2MbNo ;
+  final String supervisorMobileNo ;
+  final String seekHelp;
+  final String suggestions ;
+
+  DateTime isolationDate;
+  final List<String> areYouEquippedQuestions;
+  final List<String> wellBeingQuestions;
+  final List<String> areYouEquippedAnswers;
+  final List<String> wellBeingAnswers;
 
 
-  GeneralDataSender(
-      {this.selectedCategory = 'NE',this.name = 'NE', this.hall = 'NE', this.room = 'NE', this.birthday,
+
+  CovidDataSender(
+      {this.suggestions ='NE',this.seekHelp,this.isolationDate,this.dsaCouncilMemberName1,this.dsaCouncilMemberName2='NE',this.supervisorName ='NE',this.isolationAddress='NE',this.supervisorMobileNo='NE',this.dsaCouncilMember1MbNo='NE',this.dsaCouncilMember2MbNo='NE',this.areYouEquippedQuestions ,this.areYouEquippedAnswers,this.wellBeingQuestions,this.wellBeingAnswers,this.selectedCategory = 'NE',this.name = 'NE', this.hall = 'NE', this.room = 'NE', this.birthday,
         this.rollNo = 'NE', this.mobileNo1 = 'NE', this.mobileNo2 ='NE', this.parentName = 'NE', this.parentMobileNo= 'NE', this.email = 'NE'});
 
   @override
-  _GeneralDataSenderState createState() => _GeneralDataSenderState();
+  _CovidDataSenderState createState() => _CovidDataSenderState();
 }
 
-class _GeneralDataSenderState extends State<GeneralDataSender> {
+class _CovidDataSenderState extends State<CovidDataSender> {
 
-
-  Future putData() async {
-    var url = Uri.parse('http://13.232.3.140:8080/submit_form');
-    Map data = {
-      "name": widget.name,
-      "hall": widget.hall,
-      "birth_date": widget.birthday.toString(),
-    };
-    String body = json.encode(data);
-    print(body);
-    var response = await http.post(url, headers: {"Content-Type": "application/json"},body: body);
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
-
-  }
 
   @override
   void initState() {
     super.initState();
     print(widget.selectedCategory);
-
     if(widget.selectedCategory == 'Student')
-      {
-        print(widget.name);
-        print(widget.rollNo);
-        print(widget.email);
-        print(widget.hall);
-        print(widget.mobileNo1);
-        print(widget.mobileNo2);
-        print(widget.parentName);
-        print(widget.parentMobileNo);
-        print(widget.birthday.toString());
-      }
+    {
+      print(widget.name);
+      print(widget.rollNo);
+      print(widget.email);
+      print(widget.hall);
+      print(widget.mobileNo1);
+      print(widget.mobileNo2);
+      print(widget.parentName);
+      print(widget.parentMobileNo);
+      print(widget.birthday.toString());
+    }
     else
-      {
-        print(widget.name);
-        print(widget.rollNo);
-        print(widget.email);
-        print(widget.hall);
-        print(widget.mobileNo1);
-        print(widget.mobileNo2);
-        print(widget.birthday.toString());
-      }
-    putData();
+    {
+      print(widget.name);
+      print(widget.rollNo);
+      print(widget.email);
+      print(widget.hall);
+      print(widget.mobileNo1);
+      print(widget.mobileNo2);
+      print(widget.birthday.toString());
+    }
 
   }
 
@@ -172,7 +170,7 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
                       ),
                     ),
                     Text(
-                          widget.selectedCategory+'\n'+
+                      widget.selectedCategory+'\n'+
                           widget.name + '\n' +
                           widget.rollNo + '\n'+
                           widget.hall + '\n' +
@@ -183,9 +181,9 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
                           widget.parentMobileNo+'\n'+
                           widget.birthday.toString(),
                       style: TextStyle(
-                      fontSize: 18.0,
-                      color: Colors.black,
-                    ),
+                        fontSize: 18.0,
+                        color: Colors.black,
+                      ),
                     ),
                   ],
                 ),
@@ -227,12 +225,24 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
               ),
               onTap: () {
                 setState(() {
-                  Navigator.push(
-                      context,
-                      new MaterialPageRoute(
-                          builder: (BuildContext context) => DoYouHaveCovid(
-                                selectedCategory: widget.selectedCategory,
-                          )));
+                  AlertBox(
+                      context: context,
+                      alertContent:
+                      'Thank you For giving time to fill out the details. If you feel any different in future(from what you have entered currently, Kindly fill in this form again so that we can provide help.',
+                      alertTitle: 'Thank you for your cooperation ',
+                      rightActionText: 'Close',
+                      leftActionText: '',
+                      onPressingRightActionButton: () {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) => DoYouHaveCovid(
+                                  selectedCategory: widget.selectedCategory,
+                                )
+                            ),
+                            (route) => false,
+                        );
+                      }).showAlert();
                 });
               },
             ),
