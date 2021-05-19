@@ -6,6 +6,7 @@ import 'package:coviapp/utilities/birthday_widget.dart';
 import 'package:coviapp/general_data.dart';
 
 
+
 //import 'package:coviapp/screens/diet_plan_screen_2.dart';
 
 class FacultyChosen extends StatefulWidget {
@@ -17,6 +18,8 @@ class FacultyChosen extends StatefulWidget {
 }
 
 class _FacultyChosenState extends State<FacultyChosen> {
+
+
 
   final formKey = GlobalKey<FormState>();
   String name = '';
@@ -126,6 +129,7 @@ class _FacultyChosenState extends State<FacultyChosen> {
   @override
   void initState() {
     super.initState();
+
     buildBirthday();
     buildName();
     buildAddress();

@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:coviapp/utilities/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:coviapp/screens/do_you_have_covid.dart';
+import 'package:coviapp/shared_pref.dart';
 
 class WelcomeScreen extends StatelessWidget {
+
+  CheckLoggedIn _checkLoggedIn = CheckLoggedIn();
+
   @override
   Widget build(BuildContext context) {
     final mediaScreen = MediaQuery.of(context);
@@ -42,8 +48,22 @@ class WelcomeScreen extends StatelessWidget {
                   color: Colors.white,
                   size: 65.0,
                 ),
-                onPressed: () {
-                  Navigator.of(context).pushNamed('/chooseCategory');
+                onPressed: () async{
+                  bool visited = await _checkLoggedIn.getVisitingFlag();
+
+                  if(visited==true)
+                    {
+                      Navigator.push(
+                          context,
+                          new MaterialPageRoute(
+                              builder: (BuildContext context) => DoYouHaveCovid(),
+                          ),
+                      );
+                    }
+                  else
+                    {// visiting first time
+                      Navigator.of(context).pushNamed('/chooseCategory');
+                    }
                 },
               ),
             ),
@@ -53,3 +73,4 @@ class WelcomeScreen extends StatelessWidget {
     );
   }
 }
+

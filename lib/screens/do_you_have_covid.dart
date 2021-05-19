@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:coviapp/utilities/alert_box.dart';
 import 'package:coviapp/utilities/constants.dart';
 import 'package:coviapp/screens/general_covid_questions.dart';
+import 'package:coviapp/shared_pref.dart';
 
 class DoYouHaveCovid extends StatefulWidget {
   final String selectedCategory;
@@ -26,6 +27,7 @@ class DoYouHaveCovid extends StatefulWidget {
 
 class _DoYouHaveCovidState extends State<DoYouHaveCovid> {
 
+  CheckLoggedIn _checkLoggedIn = CheckLoggedIn();
 
   @override
   void initState() {
@@ -235,6 +237,57 @@ class _DoYouHaveCovidState extends State<DoYouHaveCovid> {
                       leftActionText: '',
                       onPressingRightActionButton: () {
                         Navigator.pop(context);
+                      }).showAlert();
+                });
+              },
+            ),
+            SizedBox(
+              height: 80.0,
+            ),
+            GestureDetector(
+              child: Align(
+                alignment: Alignment.center,
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(25.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26.withOpacity(0.3),
+                        spreadRadius: 1,
+                        blurRadius: 2,
+                        offset: Offset(0, 1), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text(
+                        'LogOut',
+                        style: TextStyle(
+                          fontSize: 24.0,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              onTap: () {
+                setState(() {
+                  AlertBox(
+                      context: context,
+                      alertContent:
+                      'Do you want to Logout?',
+                      alertTitle: 'Logout?',
+                      rightActionText: 'Yes',
+                      leftActionText: 'No',
+                      onPressingRightActionButton: () {
+                        _checkLoggedIn.setVisitingFlag(false);
+                        Navigator.of(context)
+                            .pushNamedAndRemoveUntil('/welcome', (Route<dynamic> route) => false);
                       }).showAlert();
                 });
               },
