@@ -28,7 +28,7 @@ class _StudentChosenState extends State<StudentChosen> {
   String parentName = '';
   String parentMobileNo = '';
   String emailID = '';
-
+  String password = '';
 
   DateTime birthday;
 
@@ -147,6 +147,19 @@ class _StudentChosenState extends State<StudentChosen> {
     ),
   );
 
+  Widget buildPassword() => buildTitle(
+    title: 'Choose your account password',
+    child: TextFormField(
+      initialValue: password,
+      obscureText: true,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Enter your password',
+      ),
+      onChanged: (data) => setState(() => this.password= data),
+    ),
+  );
+
 
   Widget buildTitle({
     @required String title,
@@ -176,6 +189,7 @@ class _StudentChosenState extends State<StudentChosen> {
     buildParentName();
     buildParentMobile();
     buildEmail();
+    buildPassword();
   }
 
   @override
@@ -294,6 +308,8 @@ class _StudentChosenState extends State<StudentChosen> {
                     buildParentName(),
                     const SizedBox(height: 12),
                     buildParentMobile(),
+                    const SizedBox(height: 12),
+                    buildPassword(),
                   ],
                 ),
               ),
@@ -363,6 +379,7 @@ class _StudentChosenState extends State<StudentChosen> {
                                 mobileNo2: mobileNo2,
                                 rollNo: rollNo,
                                 email: emailID,
+                                password: password,
                               )));
                     }
                   });

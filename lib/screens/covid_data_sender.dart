@@ -4,9 +4,12 @@ import 'package:coviapp/utilities/alert_box.dart';
 import 'package:coviapp/utilities/constants.dart';
 // import 'package:coviapp/screens/general_covid_questions.dart';
 import 'package:coviapp/screens/do_you_have_covid.dart';
-// import 'package:http/http.dart' as http;
+import 'package:coviapp/shared_pref.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class CovidDataSender extends StatefulWidget {
+
   final String selectedCategory;
   final String name;//
   final String hall;
@@ -18,6 +21,7 @@ class CovidDataSender extends StatefulWidget {
   final String parentName ;
   final String parentMobileNo ;//
   final String email;//
+  final String password;
   final String isolationAddress ;
   final String supervisorName ;
   final String dsaCouncilMemberName1 ;
@@ -27,6 +31,7 @@ class CovidDataSender extends StatefulWidget {
   final String supervisorMobileNo ;
   final String seekHelp;
   final String suggestions ;
+  final int id;
 
   DateTime isolationDate;
   final List<String> areYouEquippedQuestions;
@@ -37,7 +42,7 @@ class CovidDataSender extends StatefulWidget {
 
 
   CovidDataSender(
-      {this.suggestions ='NE',this.seekHelp,this.isolationDate,this.dsaCouncilMemberName1,this.dsaCouncilMemberName2='NE',this.supervisorName ='NE',this.isolationAddress='NE',this.supervisorMobileNo='NE',this.dsaCouncilMember1MbNo='NE',this.dsaCouncilMember2MbNo='NE',this.areYouEquippedQuestions ,this.areYouEquippedAnswers,this.wellBeingQuestions,this.wellBeingAnswers,this.selectedCategory = 'NE',this.name = 'NE', this.hall = 'NE', this.room = 'NE', this.birthday,
+      {this.id,this.password='NE',this.suggestions ='NE',this.seekHelp,this.isolationDate,this.dsaCouncilMemberName1,this.dsaCouncilMemberName2='NE',this.supervisorName ='NE',this.isolationAddress='NE',this.supervisorMobileNo='NE',this.dsaCouncilMember1MbNo='NE',this.dsaCouncilMember2MbNo='NE',this.areYouEquippedQuestions ,this.areYouEquippedAnswers,this.wellBeingQuestions,this.wellBeingAnswers,this.selectedCategory = 'NE',this.name = 'NE', this.hall = 'NE', this.room = 'NE', this.birthday,
         this.rollNo = 'NE', this.mobileNo1 = 'NE', this.mobileNo2 ='NE', this.parentName = 'NE', this.parentMobileNo= 'NE', this.email = 'NE'});
 
   @override
@@ -46,6 +51,85 @@ class CovidDataSender extends StatefulWidget {
 
 class _CovidDataSenderState extends State<CovidDataSender> {
 
+  CheckLoggedIn _checkLoggedIn = CheckLoggedIn();
+  bool valueFromBack;
+
+  Future putData() async {
+    var url = Uri.parse('http://13.232.3.140:8080/submit_covid_form');
+    Map data = {
+      "name": widget.name,
+      "hall": widget.hall,
+      "birth_date": "birthday",
+      "selectedCategory": "",
+      "room":"",
+      "mobileNo1" : widget.mobileNo1,
+      "mobileNo2" : " ",
+      "rollNo" : widget.rollNo,
+      "parentName" : " ",
+      "parentMobileNo": "",
+      "email": " ",
+      "password": widget.password,
+      "areYouEquippedQuestions": widget.areYouEquippedQuestions,
+      "areYouEquippedAnswers" : widget.areYouEquippedAnswers,
+      "wellBeingQuestions": widget.wellBeingQuestions,
+      "wellBeingAnswers": widget.wellBeingAnswers,
+      "isolationAddress": widget.isolationAddress,
+    "supervisorName" : widget.supervisorName,
+    "dsaCouncilMemberName1" : widget.dsaCouncilMemberName1,
+    "dsaCouncilMemberName2" : widget.dsaCouncilMemberName2,
+    "dsaCouncilMember1MbNo" : widget.dsaCouncilMember1MbNo ,
+    "dsaCouncilMember2MbNo" : widget.dsaCouncilMember2MbNo ,
+    "supervisorMobileNo" : widget.supervisorName,
+    "seekHelp": widget.seekHelp,
+    "suggestions": widget.suggestions,
+      "id":widget.id,
+    };
+    String body = json.encode(data);
+    print(body);
+    var response = await http.post(url,
+        headers: {"Content-Type": "application/json"}, body: body);
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+    Map responseBody = json.decode(response.body) as Map;
+    print(responseBody);
+    if (response.statusCode != 200) {
+      // _checkLoggedIn.setVisitingFlag(true);
+      setState(() {
+        AlertBox(
+            context: context,
+            alertContent:
+            'The given details were not registered due to some error. Kindly Renter',
+            alertTitle: 'Entry Error !!',
+            rightActionText: 'Close',
+            leftActionText: '',
+            onPressingRightActionButton: () {
+              Navigator.pushNamedAndRemoveUntil(context, '/generalCovidQuestions', (route) => false);
+            }).showAlert();
+      });
+    }
+    else {
+      _checkLoggedIn.setVisitingFlag(true);
+      setState(() {
+        AlertBox(
+            context: context,
+            alertContent:
+            'Thank You For Registering !!',
+            alertTitle: 'ThankYou',
+            rightActionText: 'Close',
+            leftActionText: '',
+            onPressingRightActionButton: () {
+              Navigator.pushNamedAndRemoveUntil(context, '/doYouHaveCovid', (route) => false);
+            }).showAlert();
+      });
+    }
+    print("inside set state for ID response");
+    //idFromBack = responseBody['studentID'];
+   // print(idFromBack);
+    valueFromBack = await _checkLoggedIn.getVisitingFlag();
+    print("=======");
+    return valueFromBack;
+    //print(idFromBack);
+  }
 
   @override
   void initState() {
@@ -73,7 +157,7 @@ class _CovidDataSenderState extends State<CovidDataSender> {
       print(widget.mobileNo2);
       print(widget.birthday.toString());
     }
-
+  putData();
   }
 
 
@@ -179,7 +263,8 @@ class _CovidDataSenderState extends State<CovidDataSender> {
                           widget.mobileNo2 + '\n'+
                           widget.parentName +'\n'+
                           widget.parentMobileNo+'\n'+
-                          widget.birthday.toString(),
+                          widget.birthday.toString()+'\n'+
+                      widget.id.toString(),
                       style: TextStyle(
                         fontSize: 18.0,
                         color: Colors.black,

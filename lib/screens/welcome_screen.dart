@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:coviapp/utilities/constants.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:coviapp/screens/do_you_have_covid.dart';
 import 'package:coviapp/shared_pref.dart';
 
@@ -62,7 +61,7 @@ class WelcomeScreen extends StatelessWidget {
                     }
                   else
                     {// visiting first time
-                      Navigator.of(context).pushNamed('/chooseCategory');
+                      Navigator.of(context).pushNamed('/signup');
                     }
                 },
               ),

@@ -8,7 +8,8 @@ import 'package:coviapp/screens/covid_data_sender.dart';
 
 class CovidQuestions extends StatefulWidget {
   final String chosenCategory;
-  CovidQuestions({this.chosenCategory});
+  final int id;
+  CovidQuestions({this.id,this.chosenCategory});
 
   @override
   _CovidQuestionsState createState() => _CovidQuestionsState();
@@ -121,7 +122,7 @@ class _CovidQuestionsState extends State<CovidQuestions> {
     'Do you have fever?',
     'Do you feel body ache?',
     'Do you have dry cough?' ,
-    'Do you have soar throat?',
+    'Do you have sore throat?',
     'Do you have difficulty in eating?' ,
     'Have you lost sense of smell?',
     'Have you lost sense of taste?',
@@ -710,6 +711,7 @@ void printValues(List<String> answers)
                               areYouEquippedAnswers: areYouEquippedQuesAnswersList,
                               wellBeingQuestions: wellBeingQuesList,
                               wellBeingAnswers: wellBeingQuesAnswersList,
+                              id: widget.id,
                             )));
                   });
                 },

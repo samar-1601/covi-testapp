@@ -21,6 +21,7 @@ class GeneralDataSender extends StatefulWidget {
   final String parentName;
   final String parentMobileNo;
   final String email;
+  final String password;
 
   GeneralDataSender(
       {this.selectedCategory = 'NE',
@@ -33,7 +34,8 @@ class GeneralDataSender extends StatefulWidget {
       this.mobileNo2 = 'NE',
       this.parentName = 'NE',
       this.parentMobileNo = 'NE',
-      this.email = 'NE'});
+      this.email = 'NE',
+        this.password = 'NE'});
 
   @override
   _GeneralDataSenderState createState() => _GeneralDataSenderState();
@@ -43,6 +45,7 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
   CheckLoggedIn _checkLoggedIn = CheckLoggedIn();
   bool valueFromBack;
   int idFromBack;
+
   Future putData() async {
     var url = Uri.parse('http://13.232.3.140:8080/submit_form');
     Map data = {
@@ -53,10 +56,11 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
       "room":"",
       "mobileNo1" : widget.mobileNo1,
       "mobileNo2" : " ",
-      "rollNo" : " ",
+      "rollNo" : widget.rollNo,
       "parentName" : " ",
       "parentMobileNo": "",
       "email": " ",
+      "password": widget.password,
     };
     String body = json.encode(data);
     print(body);
@@ -65,12 +69,25 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
     Map responseBody = json.decode(response.body) as Map;
-    if (response.statusCode == 200) {
-      _checkLoggedIn.setVisitingFlag(true);
-
-    } else {
-      _checkLoggedIn.setVisitingFlag(false);
-    }
+    if (response.statusCode != 200) {
+     // _checkLoggedIn.setVisitingFlag(true);
+      setState(() {
+        AlertBox(
+            context: context,
+            alertContent:
+            'The given details are not found in Institute Database',
+            alertTitle: 'Invalid Entry !!',
+            rightActionText: 'Close',
+            leftActionText: '',
+            onPressingRightActionButton: () {
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil('/studentChosen', (Route<dynamic> route) => false);
+            }).showAlert();
+      });
+     }
+       else {
+       _checkLoggedIn.setVisitingFlag(true);
+     }
     print("inside set state for ID response");
     idFromBack = responseBody['studentID'];
     print(idFromBack);
@@ -141,9 +158,11 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
   Widget build(BuildContext context) {
     return (valueFromBack == false)
         ? Scaffold(
-        body: CircularProgressIndicator(
-        backgroundColor: Colors.white,
+        body: Center(
+          child: CircularProgressIndicator(
+          backgroundColor: Colors.white,
       ),
+        ),
     )
         : Scaffold(
             body: Container(
@@ -338,6 +357,7 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
                                 MaterialPageRoute(
                                     builder: (BuildContext context) => DoYouHaveCovid(
                                       selectedCategory: widget.selectedCategory,
+                                      id: idFromBack,
                                     )
                                 ),
                                     (route) => false,
@@ -358,7 +378,6 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
                                         .pushNamedAndRemoveUntil('/studentChosen', (Route<dynamic> route) => false);
                                   }).showAlert();
                             }
-
                       });
                     },
                   ),
