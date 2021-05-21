@@ -60,7 +60,7 @@ class _StaffChosenState extends State<StaffChosen> {
         border: OutlineInputBorder(),
         hintText: 'Enter EC Number',
       ),
-      onChanged: (eclNo) => setState(() => this.ecNo = ecNo),
+      onChanged: (ecNo) => setState(() => this.ecNo = ecNo),
     ),
   );
   Widget buildMobile1() => buildTitle(

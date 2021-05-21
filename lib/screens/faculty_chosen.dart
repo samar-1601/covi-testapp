@@ -63,7 +63,7 @@ class _FacultyChosenState extends State<FacultyChosen> {
         border: OutlineInputBorder(),
         hintText: 'Enter EC Number',
       ),
-      onChanged: (eclNo) => setState(() => this.ecNo = ecNo),
+      onChanged: (ecNo) => setState(() => this.ecNo = ecNo),
     ),
   );
   Widget buildMobile1() => buildTitle(
