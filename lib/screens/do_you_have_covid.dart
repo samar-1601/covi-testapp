@@ -4,6 +4,8 @@ import 'package:coviapp/utilities/alert_box.dart';
 import 'package:coviapp/utilities/constants.dart';
 import 'package:coviapp/screens/general_covid_questions.dart';
 import 'package:coviapp/shared_pref.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class DoYouHaveCovid extends StatefulWidget {
   final String selectedCategory;
@@ -29,6 +31,60 @@ class DoYouHaveCovid extends StatefulWidget {
 class _DoYouHaveCovidState extends State<DoYouHaveCovid> {
 
   CheckLoggedIn _checkLoggedIn = CheckLoggedIn();
+  bool valueFromBack;
+
+
+  Future sendSOS(int id) async {
+    var url = Uri.parse('http://13.232.3.140:8080/sos');
+    Map data = {
+      "id":id,
+    };
+    String body = json.encode(data);
+    print(body);
+    var response = await http.post(url,
+        headers: {"Content-Type": "application/json"}, body: body);
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+    Map responseBody = json.decode(response.body) as Map;
+    print(responseBody);
+    if (response.statusCode != 200) {
+      // _checkLoggedIn.setVisitingFlag(true);
+      setState(() {
+        AlertBox(
+            context: context,
+            alertContent:
+            'SOS was not sent',
+            alertTitle: 'SOS Error !!',
+            rightActionText: 'Close',
+            leftActionText: '',
+            onPressingRightActionButton: () {
+              Navigator.pushNamedAndRemoveUntil(context, '/generalCovidQuestions', (route) => false);
+            }).showAlert();
+      });
+    }
+    else {
+      //_checkLoggedIn.setVisitingFlag(true);
+      setState(() {
+        AlertBox(
+            context: context,
+            alertContent:
+            'We have sent a mail to Covid Task Force with your details !!',
+            alertTitle: 'ThankYou',
+            rightActionText: 'Close',
+            leftActionText: '',
+            onPressingRightActionButton: () {
+              Navigator.pushNamedAndRemoveUntil(context, '/doYouHaveCovid', (route) => false);
+            }).showAlert();
+      });
+    }
+    print("inside call for SOS");
+    //idFromBack = responseBody['studentID'];
+    // print(idFromBack);
+    valueFromBack = await _checkLoggedIn.getVisitingFlag();
+    print("=======");
+    return valueFromBack;
+    //print(idFromBack);
+  }
 
   @override
   void initState() {
@@ -302,10 +358,29 @@ class _DoYouHaveCovidState extends State<DoYouHaveCovid> {
         ),
       ),
 
-      // bottomNavigationBar: SizedBox(
-      //   height: 80.0,
-      //   child: CommonCustomBottomNavBar(),
-      // ),
+      floatingActionButton: FloatingActionButton(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Icon(
+              Icons.call,
+              color: Colors.white,
+              size: 28,
+            ),
+          ),
+        ),
+        onPressed: () async{
+          bool value = await sendSOS(widget.id);
+          if(value==true)
+            {
+              print("SOS sent==================\n");
+            }
+          else
+            {
+              print("SOS failed===================\n");
+            }
+        },
+      ),
     );
   }
 }

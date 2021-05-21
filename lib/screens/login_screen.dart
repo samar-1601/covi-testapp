@@ -101,6 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
     //   print(valueFromBack);
     //   print("=====================\n");
     // });
+    print(valueFromBack);
     return valueFromBack;
   }
 
