@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:coviapp/utilities/alert_box.dart';
 import 'package:coviapp/utilities/constants.dart';
 // import 'package:coviapp/shared_pref.dart';
+import 'package:coviapp/screens/do_you_have_covid.dart';
 
 
 class LoginTransitionHelper extends StatefulWidget {
   final bool valueFromBack;
-
+  final int id;
 
   LoginTransitionHelper(
-      {this.valueFromBack,});
+      {this.valueFromBack,this.id});
 
   @override
   _LoginTransitionHelperState createState() => _LoginTransitionHelperState();
@@ -42,8 +43,10 @@ void checkLogin()
     }
   else
     {
-      Navigator.of(context)
-          .pushNamedAndRemoveUntil('/doYouHaveCovid', (Route<dynamic> route) => false);
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+          DoYouHaveCovid(
+            id: widget.id,
+          )), (Route<dynamic> route) => false);
     }
 }
 

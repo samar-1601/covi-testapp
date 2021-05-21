@@ -73,8 +73,10 @@ class _DoYouHaveCovidState extends State<DoYouHaveCovid> {
             rightActionText: 'Close',
             leftActionText: '',
             onPressingRightActionButton: () {
-              Navigator.pushNamedAndRemoveUntil(context, '/doYouHaveCovid', (route) => false);
-            }).showAlert();
+              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+                  DoYouHaveCovid(
+                    id: widget.id,
+                  )), (Route<dynamic> route) => false); }).showAlert();
       });
     }
     print("inside call for SOS");

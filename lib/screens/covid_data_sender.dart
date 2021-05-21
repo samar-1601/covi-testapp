@@ -118,7 +118,10 @@ class _CovidDataSenderState extends State<CovidDataSender> {
             rightActionText: 'Close',
             leftActionText: '',
             onPressingRightActionButton: () {
-              Navigator.pushNamedAndRemoveUntil(context, '/doYouHaveCovid', (route) => false);
+              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+                  DoYouHaveCovid(
+                    id: widget.id,
+                  )), (Route<dynamic> route) => false);
             }).showAlert();
       });
     }
@@ -323,6 +326,7 @@ class _CovidDataSenderState extends State<CovidDataSender> {
                             MaterialPageRoute(
                                 builder: (BuildContext context) => DoYouHaveCovid(
                                   selectedCategory: widget.selectedCategory,
+                                  id: widget.id,
                                 )
                             ),
                             (route) => false,
