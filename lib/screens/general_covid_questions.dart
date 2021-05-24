@@ -6,6 +6,7 @@ import 'package:coviapp/utilities/alert_box.dart';
 import 'package:coviapp/utilities/customDropDownButton.dart';
 import 'package:coviapp/screens/covid_data_sender.dart';
 
+
 class CovidQuestions extends StatefulWidget {
   final String chosenCategory;
   final int id;
@@ -446,6 +447,8 @@ void printValues(List<String> answers)
   print([isolationAddress,supervisorName,dsaCouncilMemberName1,dsaCouncilMemberName2,dsaCouncilMember1MbNo,dsaCouncilMember2MbNo,supervisorMobileNo,seekHelp,suggestions,isolationDate]);
   print("----------------- Answers Values End ------------------\n");
 }
+
+
   List<String> areYouEquippedQuesAnswersList = [], wellBeingQuesAnswersList=[];
   @override
   void initState() {
@@ -487,6 +490,10 @@ void printValues(List<String> answers)
     buildSeekHelp();
     buildSuggestions();
   }
+
+  //==========================================setting already answered shared Preference===============
+ // CheckLoggedIn _checkLoggedIn = CheckLoggedIn();
+
 
   @override
   Widget build(BuildContext context) {

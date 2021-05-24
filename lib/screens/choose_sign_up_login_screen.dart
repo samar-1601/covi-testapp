@@ -90,7 +90,7 @@ class _ChooseSignUpLoginScreenState extends State<ChooseSignUpLoginScreen> {
               ),
             ),
             SizedBox(
-              height: 150.0,
+              height: 250.0,
             ),
             GestureDetector(
               child: Align(
@@ -132,46 +132,48 @@ class _ChooseSignUpLoginScreenState extends State<ChooseSignUpLoginScreen> {
             SizedBox(
               height: 50.0,
             ),
-            GestureDetector(
-              child: Align(
-                alignment: Alignment.center,
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.5,
-                  decoration: BoxDecoration(
-                    color: kWeirdBlue,
-                    borderRadius: BorderRadius.circular(25.0),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26.withOpacity(0.3),
-                        spreadRadius: 1,
-                        blurRadius: 2,
-                        offset: Offset(0, 1), // changes position of shadow
-                      ),
-                    ],
-                  ),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Text(
-                        'SIGN UP',
-                        style: TextStyle(
-                          fontSize: 24.0,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              onTap: () {
-                setState(() {
-                  Navigator.of(context).pushNamed('/chooseCategory');
-                });
-              },
-            ),
-            SizedBox(
-              height: 80.0,
-            ),
+            //===================================sign-Up commented=================================================
+            // GestureDetector(
+            //   child: Align(
+            //     alignment: Alignment.center,
+            //     child: Container(
+            //       width: MediaQuery.of(context).size.width * 0.5,
+            //       decoration: BoxDecoration(
+            //         color: kWeirdBlue,
+            //         borderRadius: BorderRadius.circular(25.0),
+            //         boxShadow: [
+            //           BoxShadow(
+            //             color: Colors.black26.withOpacity(0.3),
+            //             spreadRadius: 1,
+            //             blurRadius: 2,
+            //             offset: Offset(0, 1), // changes position of shadow
+            //           ),
+            //         ],
+            //       ),
+            //       child: Center(
+            //         child: Padding(
+            //           padding: const EdgeInsets.all(10.0),
+            //           child: Text(
+            //             'SIGN UP',
+            //             style: TextStyle(
+            //               fontSize: 24.0,
+            //               color: Colors.white,
+            //             ),
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            //   onTap: () {
+            //     setState(() {
+            //       Navigator.of(context).pushNamed('/chooseCategory');
+            //     });
+            //   },
+            // ),
+            // SizedBox(
+            //   height: 80.0,
+            //),
+            //=========================== SIGN UP COMMENT ENDS ===================================
           ],
         ),
       ),

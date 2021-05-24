@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:coviapp/utilities/alert_box.dart';
 import 'package:coviapp/utilities/constants.dart';
-// import 'package:coviapp/screens/general_covid_questions.dart';
-import 'package:coviapp/screens/do_you_have_covid.dart';
+import 'package:coviapp/screens/monitoring_questions_transition.dart';
+//import 'package:coviapp/screens/do_you_have_covid.dart';
 import 'package:coviapp/shared_pref.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -39,8 +39,6 @@ class CovidDataSender extends StatefulWidget {
   final List<String> areYouEquippedAnswers;
   final List<String> wellBeingAnswers;
 
-
-
   CovidDataSender(
       {this.id,this.password='NE',this.suggestions ='NE',this.seekHelp,this.isolationDate,this.dsaCouncilMemberName1,this.dsaCouncilMemberName2='NE',this.supervisorName ='NE',this.isolationAddress='NE',this.supervisorMobileNo='NE',this.dsaCouncilMember1MbNo='NE',this.dsaCouncilMember2MbNo='NE',this.areYouEquippedQuestions ,this.areYouEquippedAnswers,this.wellBeingQuestions,this.wellBeingAnswers,this.selectedCategory = 'NE',this.name = 'NE', this.hall = 'NE', this.room = 'NE', this.birthday,
         this.rollNo = 'NE', this.mobileNo1 = 'NE', this.mobileNo2 ='NE', this.parentName = 'NE', this.parentMobileNo= 'NE', this.email = 'NE'});
@@ -53,9 +51,15 @@ class _CovidDataSenderState extends State<CovidDataSender> {
 
   CheckLoggedIn _checkLoggedIn = CheckLoggedIn();
   bool valueFromBack;
+  String rollNo;
 
   Future putData() async {
+    print("============inside PUTDATA in covid_data_sender\n");
     var url = Uri.parse('http://13.232.3.140:8080/submit_covid_form');
+    rollNo = await _checkLoggedIn.getRollNo();
+    int id = await _checkLoggedIn.getLoginIdValue();
+    print(rollNo);
+    print(id);
     Map data = {
       "name": widget.name,
       "hall": widget.hall,
@@ -64,7 +68,7 @@ class _CovidDataSenderState extends State<CovidDataSender> {
       "room":"",
       "mobileNo1" : widget.mobileNo1,
       "mobileNo2" : " ",
-      "rollNo" : widget.rollNo,
+      "rollNo" : rollNo,
       "parentName" : " ",
       "parentMobileNo": "",
       "email": " ",
@@ -82,7 +86,7 @@ class _CovidDataSenderState extends State<CovidDataSender> {
     "supervisorMobileNo" : widget.supervisorName,
     "seekHelp": widget.seekHelp,
     "suggestions": widget.suggestions,
-      "id":widget.id,
+      "id":id,
     };
     String body = json.encode(data);
     print(body);
@@ -109,6 +113,7 @@ class _CovidDataSenderState extends State<CovidDataSender> {
     }
     else {
       _checkLoggedIn.setVisitingFlag(true);
+      _checkLoggedIn.setIfAnsweredBeforeFlag(true);
       setState(() {
         AlertBox(
             context: context,
@@ -119,8 +124,10 @@ class _CovidDataSenderState extends State<CovidDataSender> {
             leftActionText: '',
             onPressingRightActionButton: () {
               Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-                  DoYouHaveCovid(
+                  MonitoringQuestionsTransitionScreen(
+                    selectedCategory: widget.selectedCategory,
                     id: widget.id,
+                    rollNo: rollNo,
                   )), (Route<dynamic> route) => false);
             }).showAlert();
       });
@@ -160,7 +167,7 @@ class _CovidDataSenderState extends State<CovidDataSender> {
       print(widget.mobileNo2);
       print(widget.birthday.toString());
     }
-  putData();
+    putData();
   }
 
 
@@ -311,27 +318,48 @@ class _CovidDataSenderState extends State<CovidDataSender> {
                   ),
                 ),
               ),
-              onTap: () {
+              onTap: (){
+
                 setState(() {
-                  AlertBox(
-                      context: context,
-                      alertContent:
-                      'Thank you For giving time to fill out the details. If you feel any different in future(from what you have entered currently, Kindly fill in this form again so that we can provide help.',
-                      alertTitle: 'Thank you for your cooperation ',
-                      rightActionText: 'Close',
-                      leftActionText: '',
-                      onPressingRightActionButton: () {
-                        Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (BuildContext context) => DoYouHaveCovid(
-                                  selectedCategory: widget.selectedCategory,
-                                  id: widget.id,
-                                )
-                            ),
-                            (route) => false,
-                        );
-                      }).showAlert();
+                  if(valueFromBack==true)
+                    {
+                      _checkLoggedIn.setIfAnsweredBeforeFlag(true);
+                      AlertBox(
+                          context: context,
+                          alertContent:
+                          'Thank you For giving time to fill out the details. If you feel any different in future(from what you have entered currently, Kindly fill in this form again so that we can provide help.',
+                          alertTitle: 'Thank you for your cooperation ',
+                          rightActionText: 'Close',
+                          leftActionText: '',
+                          onPressingRightActionButton: () {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) => MonitoringQuestionsTransitionScreen(
+                                    selectedCategory: widget.selectedCategory,
+                                    id: widget.id,
+                                    rollNo: rollNo,
+                                  )
+                              ),
+                                  (route) => false,
+                            );
+                          }).showAlert();
+                    }
+                  else
+                    {
+                      _checkLoggedIn.setIfAnsweredBeforeFlag(false);
+                      AlertBox(
+                          context: context,
+                          alertContent:
+                          'The given details were not registered due to some error. Kindly Renter',
+                          alertTitle: 'Entry Error !!',
+                          rightActionText: 'Close',
+                          leftActionText: '',
+                          onPressingRightActionButton: () {
+                            Navigator.pushNamedAndRemoveUntil(context, '/generalCovidQuestions', (route) => false);
+                          }).showAlert();
+                    }
+
                 });
               },
             ),

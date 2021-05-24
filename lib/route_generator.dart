@@ -10,6 +10,7 @@ import 'package:coviapp/screens/choose_sign_up_login_screen.dart';
 import 'package:coviapp/screens/miscellaneous_chosen.dart';
 import 'package:coviapp/screens/do_you_have_covid.dart';
 import 'package:coviapp/screens/general_covid_questions.dart';
+import 'package:coviapp/screens/monitoring_questions_transition.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -58,7 +59,11 @@ class RouteGenerator {
         );
       case '/generalCovidQuestions':
         return MaterialPageRoute(
-          builder: (_) => DoYouHaveCovid(),
+          builder: (_) => CovidQuestions(),
+        );
+      case '/monitoringQuestionsTransition':
+        return MaterialPageRoute(
+          builder: (_) => MonitoringQuestionsTransitionScreen(),
         );
       default:
       // If there is no such named route in the switch statement, e.g. /third

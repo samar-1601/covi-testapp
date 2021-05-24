@@ -63,6 +63,7 @@ class _MyAppState extends State<MyApp> {
       ),
       initialRoute: '/',
       onGenerateRoute: RouteGenerator.generateRoute,
+      
     );
   }
 }

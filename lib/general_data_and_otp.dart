@@ -5,9 +5,9 @@ import 'package:coviapp/utilities/constants.dart';
 import 'package:coviapp/screens/do_you_have_covid.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:otp_text_field/otp_text_field.dart';
+//import 'package:otp_text_field/otp_text_field.dart';
 import 'package:coviapp/shared_pref.dart';
-import 'package:otp_text_field/style.dart';
+//import 'package:otp_text_field/style.dart';
 
 class GeneralDataSender extends StatefulWidget {
   final String selectedCategory;
@@ -70,7 +70,8 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
     print('Response body: ${response.body}');
     Map responseBody = json.decode(response.body) as Map;
     if (response.statusCode != 200) {
-     // _checkLoggedIn.setVisitingFlag(true);
+      _checkLoggedIn.setVisitingFlag(false);
+      _checkLoggedIn.setIfAnsweredBeforeFlag(false);
       setState(() {
         AlertBox(
             context: context,
@@ -91,49 +92,56 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
     print("inside set state for ID response");
     idFromBack = responseBody['studentID'];
     print(idFromBack);
-    setState(() async{
-      valueFromBack = await _checkLoggedIn.getVisitingFlag();
+    valueFromBack = await _checkLoggedIn.getVisitingFlag();
+    setState((){
       idFromBack = responseBody['studentID'].toInt();
+      _checkLoggedIn.setLoginIdValue(idFromBack);
     });
     print("=======");
     print(idFromBack);
   }
 
 
-  String otp ="";
-  Future checkOTP(String otp, int id) async {
-    var url = Uri.parse('http://13.232.3.140:8080/verify');
-    print(id);
-    print(otp);
-    Map data = {
-      "otp": otp,
-      "id":id,
-    };
-    String body = json.encode(data);
-    print(body);
-    var response = await http.post(url,
-        headers: {"Content-Type": "application/json"}, body: body);
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
-    if (response.statusCode == 200) {
-      _checkLoggedIn.setVisitingFlag(true);
-    } else {
-      _checkLoggedIn.setVisitingFlag(false);
-    }
-    print(_checkLoggedIn.getVisitingFlag());
-    setState(() async{
-      valueFromBack = await _checkLoggedIn.getVisitingFlag();
-    });
+  // String otp ="";
+  // Future checkOTP(String otp, int id) async {
+  //   var url = Uri.parse('http://13.232.3.140:8080/verify');
+  //   print(id);
+  //   print(otp);
+  //   Map data = {
+  //     "otp": otp,
+  //     "id":id,
+  //   };
+  //   String body = json.encode(data);
+  //   print(body);
+  //   var response = await http.post(url,
+  //       headers: {"Content-Type": "application/json"}, body: body);
+  //   print('Response status: ${response.statusCode}');
+  //   print('Response body: ${response.body}');
+  //   if (response.statusCode == 200) {
+  //     _checkLoggedIn.setVisitingFlag(true);
+  //   } else {
+  //     _checkLoggedIn.setVisitingFlag(false);
+  //   }
+  //   print(_checkLoggedIn.getVisitingFlag());
+  //   setState(() async{
+  //     valueFromBack = await _checkLoggedIn.getVisitingFlag();
+  //   });
+  // }
+
+  String studentRollNo;
+  Future getID() async
+  {
+    studentRollNo = await _checkLoggedIn.getRollNo();
   }
 
   @override
   void initState() {
     super.initState();
     print(widget.selectedCategory);
-
+  getID();
     if (widget.selectedCategory == 'Student') {
       print(widget.name);
-      print(widget.rollNo);
+      print(studentRollNo);
       print(widget.email);
       print(widget.hall);
       print(widget.mobileNo1);
@@ -281,39 +289,41 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 30),
-                  Align(
-                    alignment: Alignment.center,
-                    child: Container(
-                      child: Text(
-                         'Enter OTP',
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          fontSize: 22.0,
-                          fontWeight: FontWeight.bold,
-                          color: kWeirdBlue,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 25),
-                  OTPTextField(
-                    length: 6,
-                    width: MediaQuery.of(context).size.width*0.7,
-                    fieldWidth: 50,
-                    style: TextStyle(
-                        fontSize: 20,
-                    ),
-                    textFieldAlignment: MainAxisAlignment.center,
-                    fieldStyle: FieldStyle.underline,
-                    onCompleted: (pin) {
-                      print("Completed: " + pin);
-                      otp = pin;
-                    },
-                  ),
-                  SizedBox(
-                    height: 30.0,
-                  ),
+                  // ================================== Removed OTP part ===================
+                  // const SizedBox(height: 30),
+                  // Align(
+                  //   alignment: Alignment.center,
+                  //   child: Container(
+                  //     child: Text(
+                  //        'Enter OTP',
+                  //       textAlign: TextAlign.left,
+                  //       style: TextStyle(
+                  //         fontSize: 22.0,
+                  //         fontWeight: FontWeight.bold,
+                  //         color: kWeirdBlue,
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                  // const SizedBox(height: 25),
+                  // OTPTextField(
+                  //   length: 6,
+                  //   width: MediaQuery.of(context).size.width*0.7,
+                  //   fieldWidth: 50,
+                  //   style: TextStyle(
+                  //       fontSize: 20,
+                  //   ),
+                  //   textFieldAlignment: MainAxisAlignment.center,
+                  //   fieldStyle: FieldStyle.underline,
+                  //   onCompleted: (pin) {
+                  //     print("Completed: " + pin);
+                  //     otp = pin;
+                  //   },
+                  // ),
+                  // SizedBox(
+                  //   height: 30.0,
+                  // ),
+                  //=============================== Removed OTP Part =========================
                   GestureDetector(
                     child: Align(
                       alignment: Alignment.center,
@@ -348,7 +358,7 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
                     ),
                     onTap: () {
                       setState(() {
-                          checkOTP(otp,idFromBack);
+                          //checkOTP(otp,idFromBack);
                           if(valueFromBack==true)
                             {
                               _checkLoggedIn.setVisitingFlag(true);
@@ -366,11 +376,13 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
                           else
                             {
                               _checkLoggedIn.setVisitingFlag(false);
+                              _checkLoggedIn.setRollNo("value");
+                              _checkLoggedIn.setIfAnsweredBeforeFlag(false);
                               AlertBox(
                                   context: context,
                                   alertContent:
-                                  'Wrong OTP Entered',
-                                  alertTitle: 'Invalid OTP !!',
+                                  'The given details are not found in Institute Database',
+                                  alertTitle: 'Invalid Entry !!',
                                   rightActionText: 'Close',
                                   leftActionText: '',
                                   onPressingRightActionButton: () {

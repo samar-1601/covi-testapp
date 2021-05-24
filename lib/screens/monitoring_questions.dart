@@ -1,111 +1,68 @@
-import 'package:coviapp/screens/do_you_have_covid.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:coviapp/utilities/constants.dart';
 import 'package:coviapp/utilities/alert_box.dart';
-import 'package:coviapp/shared_pref.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:coviapp/screens/choose_category.dart';
+import 'package:coviapp/utilities/customDropDownButton.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-
-class LoginScreen extends StatefulWidget {
+class MonitoringQuestions extends StatefulWidget {
+  final String chosenCategory;
+  final int id;
+  final String rollNo;
+  MonitoringQuestions({this.rollNo,this.id,this.chosenCategory});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _MonitoringQuestionsState createState() => _MonitoringQuestionsState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-
-
-  CheckLoggedIn _checkLoggedIn = CheckLoggedIn();
+class _MonitoringQuestionsState extends State<MonitoringQuestions> {
 
 
   final formKey = GlobalKey<FormState>();
-  String rollNo = '';
-  String mobileNo1 = '';
-  String password = '';
-  int idFromBack;
 
-  Widget buildRollOrEcNumber() => buildTitle(
-    title: 'Roll/EC Number',
+  String feverTemp = '';
+  String spo2 = '';
+  String extraHealthCondition = '';
+
+  DateTime isolationDate;
+
+
+  Widget buildFeverLevel() => buildTitle(
+    title: 'Enter Your Temperature(in Celsius)?',
     child: TextFormField(
-      initialValue: rollNo,
+      initialValue: feverTemp,
+      keyboardType: TextInputType.number,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Enter temperature',
+      ),
+      onChanged: (data) => setState(() => this.feverTemp = data),
+    ),
+  );
+  Widget buildSpO2Level() => buildTitle(
+    title: 'Enter Your SpO2 Level?',
+    child: TextFormField(
+      initialValue: spo2,
+      keyboardType: TextInputType.number,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Write your SpO2 Level',
+      ),
+      onChanged: (data) => setState(() => this.spo2 = data),
+    ),
+  );
+
+  Widget buildExtraHealthConditions() => buildTitle(
+    title: 'How do you feel (any discomfort?)',
+    child: TextFormField(
+      initialValue: extraHealthCondition,
       decoration: InputDecoration(
         border: OutlineInputBorder(),
         hintText: 'Enter data',
       ),
-      onChanged: (data) => setState(() => this.rollNo = data),
+      onChanged: (data) => setState(() => this.extraHealthCondition = data),
     ),
   );
-
-  Widget buildMobile1() => buildTitle(
-    title: 'Registered Mobile Number',
-    child: TextFormField(
-      initialValue: mobileNo1,
-      keyboardType: TextInputType.phone,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        hintText: 'Enter data',
-      ),
-      onChanged: (data) => setState(() => this.mobileNo1 = data),
-    ),
-  );
-
-  Widget buildPassword() => buildTitle(
-    title: 'Enter password',
-    child: TextFormField(
-      initialValue: password,
-      obscureText: true,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        hintText: 'Enter your password',
-      ),
-      onChanged: (data) => setState(() => this.password= data),
-    ),
-  );
-
-  String otp ="";
-
-  bool valueFromBack;
-
-  Future checkPassword (String password, String mobileNo, String rollNo) async {
-    var url = Uri.parse('http://13.232.3.140:8080/login');
-    print(mobileNo);
-    print(password);
-    print("ONN LOOGGIINNN SCCRREESSNN-----------------------------\n");
-    Map data = {
-      "password": password,
-      "mobileNo1": mobileNo,
-      "rollNo": rollNo,
-    };
-    String body = json.encode(data);
-    print(body);
-    var response = await http.post(url,
-        headers: {"Content-Type": "application/json"}, body: body);
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
-    Map responseBody = json.decode(response.body) as Map;
-    if (response.statusCode == 200) {
-      _checkLoggedIn.setVisitingFlag(true);
-      _checkLoggedIn.setRollNo(rollNo);
-    } else {
-      _checkLoggedIn.setVisitingFlag(false);
-    }
-    print(_checkLoggedIn.getVisitingFlag());
-    valueFromBack = await _checkLoggedIn.getVisitingFlag();
-    idFromBack = responseBody['id'];
-    print(idFromBack);
-    _checkLoggedIn.setLoginIdValue(idFromBack);
-    // setState(() async{
-    //   valueFromBack = await _checkLoggedIn.getVisitingFlag();
-    //   print("=====================\n");
-    //   print(valueFromBack);
-    //   print("=====================\n");
-    // });
-    print(valueFromBack);
-    return valueFromBack;
-  }
 
 
   Widget buildTitle({
@@ -123,17 +80,25 @@ class _LoginScreenState extends State<LoginScreen> {
           child,
         ],
       );
+
+  void printValues(List<String> answers)
+  {
+    print("----------------- Answers Values ------------------\n");
+    print("----------------- Answers Values End ------------------\n");
+  }
+
   @override
   void initState() {
     super.initState();
-    buildRollOrEcNumber();
-    buildMobile1();
-    buildPassword();
+    buildFeverLevel();
+    buildExtraHealthConditions();
+    buildSpO2Level();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Container(
         child: ListView(
           shrinkWrap: true,
@@ -207,46 +172,47 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             SizedBox(
-              height: 50.0,
+              height: 30.0,
             ),
             Container(
-              margin: EdgeInsets.only(left: 15.0, right: 15),
+              margin: EdgeInsets.only(left: 20.0, right: 20.0),
               child: Column(
                 children: <Widget>[
                   Align(
-                    alignment: Alignment.centerLeft,
-                    child: Center(
+                    alignment: Alignment.center,
+                    child: Container(
                       child: Text(
-                        'Enter Your Details',
+                        'Please enter the following details so that our Doctors can monitor you',
                         textAlign: TextAlign.left,
                         style: TextStyle(
-                          fontSize: 24.0,
+                          fontSize: 16.0,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: kWeirdBlue,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 32),
-                  buildRollOrEcNumber(),
+                  const SizedBox(height: 100),
+                  buildFeverLevel(),
                   const SizedBox(height: 12),
-                  buildMobile1(),
+                  buildSpO2Level(),
                   const SizedBox(height: 12),
-                  buildPassword(),
+                  buildExtraHealthConditions(),
                 ],
               ),
             ),
             SizedBox(
-              height: 50.0,
+              height: 20.0,
             ),
             GestureDetector(
               child: Align(
                 alignment: Alignment.center,
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.5,
+                  margin: EdgeInsets.only(bottom: 10.0),
                   decoration: BoxDecoration(
                     color: kWeirdBlue,
-                    borderRadius: BorderRadius.circular(25.0),
+                    borderRadius: BorderRadius.circular(30.0),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black26.withOpacity(0.3),
@@ -258,11 +224,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   child: Center(
                     child: Padding(
-                      padding: const EdgeInsets.all(10.0),
+                      padding: const EdgeInsets.all(12.0),
                       child: Text(
                         'Proceed',
                         style: TextStyle(
-                          fontSize: 24.0,
+                          fontSize: 25.0,
                           color: Colors.white,
                         ),
                       ),
@@ -270,45 +236,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-              onTap: () async{
-                bool value = await checkPassword(password, mobileNo1, rollNo);
-                if(value==true)
-                  {
-                    _checkLoggedIn.setVisitingFlag(false);
-                    _checkLoggedIn.setRollNo(rollNo);
-                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-                        ChooseCategory(
-                         // id: idFromBack,
-                        )), (Route<dynamic> route) => false);
-                  }
-                else
-                  {
-                    AlertBox(
-                        context: context,
-                        alertContent:
-                        'Invalid UserName or Password. Try again.\nDont\'t have an account? SignUp',
-                        alertTitle: 'Invalid Entry !!',
-                        rightActionText: 'SignUp',
-                        leftActionText: 'Close',
-                        onPressingLeftActionButton: () {
-                          Navigator.of(context).pop();
-                          _checkLoggedIn.setVisitingFlag(false);
-                        },
-                        onPressingRightActionButton: ()
-                        {
-                          _checkLoggedIn.setVisitingFlag(false);
-                          Navigator.of(context)
-                              .pushNamedAndRemoveUntil('/signup', (Route<dynamic> route) => false);
-                        }
-                    ).showAlert();
-                  }
-                // setState((){
-                //   Navigator.push(
-                //       context,
-                //       new MaterialPageRoute(
-                //           builder: (BuildContext context) => LoginTransitionHelper(
-                //             valueFromBack: valueFromBack,
-                //           )));
+              onTap: () {
+                // setState(() {
+                //   // Navigator.push(
+                //   //     context,
+                //   //     new MaterialPageRoute(
+                //   //         builder: (BuildContext context) => CovidDataSender(
+                //   //           areYouEquippedQuestions: areYouEquippedQuesList,
+                //   //           areYouEquippedAnswers: areYouEquippedQuesAnswersList,
+                //   //           id: widget.id,
+                //   //         )));
                 // });
               },
             )
@@ -318,3 +255,4 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+

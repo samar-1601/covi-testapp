@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:coviapp/utilities/constants.dart';
 import 'package:coviapp/screens/do_you_have_covid.dart';
+//import 'package:coviapp/screens/monitoring_questions_transition.dart';
 import 'package:coviapp/shared_pref.dart';
+import 'package:coviapp/screens/choose_category.dart';
 
 class WelcomeScreen extends StatelessWidget {
 
@@ -49,19 +51,28 @@ class WelcomeScreen extends StatelessWidget {
                 ),
                 onPressed: () async{
                   bool visited = await _checkLoggedIn.getVisitingFlag();
-
+                  bool alreadyAnswered = await _checkLoggedIn.getIfAnsweredBeforeFlag();
                   if(visited==true)
                     {
-                      Navigator.push(
-                          context,
-                          new MaterialPageRoute(
-                              builder: (BuildContext context) => DoYouHaveCovid(),
-                          ),
-                      );
+                      if(alreadyAnswered==false)
+                        {
+                          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+                              DoYouHaveCovid()), (Route<dynamic> route) => false);
+                        }
+                      else
+                        {
+                          Navigator.push(
+                            context,
+                            new MaterialPageRoute(
+                              builder: (BuildContext context) =>ChooseCategory(),
+                            ),
+                          );
+                        }
                     }
                   else
                     {// visiting first time
-                      Navigator.of(context).pushNamed('/signup');
+                    Navigator.of(context)
+                        .pushNamedAndRemoveUntil('/signup', (Route<dynamic> route) => false);
                     }
                 },
               ),

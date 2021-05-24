@@ -2,13 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:coviapp/utilities/alert_box.dart';
 import 'package:coviapp/utilities/constants.dart';
-import 'package:coviapp/screens/general_covid_questions.dart';
 import 'package:coviapp/shared_pref.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:coviapp/screens/monitoring_questions.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class DoYouHaveCovid extends StatefulWidget {
+class MonitoringQuestionsTransitionScreen extends StatefulWidget {
   final String selectedCategory;
   final String name;
   final String hall;
@@ -21,86 +19,45 @@ class DoYouHaveCovid extends StatefulWidget {
   final String parentMobileNo ;
   final int id ;
 
-  DoYouHaveCovid(
+  MonitoringQuestionsTransitionScreen(
       {this.id,this.selectedCategory,this.name, this.hall, this.room, this.birthday,
         this.rollNo, this.mobileNo1, this.mobileNo2, this.parentName, this.parentMobileNo});
 
   @override
-  _DoYouHaveCovidState createState() => _DoYouHaveCovidState();
+  _MonitoringQuestionsTransitionScreenState createState() => _MonitoringQuestionsTransitionScreenState();
 }
 
-class _DoYouHaveCovidState extends State<DoYouHaveCovid> {
+class _MonitoringQuestionsTransitionScreenState extends State<MonitoringQuestionsTransitionScreen> {
 
   CheckLoggedIn _checkLoggedIn = CheckLoggedIn();
   bool valueFromBack;
+  int id ;
   String rollNo;
+Future getID() async
+{
+  id = await _checkLoggedIn.getLoginIdValue();
+  rollNo = await _checkLoggedIn.getRollNo();
+}
+  Future<void> _launched;
+  String _phone = "7061436275";
+  Future<void> _makePhoneCall(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 
-  // Future sendSOS(int id) async {
-  //   var url = Uri.parse('http://13.232.3.140:8080/sos');
-  //   Map data = {
-  //     "id":id,
-  //   };
-  //   String body = json.encode(data);
-  //   print(body);
-  //   var response = await http.post(url,
-  //       headers: {"Content-Type": "application/json"}, body: body);
-  //   print('Response status: ${response.statusCode}');
-  //   print('Response body: ${response.body}');
-  //   Map responseBody = json.decode(response.body) as Map;
-  //   print(responseBody);
-  //   if (response.statusCode != 200) {
-  //     // _checkLoggedIn.setVisitingFlag(true);
-  //     setState(() {
-  //       AlertBox(
-  //           context: context,
-  //           alertContent:
-  //           'SOS was not sent',
-  //           alertTitle: 'SOS Error !!',
-  //           rightActionText: 'Close',
-  //           leftActionText: '',
-  //           onPressingRightActionButton: () async{
-  //             bool alreadyAnswered = await _checkLoggedIn.getIfAnsweredBeforeFlag();
-  //             if(alreadyAnswered==false)
-  //             Navigator.pushNamedAndRemoveUntil(context, '/doYouHaveCovid', (route) => false);
-  //             else
-  //               Navigator.pushNamedAndRemoveUntil(context, '/monitoringQuestionsTransition', (route) => false);
-  //           }).showAlert();
-  //     });
-  //   }
-  //   else {
-  //     //_checkLoggedIn.setVisitingFlag(true);
-  //     setState(() {
-  //       AlertBox(
-  //           context: context,
-  //           alertContent:
-  //           'We have sent a mail to Covid Task Force with your details !!',
-  //           alertTitle: 'ThankYou',
-  //           rightActionText: 'Close',
-  //           leftActionText: '',
-  //           onPressingRightActionButton: () {
-  //             Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-  //                 DoYouHaveCovid(
-  //                   id: widget.id,
-  //                 )), (Route<dynamic> route) => false); }).showAlert();
-  //     });
-  //   }
-  //   print("inside call for SOS");
-  //   //idFromBack = responseBody['studentID'];
-  //   // print(idFromBack);
-  //   valueFromBack = await _checkLoggedIn.getVisitingFlag();
-  //   print("=======");
-  //   return valueFromBack;
-  //   //print(idFromBack);
-  // }
 
   @override
   void initState() {
     super.initState();
+    getID();
     print(widget.selectedCategory);
     if(widget.selectedCategory == 'Student')
     {
       print(widget.name==''?'Name not entered':widget.name);
-      print(widget.rollNo==''?'roll not entered':widget.rollNo);
+      print(widget.rollNo==''?'roll not entered':rollNo);
       print(widget.hall==''?'hall not entered':widget.hall);
       print(widget.mobileNo1==''?'mobile1 not entered':widget.mobileNo1);
       print(widget.mobileNo2==''?'mobile2 not entered':widget.mobileNo2);
@@ -118,16 +75,6 @@ class _DoYouHaveCovidState extends State<DoYouHaveCovid> {
 
   }
 
-
-  Future<void> _launched;
-  String _phone = "7061436275";
-  Future<void> _makePhoneCall(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -211,7 +158,7 @@ class _DoYouHaveCovidState extends State<DoYouHaveCovid> {
             Container(
               child: Center(
                 child: Text(
-                  'Are you infected with Covid (or have symptoms)?',
+                  'Please Answer the required questions so that we can monitor you',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 24.0,
@@ -245,53 +192,7 @@ class _DoYouHaveCovidState extends State<DoYouHaveCovid> {
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Text(
-                        'YES',
-                        style: TextStyle(
-                          fontSize: 24.0,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              onTap: () async{
-                setState(() {
-                  Navigator.push(
-                      context,
-                      new MaterialPageRoute(
-                          builder: (BuildContext context) => CovidQuestions(
-                            chosenCategory: widget.selectedCategory,
-                            id : widget.id,
-                          )));
-                });
-              },
-            ),
-            SizedBox(
-              height: 50.0,
-            ),
-            GestureDetector(
-              child: Align(
-                alignment: Alignment.center,
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.5,
-                  decoration: BoxDecoration(
-                    color: kWeirdBlue,
-                    borderRadius: BorderRadius.circular(25.0),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26.withOpacity(0.3),
-                        spreadRadius: 1,
-                        blurRadius: 2,
-                        offset: Offset(0, 1), // changes position of shadow
-                      ),
-                    ],
-                  ),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Text(
-                        'NO',
+                        'Proceed',
                         style: TextStyle(
                           fontSize: 24.0,
                           color: Colors.white,
@@ -303,21 +204,19 @@ class _DoYouHaveCovidState extends State<DoYouHaveCovid> {
               ),
               onTap: () {
                 setState(() {
-                  AlertBox(
-                      context: context,
-                      alertContent:
-                      'Please update your status in the app if you feel any covid symptoms',
-                      alertTitle: 'Thank you for your cooperation ',
-                      rightActionText: 'Close',
-                      leftActionText: '',
-                      onPressingRightActionButton: () {
-                        Navigator.pop(context);
-                      }).showAlert();
+                  Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                          builder: (BuildContext context) => MonitoringQuestions(
+                            chosenCategory: widget.selectedCategory,
+                            id : id,
+                            rollNo: rollNo,
+                          )));
                 });
               },
             ),
             SizedBox(
-              height: 80.0,
+              height: 150.0,
             ),
             GestureDetector(
               child: Align(
@@ -366,10 +265,10 @@ class _DoYouHaveCovidState extends State<DoYouHaveCovid> {
                         _checkLoggedIn.setVisitingFlag(false);
                         _checkLoggedIn.setLoginIdValue(0);
                         _checkLoggedIn.setIfAnsweredBeforeFlag(false);
+                        _checkLoggedIn.setRollNo("");
                         Navigator.of(context)
                             .pushNamedAndRemoveUntil('/welcome', (Route<dynamic> route) => false);
                       }).showAlert();
-
                 });
               },
             ),
@@ -388,9 +287,11 @@ class _DoYouHaveCovidState extends State<DoYouHaveCovid> {
             ),
           ),
         ),
-        onPressed: () => setState(() {
-          _launched = _makePhoneCall('tel:$_phone');
-        }),
+        onPressed: () async{
+          setState(() {
+            _makePhoneCall('tel:$_phone');
+          });
+      }
       ),
     );
   }

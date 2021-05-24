@@ -1,4 +1,5 @@
 import 'package:coviapp/screens/faculty_chosen.dart';
+import 'package:coviapp/screens/monitoring_questions_transition.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:coviapp/utilities/alert_box.dart';
@@ -6,7 +7,7 @@ import 'package:coviapp/utilities/constants.dart';
 import 'package:coviapp/screens/student_chosen.dart';
 import 'package:coviapp/screens/miscellaneous_chosen.dart';
 import 'package:coviapp/screens/staff_chosen.dart';
-
+import 'package:coviapp/shared_pref.dart';
 
 class ChooseCategory extends StatefulWidget {
   @override
@@ -26,6 +27,7 @@ class _ChooseCategoryState extends State<ChooseCategory> {
   }
 
   String selectedCategory = categoryList[0];
+  CheckLoggedIn _checkLoggedIn = CheckLoggedIn();
 
   @override
   Widget build(BuildContext context) {
@@ -191,17 +193,28 @@ class _ChooseCategoryState extends State<ChooseCategory> {
                   ),
                 ),
               ),
-              onTap: () {
+              onTap: () async{
+                bool alreadyAnswered = await _checkLoggedIn.getIfAnsweredBeforeFlag();
                 setState(() {
                   if(selectedCategory == 'Student')
                     {
-                      Navigator.push(
-                          context,
-                          new MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  StudentChosen(chosenCategory: selectedCategory,)
-                          )
-                      );
+                      if(alreadyAnswered==true)
+                        {
+                          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+                              MonitoringQuestionsTransitionScreen(
+                                selectedCategory: selectedCategory,
+                              )
+                          ), (Route<dynamic> route) => false);
+                        }
+                      else{
+                        Navigator.push(
+                            context,
+                            new MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    StudentChosen(chosenCategory: selectedCategory,)
+                            )
+                        );
+                      }
                     }
                   else if(selectedCategory == 'Staff')
                   {

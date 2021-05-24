@@ -4,7 +4,7 @@ import 'package:coviapp/utilities/constants.dart';
 import 'package:coviapp/utilities/alert_box.dart';
 import 'package:coviapp/utilities/birthday_widget.dart';
 import 'package:coviapp/general_data_and_otp.dart';
-
+import 'package:coviapp/shared_pref.dart';
 
 class StudentChosen extends StatefulWidget {
   final String chosenCategory;
@@ -44,17 +44,17 @@ class _StudentChosenState extends State<StudentChosen> {
       onChanged: (name) => setState(() => this.name = name),
     ),
   );
-  Widget buildRollNo() => buildTitle(
-    title: 'Roll No',
-    child: TextFormField(
-      initialValue: rollNo,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        hintText: 'Your Roll No',
-      ),
-      onChanged: (rollNo) => setState(() => this.rollNo = rollNo),
-    ),
-  );
+  // Widget buildRollNo() => buildTitle(
+  //   title: 'Roll No',
+  //   child: TextFormField(
+  //     initialValue: rollNo,
+  //     decoration: InputDecoration(
+  //       border: OutlineInputBorder(),
+  //       hintText: 'Your Roll No',
+  //     ),
+  //     onChanged: (rollNo) => setState(() => this.rollNo = rollNo),
+  //   ),
+  // );
   Widget buildMobile1() => buildTitle(
     title: 'Mobile number 1',
     child: TextFormField(
@@ -147,18 +147,18 @@ class _StudentChosenState extends State<StudentChosen> {
     ),
   );
 
-  Widget buildPassword() => buildTitle(
-    title: 'Choose your account password',
-    child: TextFormField(
-      initialValue: password,
-      obscureText: true,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        hintText: 'Enter your password',
-      ),
-      onChanged: (data) => setState(() => this.password= data),
-    ),
-  );
+  // Widget buildPassword() => buildTitle(
+  //   title: 'Choose your account password',
+  //   child: TextFormField(
+  //     initialValue: password,
+  //     obscureText: true,
+  //     decoration: InputDecoration(
+  //       border: OutlineInputBorder(),
+  //       hintText: 'Enter your password',
+  //     ),
+  //     onChanged: (data) => setState(() => this.password= data),
+  //   ),
+  // );
 
 
   Widget buildTitle({
@@ -176,12 +176,25 @@ class _StudentChosenState extends State<StudentChosen> {
           child,
         ],
       );
+
+
+  CheckLoggedIn _checkLoggedIn = CheckLoggedIn();
+  bool valueFromBack;
+  int id ;
+  String studentRollNo;
+  Future getID() async
+  {
+    id = await _checkLoggedIn.getLoginIdValue();
+    studentRollNo = await _checkLoggedIn.getRollNo();
+  }
+
   @override
   void initState() {
     super.initState();
     buildBirthday();
+    getID();
     buildName();
-    buildRollNo();
+    //buildRollNo();
     buildHall();
     buildRoom();
     buildMobile1();
@@ -189,7 +202,7 @@ class _StudentChosenState extends State<StudentChosen> {
     buildParentName();
     buildParentMobile();
     buildEmail();
-    buildPassword();
+    //buildPassword();
   }
 
   @override
@@ -290,8 +303,8 @@ class _StudentChosenState extends State<StudentChosen> {
                     ),
                     const SizedBox(height: 32),
                     buildName(),
-                    const SizedBox(height: 12),
-                    buildRollNo(),
+                    // const SizedBox(height: 12),
+                    // buildRollNo(),
                     const SizedBox(height: 12),
                     buildEmail(),
                     const SizedBox(height: 12),
@@ -308,8 +321,8 @@ class _StudentChosenState extends State<StudentChosen> {
                     buildParentName(),
                     const SizedBox(height: 12),
                     buildParentMobile(),
-                    const SizedBox(height: 12),
-                    buildPassword(),
+                    // const SizedBox(height: 12),
+                    // buildPassword(),
                   ],
                 ),
               ),
@@ -377,7 +390,7 @@ class _StudentChosenState extends State<StudentChosen> {
                                 parentName: parentName,
                                 mobileNo1: mobileNo1,
                                 mobileNo2: mobileNo2,
-                                rollNo: rollNo,
+                                rollNo: studentRollNo,
                                 email: emailID,
                                 password: password,
                               )));
