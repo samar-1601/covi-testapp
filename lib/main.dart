@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'utilities/constants.dart';
 import 'route_generator.dart';
+import 'notifications_manager.dart';
 
 void main() {
+  // from notifications manager
   runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
   // This widget is the root of your application.
+
 
   static Map<int, Color> color = {
     50: Color.fromRGBO(57,73,171, .1),
@@ -28,6 +31,12 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   MaterialColor colorCustom = MaterialColor(0xFFC30000, MyApp.color);
+
+  @override
+  void initState() {
+    notificationsManager(context);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

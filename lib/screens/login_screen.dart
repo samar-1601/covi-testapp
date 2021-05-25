@@ -272,13 +272,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               onTap: () async{
-                bool value = await checkPassword(password, mobileNo1, rollNo);
-
+                bool value = false;
+                value = await checkPassword(password, mobileNo1, rollNo);
                 print("value == \n");
                 print(value);
                 if(value==true)
                   {
-                    _checkLoggedIn.setVisitingFlag(false);
+                    //_checkLoggedIn.setVisitingFlag(false);
                     _checkLoggedIn.setRollNo(rollNo);
                     if(ifPreviouslyLoggedIn==true)
                       {
@@ -309,6 +309,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       }
                     else
                       {
+                        _checkLoggedIn.setVisitingFlag(false);
                         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
                             ChooseCategory(
                               // id: idFromBack,

@@ -200,6 +200,7 @@ class _ChooseCategoryState extends State<ChooseCategory> {
                     {
                       if(alreadyAnswered==true)
                         {
+                          _checkLoggedIn.setVisitingFlag(true);
                           Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
                               MonitoringQuestionsTransitionScreen(
                                 selectedCategory: selectedCategory,
