@@ -7,7 +7,7 @@ import 'package:coviapp/shared_pref.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:coviapp/screens/choose_category.dart';
-
+import 'monitoring_questions_transition.dart';
 
 class LoginScreen extends StatefulWidget {
 
@@ -66,8 +66,9 @@ class _LoginScreenState extends State<LoginScreen> {
   );
 
   String otp ="";
-
+  bool ifPreviouslyLoggedIn;
   bool valueFromBack;
+  bool hasUserAnsweredDoYouHaveCovidBefore;
 
   Future checkPassword (String password, String mobileNo, String rollNo) async {
     var url = Uri.parse('http://13.232.3.140:8080/login');
@@ -95,14 +96,14 @@ class _LoginScreenState extends State<LoginScreen> {
     print(_checkLoggedIn.getVisitingFlag());
     valueFromBack = await _checkLoggedIn.getVisitingFlag();
     idFromBack = responseBody['id'];
+    ifPreviouslyLoggedIn = responseBody['details'];
+    hasUserAnsweredDoYouHaveCovidBefore = responseBody['filledCovidForm'];
+    print(" == ifPrevLoggedIn Successfully : ");
+    print(ifPreviouslyLoggedIn);
+    print(" == idFromBack : ");
     print(idFromBack);
     _checkLoggedIn.setLoginIdValue(idFromBack);
-    // setState(() async{
-    //   valueFromBack = await _checkLoggedIn.getVisitingFlag();
-    //   print("=====================\n");
-    //   print(valueFromBack);
-    //   print("=====================\n");
-    // });
+
     print(valueFromBack);
     return valueFromBack;
   }
@@ -272,14 +273,47 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               onTap: () async{
                 bool value = await checkPassword(password, mobileNo1, rollNo);
+
+                print("value == \n");
+                print(value);
                 if(value==true)
                   {
                     _checkLoggedIn.setVisitingFlag(false);
                     _checkLoggedIn.setRollNo(rollNo);
-                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-                        ChooseCategory(
-                         // id: idFromBack,
-                        )), (Route<dynamic> route) => false);
+                    if(ifPreviouslyLoggedIn==true)
+                      {
+                        if(hasUserAnsweredDoYouHaveCovidBefore==true)
+                          {
+                            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+                                MonitoringQuestionsTransitionScreen(
+                                  // id: idFromBack,
+                                  rollNo: rollNo,
+                                  mobileNo1: mobileNo1,
+
+                                )), (Route<dynamic> route) => false);
+                          }
+                        else
+                          {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) => DoYouHaveCovid(
+                                   // selectedCategory: widget.selectedCategory,
+                                    id: idFromBack,
+                                    rollNo: rollNo,
+                                  )
+                              ),
+                                  (route) => false,
+                            );
+                          }
+                      }
+                    else
+                      {
+                        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+                            ChooseCategory(
+                              // id: idFromBack,
+                            )), (Route<dynamic> route) => false);
+                      }
                   }
                 else
                   {

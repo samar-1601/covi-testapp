@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:coviapp/utilities/constants.dart';
 import 'package:coviapp/utilities/alert_box.dart';
-import 'package:coviapp/utilities/customDropDownButton.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'monitoring_questions_transition.dart';
+import 'package:coviapp/shared_pref.dart';
 
 class MonitoringQuestions extends StatefulWidget {
   final String chosenCategory;
@@ -85,6 +87,43 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
   {
     print("----------------- Answers Values ------------------\n");
     print("----------------- Answers Values End ------------------\n");
+  }
+
+  CheckLoggedIn _checkLoggedIn = CheckLoggedIn();
+  bool valueFromBack;
+  String rollNo;
+
+  Future putData(String feverTemp, String spo2, String extraHealthCondition) async {
+    print("============inside PUTDATA in covid_data_sender\n");
+    var url = Uri.parse('http://13.232.3.140:8080/submit_timestamp_data');
+    rollNo = await _checkLoggedIn.getRollNo();
+    int id = await _checkLoggedIn.getLoginIdValue();
+    print(rollNo);
+    print(id);
+    Map data = {
+      "Fever":feverTemp,
+      "spo2":spo2,
+      "condition" : extraHealthCondition,
+      "rollNo" : rollNo,
+    };
+    String body = json.encode(data);
+    print(body);
+    var response = await http.post(url,
+        headers: {"Content-Type": "application/json"}, body: body);
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+    Map responseBody = json.decode(response.body) as Map;
+    print(responseBody);
+    if (response.statusCode != 200) {
+      // _checkLoggedIn.setVisitingFlag(true);
+      valueFromBack = false;
+    }
+    else {
+      valueFromBack = true;
+    }
+    print("inside set state for Monitoring question's response");
+    print(valueFromBack);
+    return valueFromBack;
   }
 
   @override
@@ -236,17 +275,44 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
                   ),
                 ),
               ),
-              onTap: () {
-                // setState(() {
-                //   // Navigator.push(
-                //   //     context,
-                //   //     new MaterialPageRoute(
-                //   //         builder: (BuildContext context) => CovidDataSender(
-                //   //           areYouEquippedQuestions: areYouEquippedQuesList,
-                //   //           areYouEquippedAnswers: areYouEquippedQuesAnswersList,
-                //   //           id: widget.id,
-                //   //         )));
-                // });
+              onTap: () async{
+                valueFromBack = await putData(feverTemp, spo2, extraHealthCondition);
+                print(valueFromBack);
+                if(valueFromBack==true)
+                  {
+                    setState(() {
+                      AlertBox(
+                          context: context,
+                          alertContent:
+                          'Thank You For entering your details. Please renter after 6 hours for continuous monitoring',
+                          alertTitle: 'ThankYou',
+                          rightActionText: 'Close',
+                          leftActionText: '',
+                          onPressingRightActionButton: () {
+                            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+                                MonitoringQuestionsTransitionScreen(
+                                  selectedCategory: widget.chosenCategory,
+                                  id: widget.id,
+                                  rollNo: rollNo,
+                                )), (Route<dynamic> route) => false);
+                          }).showAlert();
+                    });
+                  }
+                else
+                  {
+                    setState(() {
+                      AlertBox(
+                          context: context,
+                          alertContent:
+                          'The given details were not registered due to some error. Kindly Renter',
+                          alertTitle: 'Entry Error !!',
+                          rightActionText: 'Close',
+                          leftActionText: '',
+                          onPressingRightActionButton: () {
+                            Navigator.pop(context);
+                          }).showAlert();
+                    });
+                  }
               },
             )
           ],

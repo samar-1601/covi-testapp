@@ -11,6 +11,7 @@ import 'package:coviapp/screens/miscellaneous_chosen.dart';
 import 'package:coviapp/screens/do_you_have_covid.dart';
 import 'package:coviapp/screens/general_covid_questions.dart';
 import 'package:coviapp/screens/monitoring_questions_transition.dart';
+import 'package:coviapp/screens/monitoring_questions.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -60,6 +61,10 @@ class RouteGenerator {
       case '/generalCovidQuestions':
         return MaterialPageRoute(
           builder: (_) => CovidQuestions(),
+        );
+      case '/monitoringQuestions':
+        return MaterialPageRoute(
+          builder: (_) => MonitoringQuestions(),
         );
       case '/monitoringQuestionsTransition':
         return MaterialPageRoute(
