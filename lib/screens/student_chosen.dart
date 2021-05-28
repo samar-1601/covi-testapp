@@ -44,17 +44,17 @@ class _StudentChosenState extends State<StudentChosen> {
       onChanged: (name) => setState(() => this.name = name),
     ),
   );
-  // Widget buildRollNo() => buildTitle(
-  //   title: 'Roll No',
-  //   child: TextFormField(
-  //     initialValue: rollNo,
-  //     decoration: InputDecoration(
-  //       border: OutlineInputBorder(),
-  //       hintText: 'Your Roll No',
-  //     ),
-  //     onChanged: (rollNo) => setState(() => this.rollNo = rollNo),
-  //   ),
-  // );
+  Widget buildRollNo() => buildTitle(
+    title: 'Roll No',
+    child: TextFormField(
+      initialValue: rollNo,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Your Roll No',
+      ),
+      onChanged: (rollNo) => setState(() => this.rollNo = rollNo),
+    ),
+  );
   Widget buildMobile1() => buildTitle(
     title: 'Mobile number 1',
     child: TextFormField(
@@ -194,7 +194,7 @@ class _StudentChosenState extends State<StudentChosen> {
     buildBirthday();
     getID();
     buildName();
-    //buildRollNo();
+    buildRollNo();
     buildHall();
     buildRoom();
     buildMobile1();
@@ -281,7 +281,7 @@ class _StudentChosenState extends State<StudentChosen> {
                 ),
               ),
               SizedBox(
-                height: 50.0,
+                height: 30.0,
               ),
               Container(
                 margin: EdgeInsets.only(left: 15.0, right: 15),
@@ -301,20 +301,18 @@ class _StudentChosenState extends State<StudentChosen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 20),
                     buildName(),
-                    // const SizedBox(height: 12),
-                    // buildRollNo(),
                     const SizedBox(height: 12),
-                    buildEmail(),
+                    buildRollNo(),
+                    // const SizedBox(height: 12),
+                    // buildEmail(),
                     const SizedBox(height: 12),
                     buildMobile1(),
-                    const SizedBox(height: 12),
-                    buildMobile2(),
+                    // const SizedBox(height: 12),
+                    // buildMobile2(),
                     const SizedBox(height: 12),
                     buildHall(),
-                    const SizedBox(height: 12),
-                    buildRoom(),
                     const SizedBox(height: 12),
                     buildBirthday(),
                     const SizedBox(height: 12),
@@ -384,14 +382,14 @@ class _StudentChosenState extends State<StudentChosen> {
                                 name: name,
                                 birthday: birthday,
                                 hall: hall,
-                                room: roomNo,
+                                //room: roomNo,
                                 selectedCategory: widget.chosenCategory,
                                 parentMobileNo: parentMobileNo,
                                 parentName: parentName,
                                 mobileNo1: mobileNo1,
-                                mobileNo2: mobileNo2,
+                               // mobileNo2: mobileNo2,
                                 rollNo: studentRollNo,
-                                email: emailID,
+                                //email: emailID,
                                 password: password,
                               )));
                     }

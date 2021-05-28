@@ -25,6 +25,7 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
   String feverTemp = '';
   String spo2 = '';
   String extraHealthCondition = '';
+  String haveFoodOrMedicalsupplies ='';
 
   DateTime isolationDate;
 
@@ -66,6 +67,18 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
     ),
   );
 
+  Widget buildHaveFoodOrMedicalSupplies() => buildTitle(
+    title: 'Do You have proper food and medical supplies? (Yes/No)',
+    child: TextFormField(
+      initialValue: haveFoodOrMedicalsupplies,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Enter data',
+      ),
+      onChanged: (data) => setState(() => this.haveFoodOrMedicalsupplies = data),
+    ),
+  );
+
 
   Widget buildTitle({
     @required String title,
@@ -93,7 +106,7 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
   bool valueFromBack;
   String rollNo;
 
-  Future putData(String feverTemp, String spo2, String extraHealthCondition) async {
+  Future putData(String feverTemp, String spo2, String extraHealthCondition, String haveFoodOrMedicalsupplies) async {
     print("============inside PUTDATA in covid_data_sender\n");
     var url = Uri.parse('http://13.232.3.140:8080/submit_timestamp_data');
     rollNo = await _checkLoggedIn.getRollNo();
@@ -105,6 +118,7 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
       "spo2":spo2,
       "condition" : extraHealthCondition,
       "rollNo" : rollNo,
+      "foodSupply":haveFoodOrMedicalsupplies,
     };
     String body = json.encode(data);
     print(body);
@@ -132,6 +146,7 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
     buildFeverLevel();
     buildExtraHealthConditions();
     buildSpO2Level();
+    buildHaveFoodOrMedicalSupplies();
   }
 
   @override
@@ -231,12 +246,14 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 100),
+                  const SizedBox(height: 40),
                   buildFeverLevel(),
                   const SizedBox(height: 12),
                   buildSpO2Level(),
                   const SizedBox(height: 12),
                   buildExtraHealthConditions(),
+                  const SizedBox(height: 12),
+                  buildHaveFoodOrMedicalSupplies(),
                 ],
               ),
             ),
@@ -276,7 +293,7 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
                 ),
               ),
               onTap: () async{
-                valueFromBack = await putData(feverTemp, spo2, extraHealthCondition);
+                valueFromBack = await putData(feverTemp, spo2, extraHealthCondition,haveFoodOrMedicalsupplies);
                 print(valueFromBack);
                 if(valueFromBack==true)
                   {

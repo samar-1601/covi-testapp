@@ -51,14 +51,14 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
     Map data = {
       "name": widget.name,
       "hall": widget.hall,
-      "birth_date": "birthday",
-      "selectedCategory": "",
+      "birth_date": widget.birthday.toString(),
+      "selectedCategory": widget.selectedCategory,
       "room":"",
       "mobileNo1" : widget.mobileNo1,
       "mobileNo2" : " ",
       "rollNo" : widget.rollNo,
-      "parentName" : " ",
-      "parentMobileNo": "",
+      "parentName" : widget.parentName,
+      "parentMobileNo": widget.parentMobileNo,
       "email": " ",
       "password": widget.password,
     };

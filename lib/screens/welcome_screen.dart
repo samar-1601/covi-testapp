@@ -1,3 +1,4 @@
+import 'package:coviapp/screens/monitoring_questions_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:coviapp/utilities/constants.dart';
 import 'package:coviapp/screens/do_you_have_covid.dart';
@@ -52,6 +53,7 @@ class WelcomeScreen extends StatelessWidget {
                 onPressed: () async{
                   bool visited = await _checkLoggedIn.getVisitingFlag();
                   bool alreadyAnswered = await _checkLoggedIn.getIfAnsweredBeforeFlag();
+                  String rollNo = await _checkLoggedIn.getRollNo();
                   if(visited==true)
                     {
                       if(alreadyAnswered==false)
@@ -64,7 +66,9 @@ class WelcomeScreen extends StatelessWidget {
                           Navigator.push(
                             context,
                             new MaterialPageRoute(
-                              builder: (BuildContext context) =>ChooseCategory(),
+                              builder: (BuildContext context) =>MonitoringQuestionsTransitionScreen(
+                                rollNo: rollNo,
+                              ),
                             ),
                           );
                         }

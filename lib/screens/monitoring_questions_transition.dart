@@ -208,8 +208,8 @@ Future getID() async
                       context,
                       new MaterialPageRoute(
                           builder: (BuildContext context) => MonitoringQuestions(
-                            chosenCategory: widget.selectedCategory,
-                            id : id,
+                           // chosenCategory: widget.selectedCategory,
+                           // id : id,
                             rollNo: rollNo,
                           )));
                 });

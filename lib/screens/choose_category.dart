@@ -17,10 +17,12 @@ class ChooseCategory extends StatefulWidget {
 class _ChooseCategoryState extends State<ChooseCategory> {
 
   static List<String> categoryList = [
-      'Student',
-      'Staff',
-      'Faculty',
-      'Miscellaneous',
+      'PhD Student(Inst./Sponsored)',
+      'Project Student (MS)',
+      'Project Student (PhD)',
+    'B.Tech (regular/DD)',
+    'M.Tech',
+      'Post-Doctoral Student',
   ];
   void printValue() {
     print(selectedCategory);
@@ -106,7 +108,7 @@ class _ChooseCategoryState extends State<ChooseCategory> {
               ),
             ),
             SizedBox(
-              height: 120.0,
+              height: 60.0,
             ),
             Container(
                 child: Center(
@@ -160,7 +162,7 @@ class _ChooseCategoryState extends State<ChooseCategory> {
               ),
             ),
             SizedBox(
-              height: 60.0,
+              height: 40.0,
             ),
             GestureDetector(
               child: Align(
@@ -196,8 +198,7 @@ class _ChooseCategoryState extends State<ChooseCategory> {
               onTap: () async{
                 bool alreadyAnswered = await _checkLoggedIn.getIfAnsweredBeforeFlag();
                 setState(() {
-                  if(selectedCategory == 'Student')
-                    {
+
                       if(alreadyAnswered==true)
                         {
                           _checkLoggedIn.setVisitingFlag(true);
@@ -216,37 +217,38 @@ class _ChooseCategoryState extends State<ChooseCategory> {
                             )
                         );
                       }
-                    }
-                  else if(selectedCategory == 'Staff')
-                  {
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                StaffChosen(chosenCategory: selectedCategory,)
-                        )
-                    );
-                  }
-                  else if(selectedCategory == 'Faculty')
-                  {
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                FacultyChosen(chosenCategory: selectedCategory,)
-                        )
-                    );
-                  }
-                  else if(selectedCategory == 'Miscellaneous')
-                  {
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                MiscChosen(chosenCategory: selectedCategory,)
-                        )
-                    );
-                  }
+
+                  //============= Staff Options Commented ===============
+                  // else if(selectedCategory == 'Staff')
+                  // {
+                  //   Navigator.push(
+                  //       context,
+                  //       new MaterialPageRoute(
+                  //           builder: (BuildContext context) =>
+                  //               StaffChosen(chosenCategory: selectedCategory,)
+                  //       )
+                  //   );
+                  // }
+                  // else if(selectedCategory == 'Faculty')
+                  // {
+                  //   Navigator.push(
+                  //       context,
+                  //       new MaterialPageRoute(
+                  //           builder: (BuildContext context) =>
+                  //               FacultyChosen(chosenCategory: selectedCategory,)
+                  //       )
+                  //   );
+                  // }
+                  // else if(selectedCategory == 'Miscellaneous')
+                  // {
+                  //   Navigator.push(
+                  //       context,
+                  //       new MaterialPageRoute(
+                  //           builder: (BuildContext context) =>
+                  //               MiscChosen(chosenCategory: selectedCategory,)
+                  //       )
+                  //   );
+                  // }
                 });
               },
             ),

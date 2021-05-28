@@ -30,7 +30,7 @@ class CovidDataSender extends StatefulWidget {
   final String dsaCouncilMember2MbNo ;
   final String supervisorMobileNo ;
   final String seekHelp;
-  final String suggestions ;
+  final String symptoms ;
   final int id;
 
   DateTime isolationDate;
@@ -40,7 +40,7 @@ class CovidDataSender extends StatefulWidget {
   final List<String> wellBeingAnswers;
 
   CovidDataSender(
-      {this.id,this.password='NE',this.suggestions ='NE',this.seekHelp,this.isolationDate,this.dsaCouncilMemberName1,this.dsaCouncilMemberName2='NE',this.supervisorName ='NE',this.isolationAddress='NE',this.supervisorMobileNo='NE',this.dsaCouncilMember1MbNo='NE',this.dsaCouncilMember2MbNo='NE',this.areYouEquippedQuestions ,this.areYouEquippedAnswers,this.wellBeingQuestions,this.wellBeingAnswers,this.selectedCategory = 'NE',this.name = 'NE', this.hall = 'NE', this.room = 'NE', this.birthday,
+      {this.id,this.password='NE',this.symptoms ='NE',this.seekHelp,this.isolationDate,this.dsaCouncilMemberName1,this.dsaCouncilMemberName2='NE',this.supervisorName ='NE',this.isolationAddress='NE',this.supervisorMobileNo='NE',this.dsaCouncilMember1MbNo='NE',this.dsaCouncilMember2MbNo='NE',this.areYouEquippedQuestions ,this.areYouEquippedAnswers,this.wellBeingQuestions,this.wellBeingAnswers,this.selectedCategory = 'NE',this.name = 'NE', this.hall = 'NE', this.room = 'NE', this.birthday,
         this.rollNo = 'NE', this.mobileNo1 = 'NE', this.mobileNo2 ='NE', this.parentName = 'NE', this.parentMobileNo= 'NE', this.email = 'NE'});
 
   @override
@@ -63,29 +63,21 @@ class _CovidDataSenderState extends State<CovidDataSender> {
     Map data = {
       "name": widget.name,
       "hall": widget.hall,
-      "birth_date": "birthday",
-      "selectedCategory": "",
-      "room":"",
+      //"birth_date": widget.birthday.toString(),
+      "selectedCategory": widget.selectedCategory,
+      //"room":"",
       "mobileNo1" : widget.mobileNo1,
-      "mobileNo2" : " ",
+      //"mobileNo2" : " ",
       "rollNo" : rollNo,
-      "parentName" : " ",
-      "parentMobileNo": "",
-      "email": " ",
+      "parentName" : widget.parentName,
+      "parentMobileNo": widget.parentMobileNo,
+      //"email": " ",
       "password": widget.password,
-      "areYouEquippedQuestions": widget.areYouEquippedQuestions,
-      "areYouEquippedAnswers" : widget.areYouEquippedAnswers,
-      "wellBeingQuestions": widget.wellBeingQuestions,
-      "wellBeingAnswers": widget.wellBeingAnswers,
-      "isolationAddress": widget.isolationAddress,
     "supervisorName" : widget.supervisorName,
-    "dsaCouncilMemberName1" : widget.dsaCouncilMemberName1,
-    "dsaCouncilMemberName2" : widget.dsaCouncilMemberName2,
-    "dsaCouncilMember1MbNo" : widget.dsaCouncilMember1MbNo ,
-    "dsaCouncilMember2MbNo" : widget.dsaCouncilMember2MbNo ,
-    "supervisorMobileNo" : widget.supervisorName,
-    "seekHelp": widget.seekHelp,
-    "suggestions": widget.suggestions,
+    "supervisorMobileNo" : widget.supervisorMobileNo,
+      "isolationAddress": widget.isolationAddress,
+      "isolationDate": widget.isolationDate.toString(),
+    "symptoms": widget.symptoms,
       "id":id,
     };
     String body = json.encode(data);
@@ -114,23 +106,23 @@ class _CovidDataSenderState extends State<CovidDataSender> {
     else {
       _checkLoggedIn.setVisitingFlag(true);
       _checkLoggedIn.setIfAnsweredBeforeFlag(true);
-      setState(() {
-        AlertBox(
-            context: context,
-            alertContent:
-            'Thank You For Registering !!',
-            alertTitle: 'ThankYou',
-            rightActionText: 'Close',
-            leftActionText: '',
-            onPressingRightActionButton: () {
-              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-                  MonitoringQuestionsTransitionScreen(
-                    selectedCategory: widget.selectedCategory,
-                    id: widget.id,
-                    rollNo: rollNo,
-                  )), (Route<dynamic> route) => false);
-            }).showAlert();
-      });
+      // setState(() {
+      //   AlertBox(
+      //       context: context,
+      //       alertContent:
+      //       'Thank You For Registering !!',
+      //       alertTitle: 'ThankYou',
+      //       rightActionText: 'Close',
+      //       leftActionText: '',
+      //       onPressingRightActionButton: () {
+      //         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+      //             MonitoringQuestionsTransitionScreen(
+      //               selectedCategory: widget.selectedCategory,
+      //               id: widget.id,
+      //               rollNo: rollNo,
+      //             )), (Route<dynamic> route) => false);
+      //       }).showAlert();
+      //});
     }
     print("inside set state for ID response");
     //idFromBack = responseBody['studentID'];
@@ -143,19 +135,26 @@ class _CovidDataSenderState extends State<CovidDataSender> {
 
   @override
   void initState() {
+    putData();
     super.initState();
+    putData();
     print(widget.selectedCategory);
     if(widget.selectedCategory == 'Student')
     {
-      print(widget.name);
-      print(widget.rollNo);
-      print(widget.email);
-      print(widget.hall);
-      print(widget.mobileNo1);
-      print(widget.mobileNo2);
-      print(widget.parentName);
-      print(widget.parentMobileNo);
-      print(widget.birthday.toString());
+      // print(widget.name);
+      // print(widget.rollNo);
+      // print(widget.email);
+      // //print(widget.hall);
+      // print(widget.mobileNo1);
+      // //print(widget.mobileNo2);
+      // //print(widget.parentName);
+      // //print(widget.parentMobileNo);
+      // print(widget.birthday.toString());
+      print(widget.isolationAddress);
+      print(widget.isolationDate);
+      print(widget.supervisorName);
+      print(widget.supervisorMobileNo);
+      print(widget.symptoms);
     }
     else
     {
@@ -167,7 +166,7 @@ class _CovidDataSenderState extends State<CovidDataSender> {
       print(widget.mobileNo2);
       print(widget.birthday.toString());
     }
-    putData();
+
   }
 
 
@@ -264,17 +263,7 @@ class _CovidDataSenderState extends State<CovidDataSender> {
                       ),
                     ),
                     Text(
-                      widget.selectedCategory+'\n'+
-                          widget.name + '\n' +
-                          widget.rollNo + '\n'+
-                          widget.hall + '\n' +
-                          widget.room +'\n'+
-                          widget.mobileNo1 + '\n'+
-                          widget.mobileNo2 + '\n'+
-                          widget.parentName +'\n'+
-                          widget.parentMobileNo+'\n'+
-                          widget.birthday.toString()+'\n'+
-                      widget.id.toString(),
+                      widget.isolationAddress+'\n'+widget.isolationDate.toString() +'\n'+widget.supervisorName+'\n'+ widget.supervisorMobileNo +'\n'+ widget.symptoms,
                       style: TextStyle(
                         fontSize: 18.0,
                         color: Colors.black,
@@ -285,7 +274,7 @@ class _CovidDataSenderState extends State<CovidDataSender> {
               ),
             ),
             SizedBox(
-              height: 50.0,
+              height: 80.0,
             ),
             GestureDetector(
               child: Align(
@@ -318,8 +307,8 @@ class _CovidDataSenderState extends State<CovidDataSender> {
                   ),
                 ),
               ),
-              onTap: (){
-
+              onTap: () async{
+                bool value = await putData();
                 setState(() {
                   if(valueFromBack==true)
                     {

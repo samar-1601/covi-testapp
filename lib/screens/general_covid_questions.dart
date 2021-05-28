@@ -302,13 +302,13 @@ class _CovidQuestionsState extends State<CovidQuestions> {
   String dsaCouncilMember2MbNo = '';
   String supervisorMobileNo = '';
   String seekHelp = '';
-  String suggestions = '';
+  String symptoms = '';
 
   DateTime isolationDate;
 
 
   Widget buildIsolationAdd() => buildTitle(
-    title: 'Current Isolation Address',
+    title: 'Location of isolation/quarantine',
     child: TextFormField(
       initialValue: isolationAddress,
       decoration: InputDecoration(
@@ -364,25 +364,25 @@ class _CovidQuestionsState extends State<CovidQuestions> {
     ),
   );
 
-  Widget buildSuggestions() => buildTitle(
-    title: 'Additional Comments and Suggestions',
+  Widget buildSymptoms() => buildTitle(
+    title: 'What are your symptoms',
     child: TextFormField(
-      initialValue: suggestions,
+      initialValue: symptoms,
       decoration: InputDecoration(
         border: OutlineInputBorder(),
         hintText: 'Enter your suggestions',
       ),
-      onChanged: (data) => setState(() => this.suggestions = data),
+      onChanged: (data) => setState(() => this.symptoms = data),
     ),
   );
   Widget buildSupervisorMbNo() => buildTitle(
-    title: 'SuperVisor Mobile No',
+    title: 'Supervisor Mobile No',
     child: TextFormField(
       initialValue: supervisorMobileNo,
       keyboardType: TextInputType.phone,
       decoration: InputDecoration(
         border: OutlineInputBorder(),
-        hintText: 'SuperVisor Mobile No',
+        hintText: 'Supervisor Mobile No',
       ),
       onChanged: (mobileNo) => setState(() => this.supervisorMobileNo = mobileNo),
     ),
@@ -444,7 +444,7 @@ void printValues(List<String> answers)
     {
       print(answers[i]);
     }
-  print([isolationAddress,supervisorName,dsaCouncilMemberName1,dsaCouncilMemberName2,dsaCouncilMember1MbNo,dsaCouncilMember2MbNo,supervisorMobileNo,seekHelp,suggestions,isolationDate]);
+  print([isolationAddress,supervisorName,dsaCouncilMemberName1,dsaCouncilMemberName2,dsaCouncilMember1MbNo,dsaCouncilMember2MbNo,supervisorMobileNo,seekHelp,symptoms,isolationDate]);
   print("----------------- Answers Values End ------------------\n");
 }
 
@@ -488,7 +488,7 @@ void printValues(List<String> answers)
     buildDsaCouncilMem2Name();
     buildDsaCouncilMem2Mb();
     buildSeekHelp();
-    buildSuggestions();
+    buildSymptoms();
   }
 
   //==========================================setting already answered shared Preference===============
@@ -582,7 +582,7 @@ void printValues(List<String> answers)
                       alignment: Alignment.center,
                       child: Container(
                         child: Text(
-                          'Don\'t worry, you will get well soon. Please enter the following details so that we can help you out',
+                          'Kindly provide following details.This information will be asked only once.',
                           textAlign: TextAlign.left,
                           style: TextStyle(
                             fontSize: 16.0,
@@ -600,72 +600,72 @@ void printValues(List<String> answers)
                     buildSuperVisorName(),
                     const SizedBox(height: 12),
                     buildSupervisorMbNo(),
+                    // const SizedBox(height: 12),
+                    // buildDsaCouncilMem1Name(),
+                    // const SizedBox(height: 12),
+                    // buildDsaCouncilMem1Mb(),
+                    // const SizedBox(height: 12),
+                    // buildDsaCouncilMem2Name(),
+                    // const SizedBox(height: 12),
+                    // buildDsaCouncilMem2Mb(),
+                    //const SizedBox(height: 30),
+                    // Container(
+                    //   child: Center(
+                    //     child: Text(
+                    //       'Are You Equipped ?',
+                    //       textAlign: TextAlign.center,
+                    //       style: TextStyle(
+                    //         fontSize: 22.0,
+                    //         fontWeight: FontWeight.bold,
+                    //         color: kWeirdBlue,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                    // Align(
+                    //   alignment: Alignment.centerLeft,
+                    //   child: Container(
+                    //     margin: EdgeInsets.only(top: 30.0),
+                    //     child: SingleChildScrollView(
+                    //       child: Column(
+                    //           children:
+                    //             listGenerator(areYouEquippedQuestionsMap, areYouEquippedQuesAnswersList),
+                    //         ),
+                    //     ),
+                    //     ),
+                    //   ),
+                    // Container(
+                    //   child: Center(
+                    //     child: Text(
+                    //       'Questions on Well-Being',
+                    //       textAlign: TextAlign.center,
+                    //       style: TextStyle(
+                    //         fontSize: 22.0,
+                    //         fontWeight: FontWeight.bold,
+                    //         color: kWeirdBlue,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                    // SizedBox(
+                    //   height: 30.0,
+                    // ),
+                    // Align(
+                    //   alignment: Alignment.centerLeft,
+                    //   child: Container(
+                    //     margin: EdgeInsets.only(top: 30.0),
+                    //     child: SingleChildScrollView(
+                    //       child: Column(
+                    //         children:
+                    //         listGenerator(wellBeingQuestionsMap, wellBeingQuesAnswersList),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                    // const SizedBox(height: 12),
+                    // buildSeekHelp(),
                     const SizedBox(height: 12),
-                    buildDsaCouncilMem1Name(),
-                    const SizedBox(height: 12),
-                    buildDsaCouncilMem1Mb(),
-                    const SizedBox(height: 12),
-                    buildDsaCouncilMem2Name(),
-                    const SizedBox(height: 12),
-                    buildDsaCouncilMem2Mb(),
-                    const SizedBox(height: 30),
-                    Container(
-                      child: Center(
-                        child: Text(
-                          'Are You Equipped ?',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 22.0,
-                            fontWeight: FontWeight.bold,
-                            color: kWeirdBlue,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Container(
-                        margin: EdgeInsets.only(top: 30.0),
-                        child: SingleChildScrollView(
-                          child: Column(
-                              children:
-                                listGenerator(areYouEquippedQuestionsMap, areYouEquippedQuesAnswersList),
-                            ),
-                        ),
-                        ),
-                      ),
-                    Container(
-                      child: Center(
-                        child: Text(
-                          'Questions on Well-Being',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 22.0,
-                            fontWeight: FontWeight.bold,
-                            color: kWeirdBlue,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 30.0,
-                    ),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Container(
-                        margin: EdgeInsets.only(top: 30.0),
-                        child: SingleChildScrollView(
-                          child: Column(
-                            children:
-                            listGenerator(wellBeingQuestionsMap, wellBeingQuesAnswersList),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    buildSeekHelp(),
-                    const SizedBox(height: 12),
-                    buildSuggestions(),
+                    buildSymptoms(),
                   ],
                 ),
               ),
@@ -714,11 +714,17 @@ void printValues(List<String> answers)
                         context,
                         new MaterialPageRoute(
                             builder: (BuildContext context) => CovidDataSender(
-                              areYouEquippedQuestions: areYouEquippedQuesList,
-                              areYouEquippedAnswers: areYouEquippedQuesAnswersList,
-                              wellBeingQuestions: wellBeingQuesList,
-                              wellBeingAnswers: wellBeingQuesAnswersList,
+                              // areYouEquippedQuestions: areYouEquippedQuesList,
+                              // areYouEquippedAnswers: areYouEquippedQuesAnswersList,
+                              // wellBeingQuestions: wellBeingQuesList,
+                              // wellBeingAnswers: wellBeingQuesAnswersList,
+                              symptoms: symptoms,
+                              isolationAddress: isolationAddress,
+                              isolationDate: isolationDate,
+                              supervisorName: supervisorName,
+                              supervisorMobileNo: supervisorMobileNo,
                               id: widget.id,
+                              selectedCategory: widget.chosenCategory,
                             )));
                   });
                 },
