@@ -289,7 +289,7 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
       body: Center(
         child: CircularProgressIndicator(
           backgroundColor: Colors.white,
-          color: kWeirdBlue,
+            valueColor: new AlwaysStoppedAnimation<Color>(kWeirdBlue),
         ),
       ),
     )

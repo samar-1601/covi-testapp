@@ -240,7 +240,7 @@ class _ProfilePageViewState extends State<ProfilePageView> {
       body: Center(
         child: CircularProgressIndicator(
           backgroundColor: Colors.white,
-          color: kWeirdBlue,
+            valueColor: new AlwaysStoppedAnimation<Color>(kWeirdBlue),
         ),
       ),
     )

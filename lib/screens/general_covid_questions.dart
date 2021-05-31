@@ -371,7 +371,7 @@ class _CovidQuestionsState extends State<CovidQuestions> {
       initialValue: symptoms,
       decoration: InputDecoration(
         border: OutlineInputBorder(),
-        hintText: 'Enter your suggestions',
+        hintText: 'Enter your symptoms',
       ),
       onChanged: (data) => setState(() => this.symptoms = data),
     ),

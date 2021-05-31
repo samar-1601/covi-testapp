@@ -220,7 +220,7 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
         body: Center(
           child: CircularProgressIndicator(
           backgroundColor: Colors.white,
-            color: kWeirdBlue,
+          valueColor: new AlwaysStoppedAnimation<Color>(kWeirdBlue),
       ),
         ),
     )

@@ -234,7 +234,7 @@ class _CovidDataSenderState extends State<CovidDataSender> {
       body: Center(
         child: CircularProgressIndicator(
           backgroundColor: Colors.white,
-          color: kWeirdBlue,
+          valueColor: new AlwaysStoppedAnimation<Color>(kWeirdBlue),
         ),
       ),
     )
