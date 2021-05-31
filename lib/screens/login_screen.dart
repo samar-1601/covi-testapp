@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:coviapp/screens/choose_category.dart';
 import 'monitoring_questions_transition.dart';
+import 'package:coviapp/utilities/customAppBar.dart';
 
 class LoginScreen extends StatefulWidget {
 
@@ -28,29 +29,29 @@ class _LoginScreenState extends State<LoginScreen> {
   int idFromBack;
 
   Widget buildRollOrEcNumber() => buildTitle(
-    title: 'Roll/EC Number',
+    title: 'Username',
     child: TextFormField(
       initialValue: rollNo,
       decoration: InputDecoration(
         border: OutlineInputBorder(),
-        hintText: 'Enter data',
+        hintText: 'Enter Username',
       ),
       onChanged: (data) => setState(() => this.rollNo = data),
     ),
   );
 
-  Widget buildMobile1() => buildTitle(
-    title: 'Registered Mobile Number',
-    child: TextFormField(
-      initialValue: mobileNo1,
-      keyboardType: TextInputType.phone,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        hintText: 'Enter data',
-      ),
-      onChanged: (data) => setState(() => this.mobileNo1 = data),
-    ),
-  );
+  // Widget buildMobile1() => buildTitle(
+  //   title: 'Registered Mobile Number',
+  //   child: TextFormField(
+  //     initialValue: mobileNo1,
+  //     keyboardType: TextInputType.phone,
+  //     decoration: InputDecoration(
+  //       border: OutlineInputBorder(),
+  //       hintText: 'Enter data',
+  //     ),
+  //     onChanged: (data) => setState(() => this.mobileNo1 = data),
+  //   ),
+  // );
 
   Widget buildPassword() => buildTitle(
     title: 'Enter password',
@@ -66,19 +67,20 @@ class _LoginScreenState extends State<LoginScreen> {
   );
 
   String otp ="";
-  bool ifPreviouslyLoggedIn;
+  String ifPreviouslyLoggedIn;
   bool valueFromBack;
-  bool hasUserAnsweredDoYouHaveCovidBefore;
+  String hasUserAnsweredDoYouHaveCovidBefore;
+  String token = "";
 
   Future checkPassword (String password, String mobileNo, String rollNo) async {
-    var url = Uri.parse('http://13.232.3.140:8080/login');
-    print(mobileNo);
+    var url = Uri.parse('https://imedixbcr.iitkgp.ac.in/api/user/login');
+    //print(mobileNo);
     print(password);
     print("ONN LOOGGIINNN SCCRREESSNN-----------------------------\n");
     Map data = {
       "password": password,
-      "mobileNo1": mobileNo,
-      "rollNo": rollNo,
+      //mobileNo1": mobileNo,
+      "username": rollNo,
     };
     String body = json.encode(data);
     print(body);
@@ -90,35 +92,48 @@ class _LoginScreenState extends State<LoginScreen> {
     if (response.statusCode == 200) {
       _checkLoggedIn.setVisitingFlag(true);
       _checkLoggedIn.setRollNo(rollNo);
+      _checkLoggedIn.setPasswordToken(password);
     } else {
       _checkLoggedIn.setVisitingFlag(false);
     }
     print(_checkLoggedIn.getVisitingFlag());
     valueFromBack = await _checkLoggedIn.getVisitingFlag();
-    idFromBack = responseBody['id'];
-    ifPreviouslyLoggedIn = responseBody['details'];
-    hasUserAnsweredDoYouHaveCovidBefore = responseBody['filledCovidForm'];
-    print(" == ifPrevLoggedIn Successfully : ");
-    print(ifPreviouslyLoggedIn);
-    print(" == idFromBack : ");
-    print(idFromBack);
-    _checkLoggedIn.setLoginIdValue(idFromBack);
+    ifPreviouslyLoggedIn = responseBody['hasPatientData'];
+    hasUserAnsweredDoYouHaveCovidBefore = responseBody['hasCovidData'];
+    token = responseBody['jwtToken'];
 
-    print(valueFromBack);
-    return valueFromBack;
+    print(" == ifPrevLoggedIn Successfully : ${ifPreviouslyLoggedIn}");
+    print(" == token : {$token}");
+    print(" == has answered before? : {$hasUserAnsweredDoYouHaveCovidBefore}");
+
+    _checkLoggedIn.setLoginToken(token);
+    _checkLoggedIn.setRollNo(rollNo);
+    _checkLoggedIn.setPasswordToken(password);
+    print("Value Form Back = ${valueFromBack}");
+    return valueFromBack??false;
   }
 
 
   Widget buildTitle({
     @required String title,
     @required Widget child,
+    String leftText,
   }) =>
       Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            title,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          Row(
+            children: [
+
+              Text(
+                title,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              Text(
+                '*',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.red),
+              ),
+            ],
           ),
           const SizedBox(height: 8),
           child,
@@ -128,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     buildRollOrEcNumber();
-    buildMobile1();
+    //buildMobile1();
     buildPassword();
   }
 
@@ -139,74 +154,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: ListView(
           shrinkWrap: true,
           children: <Widget>[
-            Container(
-              //margin: EdgeInsets.only(top: 10.0,bottom: 20.0),
-              color: kWeirdBlue,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Flexible(
-                      flex: 3,
-                      child: MaterialButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text(
-                          'Back',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14.0,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    Flexible(
-                      flex: 9,
-                      child: Container(
-                        child: Text(
-                          'CoviApp',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 25.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-//
-                    Flexible(
-                      flex: 3,
-                      child: MaterialButton(
-                        onPressed: () {
-                          AlertBox(
-                              context: context,
-                              alertContent:
-                              'Call and Mail us at ...',
-                              alertTitle: 'Help',
-                              rightActionText: 'Close',
-                              leftActionText: '',
-                              onPressingRightActionButton: () {
-                                Navigator.pop(context);
-                              }
-                          ).showAlert();
-                        },
-                        child: Text(
-                          'Help',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            CustomAppBar(),
             SizedBox(
               height: 30.0,
             ),
@@ -218,20 +166,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     alignment: Alignment.centerLeft,
                     child: Center(
                       child: Text(
-                        'Enter Your Details',
+                        'Login Details are shared with you in your email. Kindly use that information.\n',
                         textAlign: TextAlign.left,
                         style: TextStyle(
-                          fontSize: 24.0,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.w600,
                           color: Colors.black,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 40),
                   buildRollOrEcNumber(),
-                  const SizedBox(height: 12),
-                  buildMobile1(),
                   const SizedBox(height: 12),
                   buildPassword(),
                 ],
@@ -274,22 +220,18 @@ class _LoginScreenState extends State<LoginScreen> {
               onTap: () async{
                 bool value = false;
                 value = await checkPassword(password, mobileNo1, rollNo);
-                print("value == \n");
-                print(value);
+                print("value after checking password = ${value}");
                 if(value==true)
                   {
-                    //_checkLoggedIn.setVisitingFlag(false);
                     _checkLoggedIn.setRollNo(rollNo);
-                    if(ifPreviouslyLoggedIn==true)
+                    _checkLoggedIn.setPasswordToken(password);
+                    if(ifPreviouslyLoggedIn=="yes")
                       {
-                        if(hasUserAnsweredDoYouHaveCovidBefore==true)
+                        if(hasUserAnsweredDoYouHaveCovidBefore=="yes")
                           {
                             Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
                                 MonitoringQuestionsTransitionScreen(
-                                  // id: idFromBack,
                                   rollNo: rollNo,
-                                  mobileNo1: mobileNo1,
-
                                 )), (Route<dynamic> route) => false);
                           }
                         else
@@ -298,8 +240,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               context,
                               MaterialPageRoute(
                                   builder: (BuildContext context) => DoYouHaveCovid(
-                                   // selectedCategory: widget.selectedCategory,
-                                    id: idFromBack,
                                     rollNo: rollNo,
                                   )
                               ),
@@ -316,35 +256,20 @@ class _LoginScreenState extends State<LoginScreen> {
                             )), (Route<dynamic> route) => false);
                       }
                   }
-                else
-                  {
-                    AlertBox(
-                        context: context,
-                        alertContent:
-                        'Invalid UserName or Password. Try again.\nDont\'t have an account? SignUp',
-                        alertTitle: 'Invalid Entry !!',
-                        rightActionText: 'SignUp',
-                        leftActionText: 'Close',
-                        onPressingLeftActionButton: () {
-                          Navigator.of(context).pop();
-                          _checkLoggedIn.setVisitingFlag(false);
-                        },
-                        onPressingRightActionButton: ()
-                        {
-                          _checkLoggedIn.setVisitingFlag(false);
-                          Navigator.of(context)
-                              .pushNamedAndRemoveUntil('/signup', (Route<dynamic> route) => false);
-                        }
-                    ).showAlert();
-                  }
-                // setState((){
-                //   Navigator.push(
-                //       context,
-                //       new MaterialPageRoute(
-                //           builder: (BuildContext context) => LoginTransitionHelper(
-                //             valueFromBack: valueFromBack,
-                //           )));
-                // });
+                else {
+                  AlertBox(
+                    context: context,
+                    alertContent:
+                    'Invalid UserName or Password. Try again',
+                    alertTitle: 'Invalid Entry !!',
+                    rightActionText: 'Close',
+                    leftActionText: ' ',
+                    onPressingRightActionButton: () {
+                      Navigator.of(context).pop();
+                      _checkLoggedIn.setVisitingFlag(false);
+                    },
+                  ).showAlert();
+                }
               },
             )
           ],

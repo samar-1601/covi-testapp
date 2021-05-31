@@ -5,6 +5,7 @@ import 'package:coviapp/utilities/constants.dart';
 import 'package:coviapp/shared_pref.dart';
 import 'package:coviapp/screens/monitoring_questions.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:coviapp/utilities/customAppBar.dart';
 
 class MonitoringQuestionsTransitionScreen extends StatefulWidget {
   final String selectedCategory;
@@ -54,25 +55,6 @@ Future getID() async
     super.initState();
     getID();
     print(widget.selectedCategory);
-    if(widget.selectedCategory == 'Student')
-    {
-      print(widget.name==''?'Name not entered':widget.name);
-      print(widget.rollNo==''?'roll not entered':rollNo);
-      print(widget.hall==''?'hall not entered':widget.hall);
-      print(widget.mobileNo1==''?'mobile1 not entered':widget.mobileNo1);
-      print(widget.mobileNo2==''?'mobile2 not entered':widget.mobileNo2);
-      print(widget.parentName==''?'parent not entered':widget.parentName);
-      print(widget.parentMobileNo==''?'parent No. not entered':widget.parentMobileNo);
-      print(widget.birthday.toString()==''?'Name not entered':widget.birthday.toString());
-    }
-    else
-    {
-      print(widget.name==''?'Name not entered':widget.name);
-      print(widget.hall==''?'Hall not entered':widget.hall);
-      print(widget.selectedCategory=='Student'?widget.room:'');
-      print(widget.birthday.toString()==''?'Name not entered':widget.birthday.toString());
-    }
-
   }
 
 
@@ -84,74 +66,7 @@ Future getID() async
         child: ListView(
           shrinkWrap: true,
           children: <Widget>[
-            Container(
-              //margin: EdgeInsets.only(top: 10.0,bottom: 20.0),
-              color: kWeirdBlue,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Flexible(
-                      flex: 3,
-                      child: MaterialButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text(
-                          'Back',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14.0,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    Flexible(
-                      flex: 9,
-                      child: Container(
-                        child: Text(
-                          'CoviApp',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 25.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-//
-                    Flexible(
-                      flex: 3,
-                      child: MaterialButton(
-                        onPressed: () {
-                          AlertBox(
-                              context: context,
-                              alertContent:
-                              'Call and Mail us at ...',
-                              alertTitle: 'Help',
-                              rightActionText: 'Close',
-                              leftActionText: '',
-                              onPressingRightActionButton: () {
-                                Navigator.pop(context);
-                              }
-                          ).showAlert();
-                        },
-                        child: Text(
-                          'Help',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+           CustomAppBar(),
             SizedBox(
               height: 150.0,
             ),
@@ -216,7 +131,7 @@ Future getID() async
               },
             ),
             SizedBox(
-              height: 150.0,
+              height: 100.0,
             ),
             GestureDetector(
               child: Align(
@@ -265,7 +180,13 @@ Future getID() async
                         _checkLoggedIn.setVisitingFlag(false);
                         _checkLoggedIn.setLoginIdValue(0);
                         _checkLoggedIn.setIfAnsweredBeforeFlag(false);
-                        _checkLoggedIn.setRollNo("");
+                        _checkLoggedIn.setRollNo("Your RollNo");
+                        _checkLoggedIn.setNameToken(" Your Name");
+                        _checkLoggedIn.setParentMbNoToken("Parent's Contact Number");
+                        _checkLoggedIn.setParentNameToken("Parent's Name");
+                        _checkLoggedIn.setMbNoToken("Your Mobile Number");
+                        _checkLoggedIn.setHallToken("Your Hall of Residence");
+
                         Navigator.of(context)
                             .pushNamedAndRemoveUntil('/welcome', (Route<dynamic> route) => false);
                       }).showAlert();
@@ -275,24 +196,41 @@ Future getID() async
           ],
         ),
       ),
-
-      floatingActionButton: FloatingActionButton(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Icon(
-              Icons.call,
-              color: Colors.white,
-              size: 28,
-            ),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          FloatingActionButton(
+              heroTag: "profile",
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Icon(
+                    Icons.person,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                ),
+              ),
+              onPressed: () {
+               Navigator.pushNamed(context, '/profileView');
+              }
           ),
-        ),
-        onPressed: () async{
-          setState(() {
-            _makePhoneCall('tel:$_phone');
-          });
-      }
-      ),
+          FloatingActionButton.extended(
+              label: Text('SOS'),
+              heroTag: "sos",
+              icon: Icon(
+                Icons.call,
+                color: Colors.white,
+                size: 28,
+              ),
+              onPressed: () async{
+                setState(() {
+                  _makePhoneCall('tel:$_phone');
+                });
+              }
+          ),
+        ],
+      )
     );
   }
 }

@@ -5,6 +5,7 @@ import 'package:coviapp/utilities/alert_box.dart';
 import 'package:coviapp/utilities/birthday_widget.dart';
 import 'package:coviapp/general_data_and_otp.dart';
 import 'package:coviapp/shared_pref.dart';
+import 'package:coviapp/utilities/customAppBar.dart';
 
 class StudentChosen extends StatefulWidget {
   final String chosenCategory;
@@ -56,7 +57,7 @@ class _StudentChosenState extends State<StudentChosen> {
     ),
   );
   Widget buildMobile1() => buildTitle(
-    title: 'Mobile number 1',
+    title: 'Mobile number ',
     child: TextFormField(
       initialValue: mobileNo1,
       keyboardType: TextInputType.phone,
@@ -164,13 +165,23 @@ class _StudentChosenState extends State<StudentChosen> {
   Widget buildTitle({
     @required String title,
     @required Widget child,
+    String leftText,
   }) =>
       Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            title,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          Row(
+            children: [
+
+              Text(
+                title,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              Text(
+                '*',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.red),
+              ),
+            ],
           ),
           const SizedBox(height: 8),
           child,
@@ -182,17 +193,13 @@ class _StudentChosenState extends State<StudentChosen> {
   bool valueFromBack;
   int id ;
   String studentRollNo;
-  Future getID() async
-  {
-    id = await _checkLoggedIn.getLoginIdValue();
-    studentRollNo = await _checkLoggedIn.getRollNo();
-  }
+
 
   @override
   void initState() {
     super.initState();
     buildBirthday();
-    getID();
+    //getID();
     buildName();
     buildRollNo();
     buildHall();
@@ -212,74 +219,7 @@ class _StudentChosenState extends State<StudentChosen> {
         child: ListView(
          shrinkWrap: true,
             children: <Widget>[
-              Container(
-                //margin: EdgeInsets.only(top: 10.0,bottom: 20.0),
-                color: kWeirdBlue,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Flexible(
-                        flex: 3,
-                        child: MaterialButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text(
-                            'Back',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14.0,
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      Flexible(
-                        flex: 9,
-                        child: Container(
-                          child: Text(
-                            'CoviApp',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 25.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-//
-                      Flexible(
-                        flex: 3,
-                        child: MaterialButton(
-                          onPressed: () {
-                            AlertBox(
-                                context: context,
-                                alertContent:
-                                'Call and Mail us at ...',
-                                alertTitle: 'Help',
-                                rightActionText: 'Close',
-                                leftActionText: '',
-                                onPressingRightActionButton: () {
-                                  Navigator.pop(context);
-                                }
-                            ).showAlert();
-                          },
-                          child: Text(
-                            'Help',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14.0,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              CustomAppBar(),
               SizedBox(
                 height: 30.0,
               ),
@@ -303,8 +243,8 @@ class _StudentChosenState extends State<StudentChosen> {
                     ),
                     const SizedBox(height: 20),
                     buildName(),
-                    const SizedBox(height: 12),
-                    buildRollNo(),
+                    // const SizedBox(height: 12),
+                    // buildRollNo(),
                     // const SizedBox(height: 12),
                     // buildEmail(),
                     const SizedBox(height: 12),
@@ -313,10 +253,10 @@ class _StudentChosenState extends State<StudentChosen> {
                     // buildMobile2(),
                     const SizedBox(height: 12),
                     buildHall(),
-                    const SizedBox(height: 12),
-                    buildBirthday(),
-                    const SizedBox(height: 12),
-                    buildParentName(),
+                    // const SizedBox(height: 12),
+                    // buildBirthday(),
+                    // const SizedBox(height: 12),
+                    // buildParentName(),
                     const SizedBox(height: 12),
                     buildParentMobile(),
                     // const SizedBox(height: 12),
@@ -360,12 +300,12 @@ class _StudentChosenState extends State<StudentChosen> {
                 ),
                 onTap: () {
                   setState(() {
-                    if(parentMobileNo.length != 10 || mobileNo1.length !=10 || name.length ==0)
+                    if(parentMobileNo.length != 10 || mobileNo1.length !=10)
                     {
                       AlertBox(
                           context: context,
                           alertContent:
-                          'Please Enter valid Name/Phone No',
+                          'Please Enter valid Phone No',
                           alertTitle: 'Invalid Entry !!',
                           rightActionText: 'Close',
                           leftActionText: '',
@@ -388,7 +328,7 @@ class _StudentChosenState extends State<StudentChosen> {
                                 parentName: parentName,
                                 mobileNo1: mobileNo1,
                                // mobileNo2: mobileNo2,
-                                rollNo: studentRollNo,
+                                rollNo: rollNo,
                                 //email: emailID,
                                 password: password,
                               )));

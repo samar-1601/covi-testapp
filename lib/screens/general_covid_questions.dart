@@ -5,6 +5,7 @@ import 'package:coviapp/utilities/birthday_widget.dart';
 import 'package:coviapp/utilities/alert_box.dart';
 import 'package:coviapp/utilities/customDropDownButton.dart';
 import 'package:coviapp/screens/covid_data_sender.dart';
+import 'package:coviapp/utilities/customAppBar.dart';
 
 
 class CovidQuestions extends StatefulWidget {
@@ -412,7 +413,7 @@ class _CovidQuestionsState extends State<CovidQuestions> {
     ),
   );
   Widget buildIsolationDate() => buildTitle(
-    title: 'Date when found positive and started isolation?',
+    title: 'Date when found positive and \nstarted isolation?',
     child: BirthdayWidget(
       birthday: isolationDate,
       hinText: 'Enter Date',
@@ -424,13 +425,18 @@ class _CovidQuestionsState extends State<CovidQuestions> {
   Widget buildTitle({
     @required String title,
     @required Widget child,
+    String leftText,
   }) =>
       Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            title,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          Row(
+            children: [
+              Text(
+                title,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+            ],
           ),
           const SizedBox(height: 8),
           child,
@@ -497,239 +503,174 @@ void printValues(List<String> answers)
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Container(
-        child: ListView(
-            shrinkWrap: true,
-            children: <Widget>[
-              Container(
-                //margin: EdgeInsets.only(top: 10.0,bottom: 20.0),
-                color: kWeirdBlue,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Container(
+          child: ListView(
+              shrinkWrap: true,
+              children: <Widget>[
+               CustomAppBar(),
+                SizedBox(
+                  height: 30.0,
+                ),
+                Container(
+                  margin: EdgeInsets.only(left: 20.0, right: 20.0),
+                  child: Column(
                     children: <Widget>[
-                      Flexible(
-                        flex: 3,
-                        child: MaterialButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text(
-                            'Back',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14.0,
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      Flexible(
-                        flex: 9,
+                      Align(
+                        alignment: Alignment.center,
                         child: Container(
                           child: Text(
-                            'CoviApp',
-                            textAlign: TextAlign.center,
+                            'Kindly provide following details.This information will be asked only once.',
+                            textAlign: TextAlign.left,
                             style: TextStyle(
-                              fontSize: 25.0,
+                              fontSize: 16.0,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: kWeirdBlue,
                             ),
                           ),
                         ),
                       ),
-//
-                      Flexible(
-                        flex: 3,
-                        child: MaterialButton(
-                          onPressed: () {
-                            AlertBox(
-                                context: context,
-                                alertContent:
-                                'Call and Mail us at ...',
-                                alertTitle: 'Help',
-                                rightActionText: 'Close',
-                                leftActionText: '',
-                                onPressingRightActionButton: () {
-                                  Navigator.pop(context);
-                                }
-                            ).showAlert();
-                          },
-                          child: Text(
-                            'Help',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14.0,
-                            ),
-                          ),
-                        ),
-                      ),
+                      const SizedBox(height: 32),
+                      buildIsolationAdd(),
+                      const SizedBox(height: 12),
+                      buildIsolationDate(),
+                      const SizedBox(height: 12),
+                      buildSuperVisorName(),
+                      const SizedBox(height: 12),
+                      buildSupervisorMbNo(),
+                      // const SizedBox(height: 12),
+                      // buildDsaCouncilMem1Name(),
+                      // const SizedBox(height: 12),
+                      // buildDsaCouncilMem1Mb(),
+                      // const SizedBox(height: 12),
+                      // buildDsaCouncilMem2Name(),
+                      // const SizedBox(height: 12),
+                      // buildDsaCouncilMem2Mb(),
+                      //const SizedBox(height: 30),
+                      // Container(
+                      //   child: Center(
+                      //     child: Text(
+                      //       'Are You Equipped ?',
+                      //       textAlign: TextAlign.center,
+                      //       style: TextStyle(
+                      //         fontSize: 22.0,
+                      //         fontWeight: FontWeight.bold,
+                      //         color: kWeirdBlue,
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                      // Align(
+                      //   alignment: Alignment.centerLeft,
+                      //   child: Container(
+                      //     margin: EdgeInsets.only(top: 30.0),
+                      //     child: SingleChildScrollView(
+                      //       child: Column(
+                      //           children:
+                      //             listGenerator(areYouEquippedQuestionsMap, areYouEquippedQuesAnswersList),
+                      //         ),
+                      //     ),
+                      //     ),
+                      //   ),
+                      // Container(
+                      //   child: Center(
+                      //     child: Text(
+                      //       'Questions on Well-Being',
+                      //       textAlign: TextAlign.center,
+                      //       style: TextStyle(
+                      //         fontSize: 22.0,
+                      //         fontWeight: FontWeight.bold,
+                      //         color: kWeirdBlue,
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                      // SizedBox(
+                      //   height: 30.0,
+                      // ),
+                      // Align(
+                      //   alignment: Alignment.centerLeft,
+                      //   child: Container(
+                      //     margin: EdgeInsets.only(top: 30.0),
+                      //     child: SingleChildScrollView(
+                      //       child: Column(
+                      //         children:
+                      //         listGenerator(wellBeingQuestionsMap, wellBeingQuesAnswersList),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                      // const SizedBox(height: 12),
+                      // buildSeekHelp(),
+                      const SizedBox(height: 12),
+                      buildSymptoms(),
                     ],
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 30.0,
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 20.0, right: 20.0),
-                child: Column(
-                  children: <Widget>[
-                    Align(
-                      alignment: Alignment.center,
-                      child: Container(
-                        child: Text(
-                          'Kindly provide following details.This information will be asked only once.',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.bold,
-                            color: kWeirdBlue,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    buildIsolationAdd(),
-                    const SizedBox(height: 12),
-                    buildIsolationDate(),
-                    const SizedBox(height: 12),
-                    buildSuperVisorName(),
-                    const SizedBox(height: 12),
-                    buildSupervisorMbNo(),
-                    // const SizedBox(height: 12),
-                    // buildDsaCouncilMem1Name(),
-                    // const SizedBox(height: 12),
-                    // buildDsaCouncilMem1Mb(),
-                    // const SizedBox(height: 12),
-                    // buildDsaCouncilMem2Name(),
-                    // const SizedBox(height: 12),
-                    // buildDsaCouncilMem2Mb(),
-                    //const SizedBox(height: 30),
-                    // Container(
-                    //   child: Center(
-                    //     child: Text(
-                    //       'Are You Equipped ?',
-                    //       textAlign: TextAlign.center,
-                    //       style: TextStyle(
-                    //         fontSize: 22.0,
-                    //         fontWeight: FontWeight.bold,
-                    //         color: kWeirdBlue,
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                    // Align(
-                    //   alignment: Alignment.centerLeft,
-                    //   child: Container(
-                    //     margin: EdgeInsets.only(top: 30.0),
-                    //     child: SingleChildScrollView(
-                    //       child: Column(
-                    //           children:
-                    //             listGenerator(areYouEquippedQuestionsMap, areYouEquippedQuesAnswersList),
-                    //         ),
-                    //     ),
-                    //     ),
-                    //   ),
-                    // Container(
-                    //   child: Center(
-                    //     child: Text(
-                    //       'Questions on Well-Being',
-                    //       textAlign: TextAlign.center,
-                    //       style: TextStyle(
-                    //         fontSize: 22.0,
-                    //         fontWeight: FontWeight.bold,
-                    //         color: kWeirdBlue,
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                    // SizedBox(
-                    //   height: 30.0,
-                    // ),
-                    // Align(
-                    //   alignment: Alignment.centerLeft,
-                    //   child: Container(
-                    //     margin: EdgeInsets.only(top: 30.0),
-                    //     child: SingleChildScrollView(
-                    //       child: Column(
-                    //         children:
-                    //         listGenerator(wellBeingQuestionsMap, wellBeingQuesAnswersList),
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                    // const SizedBox(height: 12),
-                    // buildSeekHelp(),
-                    const SizedBox(height: 12),
-                    buildSymptoms(),
-                  ],
+                SizedBox(
+                  height: 20.0,
                 ),
-              ),
-              SizedBox(
-                height: 20.0,
-              ),
-              GestureDetector(
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    margin: EdgeInsets.only(bottom: 10.0),
-                    decoration: BoxDecoration(
-                      color: kWeirdBlue,
-                      borderRadius: BorderRadius.circular(30.0),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black26.withOpacity(0.3),
-                          spreadRadius: 1,
-                          blurRadius: 2,
-                          offset: Offset(0, 1), // changes position of shadow
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Text(
-                          'Proceed',
-                          style: TextStyle(
-                            fontSize: 25.0,
-                            color: Colors.white,
+                GestureDetector(
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      margin: EdgeInsets.only(bottom: 10.0),
+                      decoration: BoxDecoration(
+                        color: kWeirdBlue,
+                        borderRadius: BorderRadius.circular(30.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26.withOpacity(0.3),
+                            spreadRadius: 1,
+                            blurRadius: 2,
+                            offset: Offset(0, 1), // changes position of shadow
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Text(
+                            'Proceed',
+                            style: TextStyle(
+                              fontSize: 25.0,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                onTap: () {
-                  printValues(areYouEquippedQuesAnswersList);
-                  printValues(wellBeingQuesAnswersList);
+                  onTap: () {
+                    printValues(areYouEquippedQuesAnswersList);
+                    printValues(wellBeingQuesAnswersList);
 
-                  setState(() {
+                    setState(() {
 
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (BuildContext context) => CovidDataSender(
-                              // areYouEquippedQuestions: areYouEquippedQuesList,
-                              // areYouEquippedAnswers: areYouEquippedQuesAnswersList,
-                              // wellBeingQuestions: wellBeingQuesList,
-                              // wellBeingAnswers: wellBeingQuesAnswersList,
-                              symptoms: symptoms,
-                              isolationAddress: isolationAddress,
-                              isolationDate: isolationDate,
-                              supervisorName: supervisorName,
-                              supervisorMobileNo: supervisorMobileNo,
-                              id: widget.id,
-                              selectedCategory: widget.chosenCategory,
-                            )));
-                  });
-                },
-              )
-            ],
+                      Navigator.push(
+                          context,
+                          new MaterialPageRoute(
+                              builder: (BuildContext context) => CovidDataSender(
+                                // areYouEquippedQuestions: areYouEquippedQuesList,
+                                // areYouEquippedAnswers: areYouEquippedQuesAnswersList,
+                                // wellBeingQuestions: wellBeingQuesList,
+                                // wellBeingAnswers: wellBeingQuesAnswersList,
+                                symptoms: symptoms,
+                                isolationAddress: isolationAddress,
+                                isolationDate: isolationDate,
+                                supervisorName: supervisorName,
+                                supervisorMobileNo: supervisorMobileNo,
+                                id: widget.id,
+                                selectedCategory: widget.chosenCategory,
+                              )));
+                    });
+                  },
+                )
+              ],
+          ),
         ),
       ),
     );

@@ -5,7 +5,9 @@ import 'package:coviapp/utilities/alert_box.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'monitoring_questions_transition.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:coviapp/shared_pref.dart';
+import 'package:coviapp/utilities/customAppBar.dart';
 
 class MonitoringQuestions extends StatefulWidget {
   final String chosenCategory;
@@ -105,20 +107,64 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
   CheckLoggedIn _checkLoggedIn = CheckLoggedIn();
   bool valueFromBack;
   String rollNo;
+  String msg='';
 
   Future putData(String feverTemp, String spo2, String extraHealthCondition, String haveFoodOrMedicalsupplies) async {
-    print("============inside PUTDATA in covid_data_sender\n");
-    var url = Uri.parse('http://13.232.3.140:8080/submit_timestamp_data');
+    print("============inside PUTDATA in monitoring data\n");
+    var url = Uri.parse('https://imedixbcr.iitkgp.ac.in/api/coviapp/add-data');
     rollNo = await _checkLoggedIn.getRollNo();
-    int id = await _checkLoggedIn.getLoginIdValue();
     print(rollNo);
-    print(id);
+    print(token);
+
     Map data = {
-      "Fever":feverTemp,
+      "fever":feverTemp,
       "spo2":spo2,
-      "condition" : extraHealthCondition,
-      "rollNo" : rollNo,
-      "foodSupply":haveFoodOrMedicalsupplies,
+      "patient_condition" : extraHealthCondition,
+      //"rollNo" : rollNo,
+      "food_supply":haveFoodOrMedicalsupplies,
+    };
+    String body = json.encode(data);
+    print(body);
+    var response = await http.post(url,
+        headers: {"Content-Type": "application/json",'Authorization': 'Bearer $token',}, body: body);
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+    Map responseBody = json.decode(response.body) as Map;
+    print(responseBody);
+    if (response.statusCode != 200) {
+      valueFromBack = false;
+    }
+    else {
+      valueFromBack = true;
+    }
+    print("puData in general data_and_otp");
+    print(" == token : {$token}");
+    msg = responseBody["status"];
+    print(" == msg : {$msg}");
+    return valueFromBack??false;
+  }
+
+
+  Future<void> _launched;
+  String _phone = "7061436275";
+  Future<void> _makePhoneCall(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+
+  Future checkPassword (String password, String mobileNo, String rollNo) async {
+    var url = Uri.parse('https://imedixbcr.iitkgp.ac.in/api/user/login');
+    print(mobileNo);
+    print(password);
+    print("Sending Login details to get new token\n");
+    Map data = {
+      "password": password,
+      //mobileNo1": mobileNo,
+      "username": rollNo,
     };
     String body = json.encode(data);
     print(body);
@@ -127,17 +173,104 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
     Map responseBody = json.decode(response.body) as Map;
-    print(responseBody);
-    if (response.statusCode != 200) {
-      // _checkLoggedIn.setVisitingFlag(true);
-      valueFromBack = false;
+    if (response.statusCode == 200) {
+      _checkLoggedIn.setVisitingFlag(true);
+      _checkLoggedIn.setRollNo(rollNo);
+    } else {
+      _checkLoggedIn.setVisitingFlag(false);
     }
-    else {
-      valueFromBack = true;
-    }
-    print("inside set state for Monitoring question's response");
+
+    token = responseBody['jwtToken'];
+    print(" == ifPrevLoggedIn Successfully : ");
+    print(" == New Token : {$token}");
+    _checkLoggedIn.setLoginToken(token);
+    valueFromBack = await _checkLoggedIn.getVisitingFlag();
     print(valueFromBack);
-    return valueFromBack;
+    return valueFromBack??false;
+  }
+
+  String studentRollNo;
+  Future getID() async
+  {
+    var tempStudentRollNo = await _checkLoggedIn.getRollNo();
+    setState(() {
+      studentRollNo = tempStudentRollNo;
+    });
+  }
+  String token;
+  Future getToken() async
+  {
+    var tempToken= await _checkLoggedIn.getLoginToken();
+    setState(() {
+      token = tempToken;
+    });
+
+  }
+
+  bool _loading=false;
+  Future checkFromBackend() async{
+    setState(() {
+      _loading=true;
+    });
+    await getID();
+    await getToken();
+    bool value = await putData(feverTemp, spo2, extraHealthCondition,haveFoodOrMedicalsupplies);
+    if(value==false)
+    {
+      if(msg=="token has expired")
+      {
+        print("-------inside token has expired if---------------");
+        print(" == Old Token : {$token}");
+        String passwordFromSF = await _checkLoggedIn.getPasswordToken();
+        String rollNoFromSF = await _checkLoggedIn.getRollNo();
+        String mobileNoTemp = "1234567890";
+        print("PasswordFromSF = ${passwordFromSF} ,RollNoFromSF = ${rollNoFromSF} ");
+        bool value2 = await checkPassword(passwordFromSF, mobileNoTemp, rollNoFromSF);
+        print("value after checking password for new token = ${value2}");
+        print(" == New Token : {$token}");
+        if(value2==true)
+        {
+          value = await putData(feverTemp, spo2, extraHealthCondition,haveFoodOrMedicalsupplies);
+          if(value == true)
+          {
+            setState(() {
+              _loading = false;
+            });
+          }
+          else
+          {
+            setState(() {
+              _loading= false;
+            });
+          }
+        }
+      }
+      else
+      {
+        setState(() {
+          _loading= false;
+          AlertBox(
+            context: context,
+            alertContent:
+            'Server Error. Please try again after sometime',
+            alertTitle: 'Server Error !!',
+            rightActionText: 'Close',
+            leftActionText: ' ',
+            onPressingRightActionButton: () {
+              Navigator.of(context).pop();
+              _checkLoggedIn.setVisitingFlag(false);
+            },
+          ).showAlert();
+        });
+      }
+    }
+    else
+    {
+      setState(() {
+        _loading = false;
+      });
+    }
+    return value;
   }
 
   @override
@@ -151,80 +284,22 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return (_loading == true)
+        ? Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(
+          backgroundColor: Colors.white,
+          color: kWeirdBlue,
+        ),
+      ),
+    )
+        : Scaffold(
       backgroundColor: Colors.white,
       body: Container(
         child: ListView(
           shrinkWrap: true,
           children: <Widget>[
-            Container(
-              //margin: EdgeInsets.only(top: 10.0,bottom: 20.0),
-              color: kWeirdBlue,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Flexible(
-                      flex: 3,
-                      child: MaterialButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text(
-                          'Back',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14.0,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    Flexible(
-                      flex: 9,
-                      child: Container(
-                        child: Text(
-                          'CoviApp',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 25.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-//
-                    Flexible(
-                      flex: 3,
-                      child: MaterialButton(
-                        onPressed: () {
-                          AlertBox(
-                              context: context,
-                              alertContent:
-                              'Call and Mail us at ...',
-                              alertTitle: 'Help',
-                              rightActionText: 'Close',
-                              leftActionText: '',
-                              onPressingRightActionButton: () {
-                                Navigator.pop(context);
-                              }
-                          ).showAlert();
-                        },
-                        child: Text(
-                          'Help',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            CustomAppBar(),
             SizedBox(
               height: 30.0,
             ),
@@ -236,17 +311,17 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
                     alignment: Alignment.center,
                     child: Container(
                       child: Text(
-                        'Please enter the following details so that our Doctors can monitor you',
+                        'Your daily monitoring. The important vital signs will be transmitted in the real time to BCRTH doctor’s dashboard. In case of emergency, you can press SoS button. Kindly note that you will be prompted by the app to enter these details periodically. In case of standard values of these parameters, kindly enter.',
                         textAlign: TextAlign.left,
                         style: TextStyle(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.w500,
                           color: kWeirdBlue,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 30),
                   buildFeverLevel(),
                   const SizedBox(height: 12),
                   buildSpO2Level(),
@@ -293,9 +368,10 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
                 ),
               ),
               onTap: () async{
-                valueFromBack = await putData(feverTemp, spo2, extraHealthCondition,haveFoodOrMedicalsupplies);
-                print(valueFromBack);
-                if(valueFromBack==true)
+                bool value = false;
+                value = await checkFromBackend();
+                print("value == {$value}");
+                if(value==true)
                   {
                     setState(() {
                       AlertBox(
@@ -334,6 +410,23 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
             )
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Icon(
+                Icons.call,
+                color: Colors.white,
+                size: 28,
+              ),
+            ),
+          ),
+          onPressed: () async{
+            setState(() {
+              _makePhoneCall('tel:$_phone');
+            });
+          }
       ),
     );
   }

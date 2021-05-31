@@ -7,6 +7,7 @@ import 'package:coviapp/screens/monitoring_questions_transition.dart';
 import 'package:coviapp/shared_pref.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:coviapp/utilities/customAppBar.dart';
 
 class CovidDataSender extends StatefulWidget {
 
@@ -52,33 +53,58 @@ class _CovidDataSenderState extends State<CovidDataSender> {
   CheckLoggedIn _checkLoggedIn = CheckLoggedIn();
   bool valueFromBack;
   String rollNo;
+  String msg ='';
 
   Future putData() async {
     print("============inside PUTDATA in covid_data_sender\n");
-    var url = Uri.parse('http://13.232.3.140:8080/submit_covid_form');
+    var url = Uri.parse('https://imedixbcr.iitkgp.ac.in/api/coviapp/update-covid-detail');
     rollNo = await _checkLoggedIn.getRollNo();
-    int id = await _checkLoggedIn.getLoginIdValue();
     print(rollNo);
-    print(id);
+    print(token);
     Map data = {
-      "name": widget.name,
-      "hall": widget.hall,
-      //"birth_date": widget.birthday.toString(),
-      "selectedCategory": widget.selectedCategory,
-      //"room":"",
-      "mobileNo1" : widget.mobileNo1,
-      //"mobileNo2" : " ",
-      "rollNo" : rollNo,
-      "parentName" : widget.parentName,
-      "parentMobileNo": widget.parentMobileNo,
-      //"email": " ",
-      "password": widget.password,
-    "supervisorName" : widget.supervisorName,
-    "supervisorMobileNo" : widget.supervisorMobileNo,
-      "isolationAddress": widget.isolationAddress,
-      "isolationDate": widget.isolationDate.toString(),
-    "symptoms": widget.symptoms,
-      "id":id,
+      //"selectedCategory": widget.selectedCategory,
+      //"rollNo" : rollNo,
+      "supervisor_name" : widget.supervisorName,
+      "supervisor_mobileno" : widget.supervisorMobileNo,
+      "isolation_address": widget.isolationAddress,
+      "isolation_date": widget.isolationDate.toString(),
+      "symptoms": widget.symptoms,
+      "have_covid": "yes",
+    };
+    String body = json.encode(data);
+    print(body);
+    var response = await http.post(url,
+        headers: {"Content-Type": "application/json",'Authorization': 'Bearer $token',}, body: body);
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+    Map responseBody = json.decode(response.body) as Map;
+    print(responseBody);
+    if (response.statusCode != 200) {
+      valueFromBack = false;
+    }
+    else {
+      _checkLoggedIn.setVisitingFlag(true);
+      _checkLoggedIn.setIfAnsweredBeforeFlag(true);
+      valueFromBack=true;
+    }
+    print("puData in general covid data sender");
+    print(" == token : {$token}");
+    msg = responseBody["status"];
+    print(" == msg : {$msg}");
+    return valueFromBack??false;
+
+  }
+
+
+  Future checkPassword (String password, String mobileNo, String rollNo) async {
+    var url = Uri.parse('https://imedixbcr.iitkgp.ac.in/api/user/login');
+    print(mobileNo);
+    print(password);
+    print("Sending Login details to get new token\n");
+    Map data = {
+      "password": password,
+      //mobileNo1": mobileNo,
+      "username": rollNo,
     };
     String body = json.encode(data);
     print(body);
@@ -87,165 +113,138 @@ class _CovidDataSenderState extends State<CovidDataSender> {
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
     Map responseBody = json.decode(response.body) as Map;
-    print(responseBody);
-    if (response.statusCode != 200) {
-      // _checkLoggedIn.setVisitingFlag(true);
-      setState(() {
-        AlertBox(
+    if (response.statusCode == 200) {
+      _checkLoggedIn.setVisitingFlag(true);
+      _checkLoggedIn.setRollNo(rollNo);
+    } else {
+      _checkLoggedIn.setVisitingFlag(false);
+    }
+
+    token = responseBody['jwtToken'];
+    print(" == ifPrevLoggedIn Successfully : ");
+    print(" == New Token : {$token}");
+    _checkLoggedIn.setLoginToken(token);
+    valueFromBack = await _checkLoggedIn.getVisitingFlag();
+    print(valueFromBack);
+    return valueFromBack??false;
+  }
+
+  String studentRollNo;
+  Future getID() async
+  {
+    var tempStudentRollNo = await _checkLoggedIn.getRollNo();
+    setState(() {
+      studentRollNo = tempStudentRollNo;
+    });
+  }
+  String token;
+  Future getToken() async
+  {
+    var tempToken= await _checkLoggedIn.getLoginToken();
+    setState(() {
+      token = tempToken;
+    });
+
+  }
+
+  bool _loading=false;
+  Future checkFromBackend() async{
+    setState(() {
+      _loading=true;
+    });
+    await getID();
+    await getToken();
+    bool value = await putData();
+    if(value==false)
+    {
+      if(msg=="token has expired")
+      {
+        print("-------inside token has expired if---------------");
+        print(" == Old Token : {$token}");
+        String passwordFromSF = await _checkLoggedIn.getPasswordToken();
+        String rollNoFromSF = await _checkLoggedIn.getRollNo();
+        String mobileNoTemp = "1234567890";
+        print("PasswordFromSF = ${passwordFromSF} ,RollNoFromSF = ${rollNoFromSF} ");
+        bool value2 = await checkPassword(passwordFromSF, mobileNoTemp, rollNoFromSF);
+        print("value after checking password for new token = ${value2}");
+        print(" == New Token : {$token}");
+        if(value2==true)
+        {
+          value = await putData();
+          if(value == true)
+          {
+            setState(() {
+              _loading = false;
+            });
+          }
+          else
+          {
+            setState(() {
+              _loading= false;
+            });
+          }
+        }
+      }
+      else
+      {
+        setState(() {
+          _loading= false;
+          AlertBox(
             context: context,
             alertContent:
-            'The given details were not registered due to some error. Kindly Renter',
-            alertTitle: 'Entry Error !!',
+            'Server Error. Please try again after sometime',
+            alertTitle: 'Server Error !!',
             rightActionText: 'Close',
-            leftActionText: '',
+            leftActionText: ' ',
             onPressingRightActionButton: () {
-              Navigator.pushNamedAndRemoveUntil(context, '/generalCovidQuestions', (route) => false);
-            }).showAlert();
+              Navigator.of(context).pop();
+              _checkLoggedIn.setVisitingFlag(false);
+            },
+          ).showAlert();
+        });
+      }
+    }
+    else
+    {
+      setState(() {
+        _loading = false;
       });
     }
-    else {
-      _checkLoggedIn.setVisitingFlag(true);
-      _checkLoggedIn.setIfAnsweredBeforeFlag(true);
-      // setState(() {
-      //   AlertBox(
-      //       context: context,
-      //       alertContent:
-      //       'Thank You For Registering !!',
-      //       alertTitle: 'ThankYou',
-      //       rightActionText: 'Close',
-      //       leftActionText: '',
-      //       onPressingRightActionButton: () {
-      //         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-      //             MonitoringQuestionsTransitionScreen(
-      //               selectedCategory: widget.selectedCategory,
-      //               id: widget.id,
-      //               rollNo: rollNo,
-      //             )), (Route<dynamic> route) => false);
-      //       }).showAlert();
-      //});
-    }
-    print("inside set state for ID response");
-    //idFromBack = responseBody['studentID'];
-   // print(idFromBack);
-    valueFromBack = await _checkLoggedIn.getVisitingFlag();
-    print("=======");
-    return valueFromBack;
-    //print(idFromBack);
+    return value;
   }
+
 
   @override
   void initState() {
-    putData();
     super.initState();
-    putData();
+
     print(widget.selectedCategory);
-    if(widget.selectedCategory == 'Student')
-    {
-      // print(widget.name);
-      // print(widget.rollNo);
-      // print(widget.email);
-      // //print(widget.hall);
-      // print(widget.mobileNo1);
-      // //print(widget.mobileNo2);
-      // //print(widget.parentName);
-      // //print(widget.parentMobileNo);
-      // print(widget.birthday.toString());
       print(widget.isolationAddress);
       print(widget.isolationDate);
       print(widget.supervisorName);
       print(widget.supervisorMobileNo);
       print(widget.symptoms);
-    }
-    else
-    {
-      print(widget.name);
-      print(widget.rollNo);
-      print(widget.email);
-      print(widget.hall);
-      print(widget.mobileNo1);
-      print(widget.mobileNo2);
-      print(widget.birthday.toString());
-    }
-
   }
 
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return (_loading == true)
+        ? Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(
+          backgroundColor: Colors.white,
+          color: kWeirdBlue,
+        ),
+      ),
+    )
+    :Scaffold(
       body: Container(
         //margin: EdgeInsets.only(left: 12.0, right: 12.0, top: 12.0),
         child: ListView(
           shrinkWrap: true,
           children: <Widget>[
-            Container(
-              //margin: EdgeInsets.only(top: 10.0,bottom: 20.0),
-              color: kWeirdBlue,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Flexible(
-                      flex: 3,
-                      child: MaterialButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text(
-                          'Back',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14.0,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    Flexible(
-                      flex: 9,
-                      child: Container(
-                        child: Text(
-                          'CoviApp',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 25.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-//
-                    Flexible(
-                      flex: 3,
-                      child: MaterialButton(
-                        onPressed: () {
-                          AlertBox(
-                              context: context,
-                              alertContent:
-                              'Call and Mail us at ...',
-                              alertTitle: 'Help',
-                              rightActionText: 'Close',
-                              leftActionText: '',
-                              onPressingRightActionButton: () {
-                                Navigator.pop(context);
-                              }
-                          ).showAlert();
-                        },
-                        child: Text(
-                          'Help',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+           CustomAppBar(),
             SizedBox(
               height: 120.0,
             ),
@@ -254,7 +253,7 @@ class _CovidDataSenderState extends State<CovidDataSender> {
                 child: Column(
                   children: [
                     Text(
-                      'Data till now\n',
+                      'Data You Entered\n',
                       textAlign: TextAlign.left,
                       style: TextStyle(
                         fontSize: 24.0,
@@ -297,7 +296,7 @@ class _CovidDataSenderState extends State<CovidDataSender> {
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Text(
-                        'Proceed',
+                        'Confirm',
                         style: TextStyle(
                           fontSize: 24.0,
                           color: Colors.white,
@@ -308,15 +307,17 @@ class _CovidDataSenderState extends State<CovidDataSender> {
                 ),
               ),
               onTap: () async{
-                bool value = await putData();
+                bool value = false;
+                value = await checkFromBackend();
+                print("value == {$value}");
                 setState(() {
-                  if(valueFromBack==true)
+                  if(value==true)
                     {
                       _checkLoggedIn.setIfAnsweredBeforeFlag(true);
                       AlertBox(
                           context: context,
                           alertContent:
-                          'Thank you For giving time to fill out the details. If you feel any different in future(from what you have entered currently, Kindly fill in this form again so that we can provide help.',
+                          'Thank you For giving time to fill out the details.',
                           alertTitle: 'Thank you for your cooperation ',
                           rightActionText: 'Close',
                           leftActionText: '',
@@ -355,11 +356,6 @@ class _CovidDataSenderState extends State<CovidDataSender> {
           ],
         ),
       ),
-
-      // bottomNavigationBar: SizedBox(
-      //   height: 80.0,
-      //   child: CommonCustomBottomNavBar(),
-      // ),
     );
   }
 }

@@ -1,10 +1,11 @@
+import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:coviapp/utilities/alert_box.dart';
 import 'package:coviapp/utilities/constants.dart';
-import 'package:coviapp/shared_pref.dart';
+import 'package:coviapp/utilities/alert_box.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:coviapp/shared_pref.dart';
+import 'package:coviapp/utilities/customAppBar.dart';
 
 class ProfilePageView extends StatefulWidget {
 
@@ -14,172 +15,290 @@ class ProfilePageView extends StatefulWidget {
 
 class _ProfilePageViewState extends State<ProfilePageView> {
 
+
+
+  final formKey = GlobalKey<FormState>();
+  String name = '';
+  String hall = '';
+  String mobileNo1 = '';
+  String parentName = '';
+  String parentMobileNo = '';
+  String password = '';
+  String opdNo = '';
+  String birthday;
+
+
+  Widget buildName() => buildTitle(
+    title: 'Name',
+    child: TextFormField(
+      initialValue: name,
+      enabled: false,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: name,
+      ),
+      onChanged: (name) => setState(() => this.name = name),
+    ),
+  );
+
+  Widget buildMobile1() => buildTitle(
+    title: 'Mobile number ',
+    child: TextFormField(
+      initialValue: mobileNo1,
+      enabled: false,
+      keyboardType: TextInputType.phone,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: mobileNo1,
+      ),
+      onChanged: (mobileNo1) => setState(() => this.mobileNo1 = mobileNo1),
+    ),
+  );
+
+  Widget buildParentName() => buildTitle(
+    title: 'Parent/Guardian Name',
+    child: TextFormField(
+      initialValue: parentName,
+      enabled: false,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: parentName,
+      ),
+      onChanged: (parentName) => setState(() => this.parentName = parentName),
+    ),
+  );
+  Widget buildParentMobile() => buildTitle(
+    title: 'Parent Contact No',
+    child: TextFormField(
+      initialValue: name,
+      enabled: false,
+      keyboardType: TextInputType.phone,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: parentMobileNo,
+      ),
+      onChanged: (parentMobileNo) => setState(() => this.parentMobileNo = parentMobileNo),
+    ),
+  );
+  Widget buildHall() => buildTitle(
+    title: 'Hall of Residence',
+    child: TextFormField(
+      initialValue: hall,
+      enabled: false,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: hall,
+      ),
+      onChanged: (hall) => setState(() => this.hall = hall),
+    ),
+  );
+
+  Widget buildOPDNo() => buildTitle(
+    title: 'OPD Number',
+    child: TextFormField(
+      initialValue: opdNo,
+      enabled: false,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: opdNo,
+      ),
+      onChanged: (opdNo) => setState(() => this.opdNo = opdNo),
+    ),
+  );
+
+
+  Widget buildBirthday() => buildTitle(
+    title: 'Date of Birth',
+    child: TextFormField(
+      initialValue: birthday,
+      enabled: false,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: birthday,
+      ),
+      onChanged: (birthday) => setState(() => this.birthday = birthday),
+    ),
+  );
+
+  Widget buildTitle({
+    @required String title,
+    @required Widget child,
+    String leftText,
+  }) =>
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+
+              Text(
+                title,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          child,
+        ],
+      );
+
+
   CheckLoggedIn _checkLoggedIn = CheckLoggedIn();
   bool valueFromBack;
+  bool _loading=false;
   String rollNo;
+  String msg ='';
 
-  Future putData() async {
-    print("============inside PUTDATA in covid_data_sender\n");
-    var url = Uri.parse('http://13.232.3.140:8080/submit_covid_form');
-    rollNo = await _checkLoggedIn.getRollNo();
-    int id = await _checkLoggedIn.getLoginIdValue();
-    print(rollNo);
-    print(id);
-    Map data = {
-    };
-    String body = json.encode(data);
-    print(body);
-    var response = await http.post(url,
-        headers: {"Content-Type": "application/json"}, body: body);
+
+  String token;
+  Future getToken() async
+  {
+    var tempToken= await _checkLoggedIn.getLoginToken();
+    setState(() {
+      token = tempToken;
+    });
+  }
+
+  Future getData() async {
+    setState(() {
+      _loading=true;
+    });
+    await getToken();
+    var url = Uri.parse('https://imedixbcr.iitkgp.ac.in/api/coviapp/get-patient-detail');
+    final response = await http.get(url, headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    });
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
-    Map responseBody = json.decode(response.body) as Map;
-    print(responseBody);
-    if (response.statusCode != 200) {
-      // _checkLoggedIn.setVisitingFlag(true);
+    final decoded = jsonDecode(response.body) as Map;
+    Map responseBody = decoded["data"] as Map;
+
+
+    String tStudentRollNo =responseBody["status"];
+    String tName = responseBody["name"];
+    String tMobileNo = responseBody["phone"];
+    String tHall = responseBody["hall"];
+    String tParentName =responseBody["status"];
+    String tParentMbNo = responseBody["parent_mobileno"];
+    String tDOB = responseBody["dateofbirth"];
+    String tOpd = responseBody["opdno"];
+
+    if (response.statusCode == 200) {
+      valueFromBack = true;
       setState(() {
-        AlertBox(
-            context: context,
-            alertContent:
-            'The given details were not registered due to some error. Kindly Renter',
-            alertTitle: 'Entry Error !!',
-            rightActionText: 'Close',
-            leftActionText: '',
-            onPressingRightActionButton: () {
-              Navigator.pushNamedAndRemoveUntil(context, '/generalCovidQuestions', (route) => false);
-            }).showAlert();
+        name = tName;
+        rollNo = tStudentRollNo;
+        mobileNo1 = tMobileNo;
+        hall = tHall;
+        parentName = tParentName;
+        parentMobileNo = tParentMbNo;
+        birthday = tDOB;
+        valueFromBack = true;
+        opdNo = tOpd;
+        buildBirthday();
+        buildName();
+        buildHall();
+        buildMobile1();
+        buildParentName();
+        buildParentMobile();
+        buildOPDNo();
       });
+    } else {
+
+      valueFromBack = false;
+      AlertBox(
+        context: context,
+        alertContent:
+        'Server Error. Please try again after sometime',
+        alertTitle: 'Server Error !!',
+        rightActionText: 'Close',
+        leftActionText: ' ',
+        onPressingRightActionButton: () {
+          Navigator.pushNamedAndRemoveUntil(context, '/monitoringQuestionsTransition', (route) => false);
+          _checkLoggedIn.setVisitingFlag(false);
+        },
+      ).showAlert();
     }
-    else {
-      _checkLoggedIn.setVisitingFlag(true);
-      _checkLoggedIn.setIfAnsweredBeforeFlag(true);
-    }
-    print("inside set state for ID response");
-    valueFromBack = await _checkLoggedIn.getVisitingFlag();
-    print("=======");
-    return valueFromBack;
+    setState(() {
+      _loading=false;
+    });
   }
+
 
   @override
   void initState() {
-    putData();
     super.initState();
-    putData();
-
+    getData();
   }
-
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return (_loading == true)
+        ? Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(
+          backgroundColor: Colors.white,
+          color: kWeirdBlue,
+        ),
+      ),
+    )
+        : Scaffold(
       body: Container(
-        //margin: EdgeInsets.only(left: 12.0, right: 12.0, top: 12.0),
         child: ListView(
           shrinkWrap: true,
           children: <Widget>[
+           CustomAppBar(),
+            SizedBox(
+              height: 30.0,
+            ),
             Container(
-              //margin: EdgeInsets.only(top: 10.0,bottom: 20.0),
-              color: kWeirdBlue,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Flexible(
-                      flex: 3,
-                      child: MaterialButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text(
-                          'Back',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14.0,
-                          ),
+              margin: EdgeInsets.only(left: 15.0, right: 15),
+              child: Column(
+                children: <Widget>[
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Center(
+                      child: Text(
+                        'Here are your Profile Details',
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.w300,
+                          color: Colors.black,
                         ),
                       ),
                     ),
-
-                    Flexible(
-                      flex: 9,
-                      child: Container(
-                        child: Text(
-                          'CoviApp',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 25.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-//
-                    Flexible(
-                      flex: 3,
-                      child: MaterialButton(
-                        onPressed: () {
-                          AlertBox(
-                              context: context,
-                              alertContent:
-                              'Call and Mail us at ...',
-                              alertTitle: 'Help',
-                              rightActionText: 'Close',
-                              leftActionText: '',
-                              onPressingRightActionButton: () {
-                                Navigator.pop(context);
-                              }
-                          ).showAlert();
-                        },
-                        child: Text(
-                          'Help',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 20),
+                  buildName(),
+                  const SizedBox(height: 12),
+                  buildMobile1(),
+                  // const SizedBox(height: 12),
+                  // buildMobile2(),
+                  const SizedBox(height: 12),
+                  buildHall(),
+                  const SizedBox(height: 12),
+                  buildBirthday(),
+                  const SizedBox(height: 12),
+                  buildOPDNo(),
+                  const SizedBox(height: 12),
+                  buildParentMobile(),
+                  // const SizedBox(height: 12),
+                  // buildPassword(),
+                ],
               ),
             ),
             SizedBox(
-              height: 120.0,
-            ),
-            Container(
-              child: Center(
-                child: Column(
-                  children: [
-                    Text(
-                      'Data till now\n',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontSize: 24.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    // Text(
-                    //   //widget.isolationAddress+'\n'+widget.isolationDate.toString() +'\n'+widget.supervisorName+'\n'+ widget.supervisorMobileNo +'\n'+ widget.symptoms,
-                    //   style: TextStyle(
-                    //     fontSize: 18.0,
-                    //     color: Colors.black,
-                    //   ),
-                    // ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 80.0,
+              height: 50.0,
             ),
             GestureDetector(
               child: Align(
                 alignment: Alignment.center,
                 child: Container(
-                  width: MediaQuery.of(context).size.width * 0.5,
+                  margin: EdgeInsets.only(bottom: 20),
+                  width: MediaQuery.of(context).size.width * 0.8,
                   decoration: BoxDecoration(
                     color: kWeirdBlue,
                     borderRadius: BorderRadius.circular(25.0),
@@ -196,7 +315,7 @@ class _ProfilePageViewState extends State<ProfilePageView> {
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Text(
-                        'Proceed',
+                        'Change Password',
                         style: TextStyle(
                           fontSize: 24.0,
                           color: Colors.white,
@@ -206,10 +325,8 @@ class _ProfilePageViewState extends State<ProfilePageView> {
                   ),
                 ),
               ),
-              onTap: () {
-
-              },
-            ),
+              onTap: () {},
+            )
           ],
         ),
       ),

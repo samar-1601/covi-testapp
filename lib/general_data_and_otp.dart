@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 //import 'package:otp_text_field/otp_text_field.dart';
 import 'package:coviapp/shared_pref.dart';
-//import 'package:otp_text_field/style.dart';
+import 'package:coviapp/utilities/customAppBar.dart';
 
 class GeneralDataSender extends StatefulWidget {
   final String selectedCategory;
@@ -44,23 +44,53 @@ class GeneralDataSender extends StatefulWidget {
 class _GeneralDataSenderState extends State<GeneralDataSender> {
   CheckLoggedIn _checkLoggedIn = CheckLoggedIn();
   bool valueFromBack;
-  int idFromBack;
+  //int idFromBack;
+  String msg='';
 
   Future putData() async {
-    var url = Uri.parse('http://13.232.3.140:8080/submit_form');
+    var url = Uri.parse('https://imedixbcr.iitkgp.ac.in/api/coviapp/update-patient-detail');
     Map data = {
       "name": widget.name,
       "hall": widget.hall,
-      "birth_date": widget.birthday.toString(),
-      "selectedCategory": widget.selectedCategory,
-      "room":"",
+      //"birth_date": widget.birthday.toString(),
+      "selected_category": widget.selectedCategory,
       "mobileNo1" : widget.mobileNo1,
-      "mobileNo2" : " ",
-      "rollNo" : widget.rollNo,
-      "parentName" : widget.parentName,
-      "parentMobileNo": widget.parentMobileNo,
-      "email": " ",
-      "password": widget.password,
+      //"rollNo" : widget.rollNo,
+      //"parentName" : widget.parentName,
+      "parent_mobileno": widget.parentMobileNo,
+      //"password": widget.password,
+    };
+    String body = json.encode(data);
+    print(body);
+    var response = await http.post(url,
+        headers: {"Content-Type": "application/json",'Authorization': 'Bearer $token',}, body: body,);
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+    Map responseBody = json.decode(response.body) as Map;
+    if (response.statusCode != 200) {
+      _checkLoggedIn.setVisitingFlag(false);
+      _checkLoggedIn.setIfAnsweredBeforeFlag(false);
+     }
+       else {
+       _checkLoggedIn.setVisitingFlag(true);
+     }
+    print("puData in general data_and_otp");
+    valueFromBack = await _checkLoggedIn.getVisitingFlag();
+    print(" == token : {$token}");
+    msg = responseBody["status"];
+    print(" == msg : {$msg}");
+    return valueFromBack??false;
+  }
+
+  Future checkPassword (String password, String mobileNo, String rollNo) async {
+    var url = Uri.parse('https://imedixbcr.iitkgp.ac.in/api/user/login');
+    print(mobileNo);
+    print(password);
+    print("Sending Login details to get new token\n");
+    Map data = {
+      "password": password,
+      //mobileNo1": mobileNo,
+      "username": rollNo,
     };
     String body = json.encode(data);
     print(body);
@@ -69,106 +99,128 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
     Map responseBody = json.decode(response.body) as Map;
-    if (response.statusCode != 200) {
+    if (response.statusCode == 200) {
+      _checkLoggedIn.setVisitingFlag(true);
+      _checkLoggedIn.setRollNo(rollNo);
+    } else {
       _checkLoggedIn.setVisitingFlag(false);
-      _checkLoggedIn.setIfAnsweredBeforeFlag(false);
-      setState(() {
-        AlertBox(
-            context: context,
-            alertContent:
-            'The given details are not found in Institute Database',
-            alertTitle: 'Invalid Entry !!',
-            rightActionText: 'Close',
-            leftActionText: '',
-            onPressingRightActionButton: () {
-              Navigator.of(context)
-                  .pushNamedAndRemoveUntil('/studentChosen', (Route<dynamic> route) => false);
-            }).showAlert();
-      });
-     }
-       else {
-       _checkLoggedIn.setVisitingFlag(true);
-     }
-    print("inside set state for ID response");
-    idFromBack = responseBody['studentID'];
-    print(idFromBack);
+    }
+
+    token = responseBody['jwtToken'];
+    print(" == ifPrevLoggedIn Successfully : ");
+    print(" == New Token : {$token}");
+    _checkLoggedIn.setLoginToken(token);
     valueFromBack = await _checkLoggedIn.getVisitingFlag();
-    setState((){
-      idFromBack = responseBody['studentID'].toInt();
-      _checkLoggedIn.setLoginIdValue(idFromBack);
-    });
-    print("=======");
-    print(idFromBack);
+    print(valueFromBack);
+    return valueFromBack??false;
   }
-
-
-  // String otp ="";
-  // Future checkOTP(String otp, int id) async {
-  //   var url = Uri.parse('http://13.232.3.140:8080/verify');
-  //   print(id);
-  //   print(otp);
-  //   Map data = {
-  //     "otp": otp,
-  //     "id":id,
-  //   };
-  //   String body = json.encode(data);
-  //   print(body);
-  //   var response = await http.post(url,
-  //       headers: {"Content-Type": "application/json"}, body: body);
-  //   print('Response status: ${response.statusCode}');
-  //   print('Response body: ${response.body}');
-  //   if (response.statusCode == 200) {
-  //     _checkLoggedIn.setVisitingFlag(true);
-  //   } else {
-  //     _checkLoggedIn.setVisitingFlag(false);
-  //   }
-  //   print(_checkLoggedIn.getVisitingFlag());
-  //   setState(() async{
-  //     valueFromBack = await _checkLoggedIn.getVisitingFlag();
-  //   });
-  // }
 
   String studentRollNo;
   Future getID() async
   {
-    studentRollNo = await _checkLoggedIn.getRollNo();
+     var tempStudentRollNo = await _checkLoggedIn.getRollNo();
+    setState(() {
+      studentRollNo = tempStudentRollNo;
+    });
+  }
+  String token;
+  Future getToken() async
+  {
+    var tempToken= await _checkLoggedIn.getLoginToken();
+    setState(() {
+      token = tempToken;
+    });
+
+  }
+
+  bool _loading=false;
+  Future checkFromBackend() async{
+    setState(() {
+      _loading=true;
+    });
+    await getID();
+    await getToken();
+    bool value = await putData();
+    if(value==false)
+      {
+        if(msg=="token has expired")
+        {
+          print("-------inside token has expired if---------------");
+          print(" == Old Token : {$token}");
+          String passwordFromSF = await _checkLoggedIn.getPasswordToken();
+          String rollNoFromSF = await _checkLoggedIn.getRollNo();
+          String mobileNoTemp = "1234567890";
+          print("PasswordFromSF = ${passwordFromSF} ,RollNoFromSF = ${rollNoFromSF} ");
+          bool value2 = await checkPassword(passwordFromSF, mobileNoTemp, rollNoFromSF);
+          print("value after checking password for new token = ${value2}");
+          print(" == New Token : {$token}");
+          if(value2==true)
+          {
+            value = await putData();
+            if(value == true)
+            {
+              setState(() {
+                _loading = false;
+              });
+            }
+            else
+            {
+              setState(() {
+                _loading= false;
+              });
+            }
+          }
+        }
+        else
+          {
+            setState(() {
+              _loading= false;
+              AlertBox(
+                context: context,
+                alertContent:
+                'Server Error. Please try again after sometime',
+                alertTitle: 'Server Error !!',
+                rightActionText: 'Close',
+                leftActionText: ' ',
+                onPressingRightActionButton: () {
+                  Navigator.of(context).pop();
+                  _checkLoggedIn.setVisitingFlag(false);
+                },
+              ).showAlert();
+            });
+          }
+      }
+    else
+      {
+        setState(() {
+          _loading = false;
+        });
+      }
+    return value;
   }
 
   @override
   void initState() {
     super.initState();
     print(widget.selectedCategory);
-  getID();
-    if (widget.selectedCategory == 'Student') {
-      print(widget.name);
-      print(studentRollNo);
-      print(widget.email);
-      print(widget.hall);
-      print(widget.mobileNo1);
-      print(widget.mobileNo2);
-      print(widget.parentName);
-      print(widget.parentMobileNo);
-      print(widget.birthday.toString());
-    } else {
+      //checkFromBackend();
       print(widget.name);
       print(widget.rollNo);
       print(widget.email);
       print(widget.hall);
       print(widget.mobileNo1);
-      print(widget.mobileNo2);
+     // print(widget.mobileNo2);
       print(widget.birthday.toString());
-    }
-    putData();
-
   }
 
   @override
   Widget build(BuildContext context) {
-    return (valueFromBack == false)
+    return (_loading == true)
         ? Scaffold(
         body: Center(
           child: CircularProgressIndicator(
           backgroundColor: Colors.white,
+            color: kWeirdBlue,
       ),
         ),
     )
@@ -178,72 +230,7 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
               child: ListView(
                 shrinkWrap: true,
                 children: <Widget>[
-                  Container(
-                    //margin: EdgeInsets.only(top: 10.0,bottom: 20.0),
-                    color: kWeirdBlue,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Flexible(
-                            flex: 3,
-                            child: MaterialButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text(
-                                'Back',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14.0,
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          Flexible(
-                            flex: 9,
-                            child: Container(
-                              child: Text(
-                                'CoviApp',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 25.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-//
-                          Flexible(
-                            flex: 3,
-                            child: MaterialButton(
-                              onPressed: () {
-                                AlertBox(
-                                    context: context,
-                                    alertContent: 'Call and Mail us at ...',
-                                    alertTitle: 'Help',
-                                    rightActionText: 'Close',
-                                    leftActionText: '',
-                                    onPressingRightActionButton: () {
-                                      Navigator.pop(context);
-                                    }).showAlert();
-                              },
-                              child: Text(
-                                'Help',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14.0,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  CustomAppBar(),
                   SizedBox(
                     height: 80.0,
                   ),
@@ -252,7 +239,7 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
                       child: Column(
                         children: [
                           Text(
-                            'Data till now\n',
+                            'Data Entered by You\n',
                             textAlign: TextAlign.left,
                             style: TextStyle(
                               fontSize: 24.0,
@@ -269,11 +256,7 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
                                 '\n' +
                                 widget.hall +
                                 '\n' +
-                                widget.room +
-                                '\n' +
                                 widget.mobileNo1 +
-                                '\n' +
-                                widget.mobileNo2 +
                                 '\n' +
                                 widget.parentName +
                                 '\n' +
@@ -289,41 +272,7 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
                       ),
                     ),
                   ),
-                  // ================================== Removed OTP part ===================
-                  // const SizedBox(height: 30),
-                  // Align(
-                  //   alignment: Alignment.center,
-                  //   child: Container(
-                  //     child: Text(
-                  //        'Enter OTP',
-                  //       textAlign: TextAlign.left,
-                  //       style: TextStyle(
-                  //         fontSize: 22.0,
-                  //         fontWeight: FontWeight.bold,
-                  //         color: kWeirdBlue,
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
-                  // const SizedBox(height: 25),
-                  // OTPTextField(
-                  //   length: 6,
-                  //   width: MediaQuery.of(context).size.width*0.7,
-                  //   fieldWidth: 50,
-                  //   style: TextStyle(
-                  //       fontSize: 20,
-                  //   ),
-                  //   textFieldAlignment: MainAxisAlignment.center,
-                  //   fieldStyle: FieldStyle.underline,
-                  //   onCompleted: (pin) {
-                  //     print("Completed: " + pin);
-                  //     otp = pin;
-                  //   },
-                  // ),
-                  // SizedBox(
-                  //   height: 30.0,
-                  // ),
-                  //=============================== Removed OTP Part =========================
+                  SizedBox(height: 50,),
                   GestureDetector(
                     child: Align(
                       alignment: Alignment.center,
@@ -346,7 +295,7 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
                           child: Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: Text(
-                              'Proceed',
+                              'Confirm',
                               style: TextStyle(
                                 fontSize: 24.0,
                                 color: Colors.white,
@@ -356,18 +305,25 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
                         ),
                       ),
                     ),
-                    onTap: () {
+                    onTap: () async{
+                      bool value = false;
+                      value = await checkFromBackend();
+                      print("value == {$value}");
                       setState(() {
                           //checkOTP(otp,idFromBack);
-                          if(valueFromBack==true)
+                          if(value==true)
                             {
                               _checkLoggedIn.setVisitingFlag(true);
+                              _checkLoggedIn.setHallToken(widget.hall);
+                              _checkLoggedIn.setNameToken(widget.name);
+                              _checkLoggedIn.setMbNoToken(widget.mobileNo1);
+                              _checkLoggedIn.setParentNameToken(widget.parentName);
+                              _checkLoggedIn.setParentMbNoToken(widget.parentMobileNo);
                               Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
                                     builder: (BuildContext context) => DoYouHaveCovid(
                                       selectedCategory: widget.selectedCategory,
-                                      id: idFromBack,
                                     )
                                 ),
                                     (route) => false,
@@ -404,3 +360,68 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
           );
   }
 }
+
+
+//
+
+// ================================== Removed OTP part ===================
+// const SizedBox(height: 30),
+// Align(
+//   alignment: Alignment.center,
+//   child: Container(
+//     child: Text(
+//        'Enter OTP',
+//       textAlign: TextAlign.left,
+//       style: TextStyle(
+//         fontSize: 22.0,
+//         fontWeight: FontWeight.bold,
+//         color: kWeirdBlue,
+//       ),
+//     ),
+//   ),
+// ),
+// const SizedBox(height: 25),
+// OTPTextField(
+//   length: 6,
+//   width: MediaQuery.of(context).size.width*0.7,
+//   fieldWidth: 50,
+//   style: TextStyle(
+//       fontSize: 20,
+//   ),
+//   textFieldAlignment: MainAxisAlignment.center,
+//   fieldStyle: FieldStyle.underline,
+//   onCompleted: (pin) {
+//     print("Completed: " + pin);
+//     otp = pin;
+//   },
+// ),
+// SizedBox(
+//   height: 30.0,
+// ),
+//=============================== Removed OTP Part =========================
+
+// String otp ="";
+// Future checkOTP(String otp, int id) async {
+//   var url = Uri.parse('http://13.232.3.140:8080/verify');
+//   print(id);
+//   print(otp);
+//   Map data = {
+//     "otp": otp,
+//     "id":id,
+//   };
+//   String body = json.encode(data);
+//   print(body);
+//   var response = await http.post(url,
+//       headers: {"Content-Type": "application/json"}, body: body);
+//   print('Response status: ${response.statusCode}');
+//   print('Response body: ${response.body}');
+//   if (response.statusCode == 200) {
+//     _checkLoggedIn.setVisitingFlag(true);
+//   } else {
+//     _checkLoggedIn.setVisitingFlag(false);
+//   }
+//   print(_checkLoggedIn.getVisitingFlag());
+//   setState(() async{
+//     valueFromBack = await _checkLoggedIn.getVisitingFlag();
+//   });
+// }
