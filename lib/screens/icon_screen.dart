@@ -24,7 +24,7 @@ class _IconScreenState extends State<IconScreen> {
       // appBar: AppBar(),
       body: Center(
         child: Container(
-          child: Image.asset("assets/img/coviapp_logo.png"),
+          child: Image.asset("assets/img/logo1.png"),
           height: mediaScreen.size.height * 0.5,
           width: mediaScreen.size.width * 0.5,
           // child: Image.asset(),

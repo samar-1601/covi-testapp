@@ -16,72 +16,111 @@ class WelcomeScreen extends StatelessWidget {
     // print('random');
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
-      body: Center(
-        child: ListView(
-          shrinkWrap: true,
-          children: <Widget>[
-            Container(
-              child: Image.asset("assets/img/welcome.png"),
-              height: mediaScreen.size.height * 0.5,
-              width: mediaScreen.size.width * 0.5,
-              // child: Image.asset(),
-            ),
-            Container(
-              child: Text(
-                " IIT Kharagpur \n Covid Helper app ",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+      body: Container(
+        child: Center(
+          child: ListView(
+            shrinkWrap: true,
+            children: <Widget>[
+              Container(
+                child: Image.asset("assets/img/welcome1.png"),
+                height: mediaScreen.size.height * 0.4,
+                width: mediaScreen.size.width * 0.5,
+                // child: Image.asset(),
+              ),
+              Container(
+                child: Text(
+                  " IIT Kharagpur \n Covid Helper app ",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
               ),
-            ),
-            Container(
-              margin: EdgeInsets.only(top: 50.0),
-              width: 75.0,
-              height: 75.0,
-              child: new RawMaterialButton(
-                fillColor: kWeirdBlue,
-                shape: new CircleBorder(),
-                elevation: 0.0,
-                child: Icon(
-                  Icons.keyboard_arrow_right,
-                  color: Colors.white,
-                  size: 65.0,
-                ),
-                onPressed: () async{
-                  bool visited = await _checkLoggedIn.getVisitingFlag();
-                  bool alreadyAnswered = await _checkLoggedIn.getIfAnsweredBeforeFlag();
-                  String rollNo = await _checkLoggedIn.getRollNo();
-                  if(visited==true)
-                    {
-                      if(alreadyAnswered==false)
-                        {
-                          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-                              DoYouHaveCovid()), (Route<dynamic> route) => false);
-                        }
-                      else
-                        {
-                          Navigator.push(
-                            context,
-                            new MaterialPageRoute(
-                              builder: (BuildContext context) =>MonitoringQuestionsTransitionScreen(
-                                rollNo: rollNo,
+              Container(
+                margin: EdgeInsets.only(top: 40.0),
+                width: 60.0,
+                height: 60.0,
+                child: new RawMaterialButton(
+                  fillColor: kWeirdBlue,
+                  shape: new CircleBorder(),
+                  elevation: 0.0,
+                  child: Icon(
+                    Icons.keyboard_arrow_right,
+                    color: Colors.white,
+                    size: 45.0,
+                  ),
+                  onPressed: () async{
+                    bool visited = await _checkLoggedIn.getVisitingFlag();
+                    bool alreadyAnswered = await _checkLoggedIn.getIfAnsweredBeforeFlag();
+                    String rollNo = await _checkLoggedIn.getRollNo();
+                    if(visited==true)
+                      {
+                        if(alreadyAnswered==false)
+                          {
+                            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+                                DoYouHaveCovid()), (Route<dynamic> route) => false);
+                          }
+                        else
+                          {
+                            Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                builder: (BuildContext context) =>MonitoringQuestionsTransitionScreen(
+                                  rollNo: rollNo,
+                                ),
                               ),
-                            ),
-                          );
-                        }
-                    }
-                  else
-                    {// visiting first time
-                    Navigator.of(context)
-                        .pushNamedAndRemoveUntil('/signup', (Route<dynamic> route) => false);
-                    }
-                },
+                            );
+                          }
+                      }
+                    else
+                      {// visiting first time
+                      Navigator.of(context)
+                          .pushNamedAndRemoveUntil('/signup', (Route<dynamic> route) => false);
+                      }
+                  },
+                ),
               ),
-            ),
-          ],
+              Container(
+                margin: EdgeInsets.only(top:40),
+                height: 100,
+               color: Colors.grey[200],
+               width:  mediaScreen.size.height * 0.95,
+               child: Column(
+                 children: [
+                   Expanded(
+                     child:Padding(
+                       padding: const EdgeInsets.only(top:12),
+                       child: Text(
+                         'Copyright ©2021 IIT Kharagpur, All Rights Reserved.',
+                         style: TextStyle(
+                             fontWeight:FontWeight.w400,
+                             fontSize: 13.0,
+                             color: Color(0xFF162A49)
+                         ),
+                       ),
+                     ),
+                   ),
+                   Expanded(
+                     child: Padding(
+                       padding: const EdgeInsets.all(8.0),
+                       child: Text(
+                         'CoviApp team : Samar Pratap Singh, Saksham Arya, Abhinandan De, Aryan Singh, Kunal Singh, Sayantan Das',
+                         style: TextStyle(
+                             fontWeight:FontWeight.w300,
+                             fontSize: 12.0,
+                             color: Color(0xFF162A49)
+                         ),
+                         textAlign: TextAlign.center,
+                       ),
+                     ),
+                   ),
+                 ],
+               ),
+              )
+            ],
+          ),
         ),
       ),
     );

@@ -436,6 +436,10 @@ class _CovidQuestionsState extends State<CovidQuestions> {
                 title,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
+              Text(
+                '*',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.red),
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -633,19 +637,36 @@ class _CovidQuestionsState extends State<CovidQuestions> {
                     ),
                   ),
                   onTap: () {
-                    setState(() {
-                      Navigator.push(
-                          context,
-                          new MaterialPageRoute(
-                              builder: (BuildContext context) => CovidDataSender(
-                                symptoms: symptoms,
-                                isolationAddress: isolationAddress,
-                                isolationDate: isolationDate,
-                                supervisorName: supervisorName,
-                                supervisorMobileNo: supervisorMobileNo,
-                                selectedCategory: widget.chosenCategory,
-                              )));
-                    });
+                    if(isolationAddress=='' || isolationDate.toString()=='' || symptoms == '')
+                    {
+                      AlertBox(
+                          context: context,
+                          alertContent:
+                          'Please fill in the mandatory fields',
+                          alertTitle: 'Invalid Entry !!',
+                          rightActionText: 'Close',
+                          leftActionText: '',
+                          onPressingRightActionButton: () {
+                            Navigator.pop(context);
+                          }).showAlert();
+                    }
+                    else
+                      {
+                        setState(() {
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (BuildContext context) => CovidDataSender(
+                                    symptoms: symptoms,
+                                    isolationAddress: isolationAddress,
+                                    isolationDate: isolationDate,
+                                    supervisorName: supervisorName,
+                                    supervisorMobileNo: supervisorMobileNo,
+                                    selectedCategory: widget.chosenCategory,
+                                  )));
+                        });
+                      }
+
                   },
                 )
               ],

@@ -89,9 +89,15 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
       Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            title,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 8),
           child,
@@ -368,43 +374,59 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
                 ),
               ),
               onTap: () async{
-                bool value = false;
-                value = await checkFromBackend();
-                print("value == {$value}");
-                if(value==true)
-                  {
-                    setState(() {
-                      AlertBox(
-                          context: context,
-                          alertContent:
-                          'Thank You For entering your details. Please renter after 6 hours for continuous monitoring',
-                          alertTitle: 'ThankYou',
-                          rightActionText: 'Close',
-                          leftActionText: '',
-                          onPressingRightActionButton: () {
-                            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-                                MonitoringQuestionsTransitionScreen(
-                                  selectedCategory: widget.chosenCategory,
-                                  id: widget.id,
-                                  rollNo: rollNo,
-                                )), (Route<dynamic> route) => false);
-                          }).showAlert();
-                    });
-                  }
+                if(feverTemp=='')
+                {
+                  AlertBox(
+                      context: context,
+                      alertContent:
+                      'Please Enter you Temperature. It is mandatory.',
+                      alertTitle: 'Body temperature not entered !!',
+                      rightActionText: 'Close',
+                      leftActionText: '',
+                      onPressingRightActionButton: () {
+                        Navigator.pop(context);
+                      }).showAlert();
+                }
                 else
                   {
-                    setState(() {
-                      AlertBox(
-                          context: context,
-                          alertContent:
-                          'The given details were not registered due to some error. Kindly Renter',
-                          alertTitle: 'Entry Error !!',
-                          rightActionText: 'Close',
-                          leftActionText: '',
-                          onPressingRightActionButton: () {
-                            Navigator.pop(context);
-                          }).showAlert();
-                    });
+                    bool value = false;
+                    value = await checkFromBackend();
+                    print("value == {$value}");
+                    if(value==true)
+                    {
+                      setState(() {
+                        AlertBox(
+                            context: context,
+                            alertContent:
+                            'Thank You For entering your details. Please renter after 6 hours for continuous monitoring',
+                            alertTitle: 'ThankYou',
+                            rightActionText: 'Close',
+                            leftActionText: '',
+                            onPressingRightActionButton: () {
+                              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+                                  MonitoringQuestionsTransitionScreen(
+                                    selectedCategory: widget.chosenCategory,
+                                    id: widget.id,
+                                    rollNo: rollNo,
+                                  )), (Route<dynamic> route) => false);
+                            }).showAlert();
+                      });
+                    }
+                    else
+                    {
+                      setState(() {
+                        AlertBox(
+                            context: context,
+                            alertContent:
+                            'The given details were not registered due to some error. Kindly Renter',
+                            alertTitle: 'Entry Error !!',
+                            rightActionText: 'Close',
+                            leftActionText: '',
+                            onPressingRightActionButton: () {
+                              Navigator.pop(context);
+                            }).showAlert();
+                      });
+                    }
                   }
               },
             )

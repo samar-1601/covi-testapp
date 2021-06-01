@@ -296,7 +296,7 @@ class _CovidDataSenderState extends State<CovidDataSender> {
               ),
             ),
             SizedBox(
-              height: 80.0,
+              height: 40.0,
             ),
             GestureDetector(
               child: Align(
