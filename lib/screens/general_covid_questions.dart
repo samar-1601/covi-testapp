@@ -330,40 +330,40 @@ class _CovidQuestionsState extends State<CovidQuestions> {
       onChanged: (data) => setState(() => this.supervisorName = data),
     ),
   );
-  Widget buildDsaCouncilMem1Name() => buildTitle(
-    title: 'Name of Dean SA Council Member - 1 in contact ',
-    child: TextFormField(
-      initialValue: dsaCouncilMemberName1,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        hintText: 'Enter Name',
-      ),
-      onChanged: (data) => setState(() => this.dsaCouncilMemberName1 = data),
-    ),
-  );
-  Widget buildDsaCouncilMem2Name() => buildTitle(
-    title: 'Name of Dean SA Council Member - 2 in contact ',
-    child: TextFormField(
-      initialValue: dsaCouncilMemberName2,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        hintText: 'Enter Name',
-      ),
-      onChanged: (data) => setState(() => this.dsaCouncilMemberName2 = data),
-    ),
-  );
-
-  Widget buildSeekHelp() => buildTitle(
-    title: 'What help do you seek?',
-    child: TextFormField(
-      initialValue: seekHelp,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        hintText: 'Write your problems',
-      ),
-      onChanged: (data) => setState(() => this.seekHelp = data),
-    ),
-  );
+  // Widget buildDsaCouncilMem1Name() => buildTitle(
+  //   title: 'Name of Dean SA Council Member - 1 in contact ',
+  //   child: TextFormField(
+  //     initialValue: dsaCouncilMemberName1,
+  //     decoration: InputDecoration(
+  //       border: OutlineInputBorder(),
+  //       hintText: 'Enter Name',
+  //     ),
+  //     onChanged: (data) => setState(() => this.dsaCouncilMemberName1 = data),
+  //   ),
+  // );
+  // Widget buildDsaCouncilMem2Name() => buildTitle(
+  //   title: 'Name of Dean SA Council Member - 2 in contact ',
+  //   child: TextFormField(
+  //     initialValue: dsaCouncilMemberName2,
+  //     decoration: InputDecoration(
+  //       border: OutlineInputBorder(),
+  //       hintText: 'Enter Name',
+  //     ),
+  //     onChanged: (data) => setState(() => this.dsaCouncilMemberName2 = data),
+  //   ),
+  // );
+  //
+  // Widget buildSeekHelp() => buildTitle(
+  //   title: 'What help do you seek?',
+  //   child: TextFormField(
+  //     initialValue: seekHelp,
+  //     decoration: InputDecoration(
+  //       border: OutlineInputBorder(),
+  //       hintText: 'Write your problems',
+  //     ),
+  //     onChanged: (data) => setState(() => this.seekHelp = data),
+  //   ),
+  // );
 
   Widget buildSymptoms() => buildTitle(
     title: 'What are your symptoms',
@@ -388,30 +388,30 @@ class _CovidQuestionsState extends State<CovidQuestions> {
       onChanged: (mobileNo) => setState(() => this.supervisorMobileNo = mobileNo),
     ),
   );
-  Widget buildDsaCouncilMem1Mb() => buildTitle(
-    title: 'Dean SA Council Member-1 Mobile No',
-    child: TextFormField(
-      initialValue: dsaCouncilMember1MbNo,
-      keyboardType: TextInputType.phone,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        hintText: 'Enter Mobile No',
-      ),
-      onChanged: (mobileNo) => setState(() => this.dsaCouncilMember1MbNo = mobileNo),
-    ),
-  );
-  Widget buildDsaCouncilMem2Mb() => buildTitle(
-    title: 'Dean SA Council Member-1 Mobile No',
-    child: TextFormField(
-      initialValue: dsaCouncilMember2MbNo,
-      keyboardType: TextInputType.phone,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        hintText: 'Enter Mobile No',
-      ),
-      onChanged: (mobileNo) => setState(() => this.dsaCouncilMember2MbNo = mobileNo),
-    ),
-  );
+  // Widget buildDsaCouncilMem1Mb() => buildTitle(
+  //   title: 'Dean SA Council Member-1 Mobile No',
+  //   child: TextFormField(
+  //     initialValue: dsaCouncilMember1MbNo,
+  //     keyboardType: TextInputType.phone,
+  //     decoration: InputDecoration(
+  //       border: OutlineInputBorder(),
+  //       hintText: 'Enter Mobile No',
+  //     ),
+  //     onChanged: (mobileNo) => setState(() => this.dsaCouncilMember1MbNo = mobileNo),
+  //   ),
+  // );
+  // Widget buildDsaCouncilMem2Mb() => buildTitle(
+  //   title: 'Dean SA Council Member-1 Mobile No',
+  //   child: TextFormField(
+  //     initialValue: dsaCouncilMember2MbNo,
+  //     keyboardType: TextInputType.phone,
+  //     decoration: InputDecoration(
+  //       border: OutlineInputBorder(),
+  //       hintText: 'Enter Mobile No',
+  //     ),
+  //     onChanged: (mobileNo) => setState(() => this.dsaCouncilMember2MbNo = mobileNo),
+  //   ),
+  // );
   Widget buildIsolationDate() => buildTitle(
     title: 'Date when found positive and \nstarted isolation?',
     child: BirthdayWidget(
@@ -442,18 +442,6 @@ class _CovidQuestionsState extends State<CovidQuestions> {
           child,
         ],
       );
-
-void printValues(List<String> answers)
-{
-  print("----------------- Answers Values ------------------\n");
-  for(int i=0; i<answers.length ; i++)
-    {
-      print(answers[i]);
-    }
-  print([isolationAddress,supervisorName,dsaCouncilMemberName1,dsaCouncilMemberName2,dsaCouncilMember1MbNo,dsaCouncilMember2MbNo,supervisorMobileNo,seekHelp,symptoms,isolationDate]);
-  print("----------------- Answers Values End ------------------\n");
-}
-
 
   List<String> areYouEquippedQuesAnswersList = [], wellBeingQuesAnswersList=[];
   @override
@@ -489,11 +477,11 @@ void printValues(List<String> answers)
     buildIsolationAdd();
     buildSuperVisorName();
     buildSupervisorMbNo();
-    buildDsaCouncilMem1Mb();
-    buildDsaCouncilMem1Name();
-    buildDsaCouncilMem2Name();
-    buildDsaCouncilMem2Mb();
-    buildSeekHelp();
+    // buildDsaCouncilMem1Mb();
+    // buildDsaCouncilMem1Name();
+    // buildDsaCouncilMem2Name();
+    // buildDsaCouncilMem2Mb();
+    // buildSeekHelp();
     buildSymptoms();
   }
 
@@ -525,8 +513,8 @@ void printValues(List<String> answers)
                             'Kindly provide following details.This information will be asked only once.',
                             textAlign: TextAlign.left,
                             style: TextStyle(
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.w400,
                               color: kWeirdBlue,
                             ),
                           ),
@@ -645,25 +633,16 @@ void printValues(List<String> answers)
                     ),
                   ),
                   onTap: () {
-                    printValues(areYouEquippedQuesAnswersList);
-                    printValues(wellBeingQuesAnswersList);
-
                     setState(() {
-
                       Navigator.push(
                           context,
                           new MaterialPageRoute(
                               builder: (BuildContext context) => CovidDataSender(
-                                // areYouEquippedQuestions: areYouEquippedQuesList,
-                                // areYouEquippedAnswers: areYouEquippedQuesAnswersList,
-                                // wellBeingQuestions: wellBeingQuesList,
-                                // wellBeingAnswers: wellBeingQuesAnswersList,
                                 symptoms: symptoms,
                                 isolationAddress: isolationAddress,
                                 isolationDate: isolationDate,
                                 supervisorName: supervisorName,
                                 supervisorMobileNo: supervisorMobileNo,
-                                id: widget.id,
                                 selectedCategory: widget.chosenCategory,
                               )));
                     });

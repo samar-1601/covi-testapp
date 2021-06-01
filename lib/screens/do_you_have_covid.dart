@@ -209,6 +209,7 @@ class _DoYouHaveCovidState extends State<DoYouHaveCovid> {
               height: 150.0,
             ),
             Container(
+              padding: EdgeInsets.only(left: 15, right: 15),
               child: Center(
                 child: Text(
                   'Are you infected with Covid (or have symptoms)?',
@@ -377,20 +378,19 @@ class _DoYouHaveCovidState extends State<DoYouHaveCovid> {
         ),
       ),
 
-      floatingActionButton: FloatingActionButton(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Icon(
-              Icons.call,
-              color: Colors.white,
-              size: 28,
-            ),
+      floatingActionButton:  FloatingActionButton.extended(
+          label: Text('SOS'),
+          heroTag: "sos",
+          icon: Icon(
+            Icons.call,
+            color: Colors.white,
+            size: 28,
           ),
-        ),
-        onPressed: () => setState(() {
-          _launched = _makePhoneCall('tel:$_phone');
-        }),
+          onPressed: () async{
+            setState(() {
+              _makePhoneCall('tel:$_phone');
+            });
+          }
       ),
     );
   }

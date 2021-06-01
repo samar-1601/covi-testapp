@@ -70,7 +70,7 @@ class _ProfilePageViewState extends State<ProfilePageView> {
   Widget buildParentMobile() => buildTitle(
     title: 'Parent Contact No',
     child: TextFormField(
-      initialValue: name,
+      initialValue: parentMobileNo,
       enabled: false,
       keyboardType: TextInputType.phone,
       decoration: InputDecoration(
@@ -94,7 +94,7 @@ class _ProfilePageViewState extends State<ProfilePageView> {
   );
 
   Widget buildOPDNo() => buildTitle(
-    title: 'OPD Number',
+    title: 'Roll/EC Number',
     child: TextFormField(
       initialValue: opdNo,
       enabled: false,
@@ -145,24 +145,54 @@ class _ProfilePageViewState extends State<ProfilePageView> {
 
   CheckLoggedIn _checkLoggedIn = CheckLoggedIn();
   bool valueFromBack;
-  bool _loading=false;
+
   String rollNo;
   String msg ='';
+  String tStudentRollNo;
+  String tName;
+  String tMobileNo;
+  String tHall;
+  String tParentName ;
+  String tParentMbNo ;
+  String tDOB ;
+  String tOpd ;
 
 
-  String token;
-  Future getToken() async
-  {
-    var tempToken= await _checkLoggedIn.getLoginToken();
-    setState(() {
-      token = tempToken;
-    });
+  Future checkPassword (String password, String mobileNo, String rollNo) async {
+    var url = Uri.parse('https://imedixbcr.iitkgp.ac.in/api/user/login');
+    print(mobileNo);
+    print(password);
+    print("Sending Login details to get new token\n");
+    Map data = {
+      "password": password,
+      //mobileNo1": mobileNo,
+      "username": rollNo,
+    };
+    String body = json.encode(data);
+    print(body);
+    var response = await http.post(url,
+        headers: {"Content-Type": "application/json"}, body: body);
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+    Map responseBody = json.decode(response.body) as Map;
+    if (response.statusCode == 200) {
+      _checkLoggedIn.setVisitingFlag(true);
+      _checkLoggedIn.setRollNo(rollNo);
+    } else {
+      _checkLoggedIn.setVisitingFlag(false);
+    }
+
+    token = responseBody['jwtToken'];
+    print(" == ifPrevLoggedIn Successfully : ");
+    print(" == New Token : {$token}");
+    _checkLoggedIn.setLoginToken(token);
+    valueFromBack = await _checkLoggedIn.getVisitingFlag();
+    print(valueFromBack);
+    return valueFromBack??false;
   }
 
+
   Future getData() async {
-    setState(() {
-      _loading=true;
-    });
     await getToken();
     var url = Uri.parse('https://imedixbcr.iitkgp.ac.in/api/coviapp/get-patient-detail');
     final response = await http.get(url, headers: {
@@ -176,61 +206,137 @@ class _ProfilePageViewState extends State<ProfilePageView> {
     Map responseBody = decoded["data"] as Map;
 
 
-    String tStudentRollNo =responseBody["status"];
-    String tName = responseBody["name"];
-    String tMobileNo = responseBody["phone"];
-    String tHall = responseBody["hall"];
-    String tParentName =responseBody["status"];
-    String tParentMbNo = responseBody["parent_mobileno"];
-    String tDOB = responseBody["dateofbirth"];
-    String tOpd = responseBody["opdno"];
-
     if (response.statusCode == 200) {
       valueFromBack = true;
-      setState(() {
-        name = tName;
-        rollNo = tStudentRollNo;
-        mobileNo1 = tMobileNo;
-        hall = tHall;
-        parentName = tParentName;
-        parentMobileNo = tParentMbNo;
-        birthday = tDOB;
-        valueFromBack = true;
-        opdNo = tOpd;
-        buildBirthday();
-        buildName();
-        buildHall();
-        buildMobile1();
-        buildParentName();
-        buildParentMobile();
-        buildOPDNo();
-      });
-    } else {
-
-      valueFromBack = false;
-      AlertBox(
-        context: context,
-        alertContent:
-        'Server Error. Please try again after sometime',
-        alertTitle: 'Server Error !!',
-        rightActionText: 'Close',
-        leftActionText: ' ',
-        onPressingRightActionButton: () {
-          Navigator.pushNamedAndRemoveUntil(context, '/monitoringQuestionsTransition', (route) => false);
-          _checkLoggedIn.setVisitingFlag(false);
-        },
-      ).showAlert();
+      tName = responseBody["name"];
+      tMobileNo = responseBody["phone"];
+      tHall = responseBody["hall"];
+      tParentName =responseBody["status"];
+      tParentMbNo = responseBody["parent_mobileno"];
+      tDOB = responseBody["dateofbirth"];
+      tOpd = responseBody["opdno"];
     }
+    else {
+      valueFromBack = false;
+    }
+    print("getData on profile page");
+    print(" == token : {$token}");
+    msg = decoded["message"];
+    print(" == msg : {$msg}");
+    return valueFromBack??false;
+  }
+
+  String studentRollNo;
+  Future getID() async
+  {
+    var tempStudentRollNo = await _checkLoggedIn.getRollNo();
     setState(() {
-      _loading=false;
+      studentRollNo = tempStudentRollNo;
     });
   }
 
+  String token;
+  Future getToken() async
+  {
+    var tempToken= await _checkLoggedIn.getLoginToken();
+    setState(() {
+      token = tempToken;
+    });
+  }
+
+  bool _loading=false;
+  Future checkFromBackend() async{
+    setState(() {
+      _loading=true;
+    });
+    await getID();
+    await getToken();
+    bool value = await getData();
+    if(value==false)
+    {
+      if(msg=="token has expired")
+      {
+        print("-------inside token has expired if---------------");
+        print(" == Old Token : {$token}");
+        String passwordFromSF = await _checkLoggedIn.getPasswordToken();
+        String rollNoFromSF = await _checkLoggedIn.getRollNo();
+        String mobileNoTemp = "1234567890";
+        print("PasswordFromSF = ${passwordFromSF} ,RollNoFromSF = ${rollNoFromSF} ");
+        bool value2 = await checkPassword(passwordFromSF, mobileNoTemp, rollNoFromSF);
+        print("value after checking password for new token = ${value2}");
+        print(" == New Token : {$token}");
+        if(value2==true)
+        {
+          value = await getData();
+          if(value == true)
+          {
+            setState(() {
+              _loading = false;
+            });
+          }
+          else
+          {
+            setState(() {
+              _loading= false;
+            });
+          }
+        }
+      }
+      else
+      {
+        setState(() {
+          _loading= false;
+        });
+      }
+    }
+    else
+    {
+      setState(() {
+        _loading = false;
+      });
+    }
+    if(value==true)
+      {
+        setState(() {
+          name = tName;
+          //rollNo = tStudentRollNo;
+          mobileNo1 = tMobileNo;
+          hall = tHall;
+          parentName = tParentName;
+          parentMobileNo = tParentMbNo;
+          birthday = tDOB;
+          valueFromBack = true;
+          opdNo = tOpd;
+          buildBirthday();
+          buildName();
+          buildHall();
+          buildMobile1();
+          buildParentName();
+          buildParentMobile();
+          buildOPDNo();
+        });
+      }
+    else
+      {
+        AlertBox(
+          context: context,
+          alertContent:
+          'Server Error. Please try again after sometime',
+          alertTitle: 'Server Error !!',
+          rightActionText: 'Close',
+          leftActionText: ' ',
+          onPressingRightActionButton: () {
+            Navigator.of(context).pop();
+            _checkLoggedIn.setVisitingFlag(false);
+          },
+        ).showAlert();
+      }
+  }
 
   @override
   void initState() {
     super.initState();
-    getData();
+    checkFromBackend();
   }
 
   @override
@@ -264,14 +370,14 @@ class _ProfilePageViewState extends State<ProfilePageView> {
                         'Here are your Profile Details',
                         textAlign: TextAlign.left,
                         style: TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.black,
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.w500,
+                          color: kWeirdBlue,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 30),
                   buildName(),
                   const SizedBox(height: 12),
                   buildMobile1(),
@@ -291,42 +397,8 @@ class _ProfilePageViewState extends State<ProfilePageView> {
               ),
             ),
             SizedBox(
-              height: 50.0,
+              height: 30.0,
             ),
-            GestureDetector(
-              child: Align(
-                alignment: Alignment.center,
-                child: Container(
-                  margin: EdgeInsets.only(bottom: 20),
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  decoration: BoxDecoration(
-                    color: kWeirdBlue,
-                    borderRadius: BorderRadius.circular(25.0),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26.withOpacity(0.3),
-                        spreadRadius: 1,
-                        blurRadius: 2,
-                        offset: Offset(0, 1), // changes position of shadow
-                      ),
-                    ],
-                  ),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Text(
-                        'Change Password',
-                        style: TextStyle(
-                          fontSize: 24.0,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              onTap: () {},
-            )
           ],
         ),
       ),

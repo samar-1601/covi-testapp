@@ -231,24 +231,24 @@ class _StudentChosenState extends State<StudentChosen> {
                       alignment: Alignment.centerLeft,
                       child: Center(
                         child: Text(
-                          'Enter Your Details',
+                          'Enter your details',
                           textAlign: TextAlign.left,
                           style: TextStyle(
                             fontSize: 24.0,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: kWeirdBlue,
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    buildName(),
+                    const SizedBox(height: 30),
+                    // buildName(),
                     // const SizedBox(height: 12),
                     // buildRollNo(),
                     // const SizedBox(height: 12),
                     // buildEmail(),
-                    const SizedBox(height: 12),
-                    buildMobile1(),
+                    // const SizedBox(height: 12),
+                    // buildMobile1(),
                     // const SizedBox(height: 12),
                     // buildMobile2(),
                     const SizedBox(height: 12),
@@ -300,7 +300,7 @@ class _StudentChosenState extends State<StudentChosen> {
                 ),
                 onTap: () {
                   setState(() {
-                    if(parentMobileNo.length != 10 || mobileNo1.length !=10)
+                    if(parentMobileNo.length != 10)
                     {
                       AlertBox(
                           context: context,

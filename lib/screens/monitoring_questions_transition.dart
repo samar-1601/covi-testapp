@@ -71,6 +71,7 @@ Future getID() async
               height: 150.0,
             ),
             Container(
+              padding: EdgeInsets.only(left: 10, right: 10),
               child: Center(
                 child: Text(
                   'Please Answer the required questions so that we can monitor you',
@@ -123,8 +124,6 @@ Future getID() async
                       context,
                       new MaterialPageRoute(
                           builder: (BuildContext context) => MonitoringQuestions(
-                           // chosenCategory: widget.selectedCategory,
-                           // id : id,
                             rollNo: rollNo,
                           )));
                 });
@@ -186,7 +185,6 @@ Future getID() async
                         _checkLoggedIn.setParentNameToken("Parent's Name");
                         _checkLoggedIn.setMbNoToken("Your Mobile Number");
                         _checkLoggedIn.setHallToken("Your Hall of Residence");
-
                         Navigator.of(context)
                             .pushNamedAndRemoveUntil('/welcome', (Route<dynamic> route) => false);
                       }).showAlert();

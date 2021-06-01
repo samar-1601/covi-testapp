@@ -33,7 +33,7 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
 
 
   Widget buildFeverLevel() => buildTitle(
-    title: 'Enter Your Temperature(in Fahrenheit)?',
+    title: 'Enter Your Temperature(in Fahrenheit)',
     child: TextFormField(
       initialValue: feverTemp,
       keyboardType: TextInputType.number,
@@ -45,7 +45,7 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
     ),
   );
   Widget buildSpO2Level() => buildTitle(
-    title: 'Enter Your SpO2 Level?',
+    title: 'Enter Your SpO2 Level',
     child: TextFormField(
       initialValue: spo2,
       keyboardType: TextInputType.number,
@@ -58,7 +58,7 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
   );
 
   Widget buildExtraHealthConditions() => buildTitle(
-    title: 'How do you feel (any discomfort?)',
+    title: 'How do you feel (any discomfort)?',
     child: TextFormField(
       initialValue: extraHealthCondition,
       decoration: InputDecoration(
@@ -70,7 +70,7 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
   );
 
   Widget buildHaveFoodOrMedicalSupplies() => buildTitle(
-    title: 'Do You have proper food and medical supplies? (Yes/No)',
+    title: 'Do you have proper food and medical supplies? (Yes/No)',
     child: TextFormField(
       initialValue: haveFoodOrMedicalsupplies,
       decoration: InputDecoration(
@@ -119,7 +119,7 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
     Map data = {
       "fever":feverTemp,
       "spo2":spo2,
-      "patient_condition" : extraHealthCondition,
+      "patient_condition" : extraHealthCondition.toLowerCase(),
       //"rollNo" : rollNo,
       "food_supply":haveFoodOrMedicalsupplies,
     };
@@ -139,7 +139,7 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
     }
     print("puData in general data_and_otp");
     print(" == token : {$token}");
-    msg = responseBody["status"];
+    msg = responseBody["message"];
     print(" == msg : {$msg}");
     return valueFromBack??false;
   }
@@ -314,8 +314,8 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
                         'Your daily monitoring. The important vital signs will be transmitted in the real time to BCRTH doctor’s dashboard. In case of emergency, you can press SoS button. Kindly note that you will be prompted by the app to enter these details periodically. In case of standard values of these parameters, kindly enter.',
                         textAlign: TextAlign.left,
                         style: TextStyle(
-                          fontSize: 14.0,
-                          fontWeight: FontWeight.w500,
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.w400,
                           color: kWeirdBlue,
                         ),
                       ),

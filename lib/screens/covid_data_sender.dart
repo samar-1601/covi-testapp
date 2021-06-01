@@ -89,7 +89,7 @@ class _CovidDataSenderState extends State<CovidDataSender> {
     }
     print("puData in general covid data sender");
     print(" == token : {$token}");
-    msg = responseBody["status"];
+    msg = responseBody["message"];
     print(" == msg : {$msg}");
     return valueFromBack??false;
 
@@ -213,6 +213,10 @@ class _CovidDataSenderState extends State<CovidDataSender> {
     return value;
   }
 
+  final keys = ['Isolation Address', 'Isolation Date', "Supervisor's name", "Supervisor's Mobile No.",
+  "Symptoms"];
+
+  List<String> values ;
 
   @override
   void initState() {
@@ -224,6 +228,7 @@ class _CovidDataSenderState extends State<CovidDataSender> {
       print(widget.supervisorName);
       print(widget.supervisorMobileNo);
       print(widget.symptoms);
+    values = [widget.isolationAddress, widget.isolationDate.toString(), widget.supervisorName, widget.supervisorMobileNo, widget.symptoms];
   }
 
 
@@ -246,28 +251,46 @@ class _CovidDataSenderState extends State<CovidDataSender> {
           children: <Widget>[
            CustomAppBar(),
             SizedBox(
-              height: 120.0,
+              height: 50.0,
             ),
             Container(
               child: Center(
                 child: Column(
                   children: [
                     Text(
-                      'Data You Entered\n',
+                      'Data Entered by You\n',
                       textAlign: TextAlign.left,
                       style: TextStyle(
-                        fontSize: 24.0,
+                        fontSize: 22.0,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: kWeirdBlue,
                       ),
                     ),
-                    Text(
-                      widget.isolationAddress+'\n'+widget.isolationDate.toString() +'\n'+widget.supervisorName+'\n'+ widget.supervisorMobileNo +'\n'+ widget.symptoms,
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        color: Colors.black,
-                      ),
-                    ),
+                    ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      physics: ScrollPhysics(),
+                      itemCount: keys.length,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          shadowColor: kWeirdBlue,
+                          elevation: 3,
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: ListTile(
+                              title: Text(keys[index]),
+                              subtitle: Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Text(
+                                  values[index],
+                                ),
+                              ),
+                              //isThreeLine: true,
+                            ),
+                          ),
+                        );
+                      },
+                    )
                   ],
                 ),
               ),

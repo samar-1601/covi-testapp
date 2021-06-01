@@ -77,7 +77,7 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
     print("puData in general data_and_otp");
     valueFromBack = await _checkLoggedIn.getVisitingFlag();
     print(" == token : {$token}");
-    msg = responseBody["status"];
+    msg = responseBody["message"];
     print(" == msg : {$msg}");
     return valueFromBack??false;
   }
@@ -198,19 +198,21 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
       }
     return value;
   }
+  final keys = ['Student Category', 'Hall of Residence', "Parent's Contact Number"];
+  List<String> values ;
 
   @override
   void initState() {
     super.initState();
     print(widget.selectedCategory);
       //checkFromBackend();
-      print(widget.name);
-      print(widget.rollNo);
-      print(widget.email);
+      // print(widget.name);
+      // print(widget.rollNo);
+      // print(widget.email);
       print(widget.hall);
       print(widget.mobileNo1);
-     // print(widget.mobileNo2);
-      print(widget.birthday.toString());
+      print(widget.parentMobileNo);
+      values = [widget.selectedCategory, widget.hall, widget.parentMobileNo];
   }
 
   @override
@@ -242,32 +244,30 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
                             'Data Entered by You\n',
                             textAlign: TextAlign.left,
                             style: TextStyle(
-                              fontSize: 24.0,
+                              fontSize: 22.0,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                              color: kWeirdBlue,
                             ),
                           ),
-                          Text(
-                            widget.selectedCategory +
-                                '\n' +
-                                widget.name +
-                                '\n' +
-                                widget.rollNo +
-                                '\n' +
-                                widget.hall +
-                                '\n' +
-                                widget.mobileNo1 +
-                                '\n' +
-                                widget.parentName +
-                                '\n' +
-                                widget.parentMobileNo +
-                                '\n' +
-                                widget.birthday.toString(),
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              color: Colors.black,
+                       ListView.builder(
+                         scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        physics: ScrollPhysics(),
+                        itemCount: keys.length,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            shadowColor: kWeirdBlue,
+                            elevation: 3,
+                            child: ListTile(
+                              title: Text(keys[index]),
+                              subtitle: Text(
+                                  values[index],
+                              ),
+                              //isThreeLine: true,
                             ),
-                          ),
+                          );
+                        },
+                      )
                         ],
                       ),
                     ),
