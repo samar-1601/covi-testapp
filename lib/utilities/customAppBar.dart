@@ -58,8 +58,13 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   AlertBox(
                       context: context,
                       alertContent:
-                      'Call and Mail us at ...',
-                      alertTitle: 'Help',
+                      '''If you want any immediate help or want to contact the medical facility regarding any problem you are facing, here are the contacts which you can approach:\n 
+                      \n𝗛𝗢𝗦𝗣𝗜𝗧𝗔𝗟\n\nBCRTH ER : (8695571404)\nBCRTH Help Desk : (03222-81008/81009)\n
+                      \n𝗙𝗢𝗢𝗗 𝗦𝗨𝗣𝗣𝗟𝗬\n\nBRH Mess : (9775536579/9126784350)\nNVH Mess : (8293999071)\nSunday food truck : (8617389794)\nBiplob Da : (7407031717)\nBikash Da : (9851874317)\nHeritage : (7407000227)\nDakshin : (9674873015)\nRao Garu shop in Tech (Andhra style breakfast) : (8293476093)\nSayan Dutta home delivery : (8016895224)\n
+                      \n𝗚𝗥𝗢𝗖𝗘𝗥𝗬\n\nKgp bazaar (where orders can be picked and ordered online) : (https://www.bazaarkgp.com)\n\nTech.M vegetable/eggs : (9002468543) \nRitam online services : (9046419665, 7003009650)\nTech.M groceries : (9002821867)\nSpencers- Orders can be placed in website : (8348502831)
+
+                      ''',
+                      alertTitle: 'Want immediate Help?',
                       rightActionText: 'Close',
                       leftActionText: '',
                       onPressingRightActionButton: () {

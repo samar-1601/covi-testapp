@@ -1,11 +1,9 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'utilities/constants.dart';
 import 'route_generator.dart';
 import 'notifications_manager.dart';
-import 'package:http/http.dart';
-import 'package:http/io_client.dart';
+
 
 class MyHttpOverrides extends HttpOverrides{
   @override

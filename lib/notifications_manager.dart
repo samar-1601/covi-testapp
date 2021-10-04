@@ -14,7 +14,7 @@ void notificationsManager(BuildContext context) {
   Workmanager.registerPeriodicTask(
     "2",
     "simplePeriodicTask",
-    frequency: Duration(minutes: 15),
+    frequency: Duration(hours: 6),
   );
 }
 Future notificationSelected(String payload) async {
@@ -27,7 +27,7 @@ void callbackDispatcher() {
   Workmanager.executeTask((task, inputData) {
 
     FlutterLocalNotificationsPlugin flip = new FlutterLocalNotificationsPlugin();
-    var android = new AndroidInitializationSettings('@mipmap/ic_launcher');
+    var android = new AndroidInitializationSettings('logo1');
     var IOS = new IOSInitializationSettings();
 
     var settings = new InitializationSettings(android: android, iOS: IOS);
@@ -45,7 +45,14 @@ Future _showNotificationWithDefaultSound(flip) async {
       importance: Importance.max,
       priority: Priority.high,
       styleInformation: InboxStyleInformation(
-        ['How do you feel now?','Please fill in the details in the App', 'Tap to go to the app'],
+        ['<p>How do you feel now? Please fill in the details.</p>', '<div style="float : right;"><strong >Tap to go to the app</strong></div>'],
+        contentTitle: "<i>CoviApp</i>",
+        summaryText: "summary",
+        htmlFormatContent: true,
+        htmlFormatContentTitle: true,
+        htmlFormatSummaryText: true,
+        htmlFormatLines: true,
+        htmlFormatTitle: true,
       ),
   );
   var iOSPlatformChannelSpecifics = new IOSNotificationDetails();

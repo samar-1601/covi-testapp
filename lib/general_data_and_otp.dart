@@ -22,7 +22,10 @@ class GeneralDataSender extends StatefulWidget {
   final String parentMobileNo;
   final String email;
   final String password;
-
+  final String isVaccinated ;
+  final String firstDose;
+  final String secondDose;
+  final String vaccineName;
   GeneralDataSender(
       {this.selectedCategory = 'NE',
       this.name = 'NE',
@@ -35,7 +38,12 @@ class GeneralDataSender extends StatefulWidget {
       this.parentName = 'NE',
       this.parentMobileNo = 'NE',
       this.email = 'NE',
-        this.password = 'NE'});
+        this.password = 'NE',
+        this.vaccineName='Vaccine not taken',
+        this.secondDose = 'Second dose not taken',
+        this.isVaccinated = 'No',
+        this.firstDose = 'First Dose not taken',
+      });
 
   @override
   _GeneralDataSenderState createState() => _GeneralDataSenderState();
@@ -49,17 +57,31 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
 
   Future putData() async {
     var url = Uri.parse('https://imedixbcr.iitkgp.ac.in/api/coviapp/update-patient-detail');
-    Map data = {
-      "name": widget.name,
-      "hall": widget.hall,
-      //"birth_date": widget.birthday.toString(),
-      "selected_category": widget.selectedCategory,
-      "mobileNo1" : widget.mobileNo1,
-      //"rollNo" : widget.rollNo,
-      //"parentName" : widget.parentName,
-      "parent_mobileno": widget.parentMobileNo,
-      //"password": widget.password,
-    };
+    Map data = {};
+    if(widget.isVaccinated.toLowerCase()=='yes')
+    {
+      data = {
+        "hall": widget.hall,
+        "parent_mobileno": widget.parentMobileNo,
+        "selected_category": widget.selectedCategory,
+        "vaccinated": widget.isVaccinated,
+        "vaccine_type": widget.vaccineName,
+        "date_of_first_dose": widget.firstDose,
+        "date_of_second_dose": widget.secondDose=='Second Dose not taken'?'':widget.secondDose,
+      };
+    }
+    else if(widget.isVaccinated.toLowerCase()=='no')
+    {
+      data = {
+        "hall": widget.hall,
+        "parent_mobileno": widget.parentMobileNo,
+        "selected_category": widget.selectedCategory,
+        "vaccinated": widget.isVaccinated,
+        "vaccine_type": "",
+        "date_of_first_dose": "",
+        "date_of_second_dose": "",
+      };
+    }
     String body = json.encode(data);
     print(body);
     var response = await http.post(url,
@@ -67,7 +89,8 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
     Map responseBody = json.decode(response.body) as Map;
-    if (response.statusCode != 200) {
+    String status = responseBody['status'];
+    if (response.statusCode != 200 ||  status!='success') {
       _checkLoggedIn.setVisitingFlag(false);
       _checkLoggedIn.setIfAnsweredBeforeFlag(false);
      }
@@ -99,7 +122,10 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
     Map responseBody = json.decode(response.body) as Map;
-    if (response.statusCode == 200) {
+
+    String type = responseBody["type"];
+
+    if (response.statusCode == 200 && type == "PAT") {
       _checkLoggedIn.setVisitingFlag(true);
       _checkLoggedIn.setRollNo(rollNo);
     } else {
@@ -198,21 +224,17 @@ class _GeneralDataSenderState extends State<GeneralDataSender> {
       }
     return value;
   }
-  final keys = ['Student Category', 'Hall of Residence', "Parent's Contact Number"];
+  final keys = ['Student Category', 'Hall of Residence', "Parent's Contact Number","Vaccinated?(yes/no)","Date of First Dose", "Date of Second Dose", "Name of Vaccine taken"];
   List<String> values ;
 
   @override
   void initState() {
     super.initState();
     print(widget.selectedCategory);
-      //checkFromBackend();
-      // print(widget.name);
-      // print(widget.rollNo);
-      // print(widget.email);
       print(widget.hall);
       print(widget.mobileNo1);
       print(widget.parentMobileNo);
-      values = [widget.selectedCategory, widget.hall, widget.parentMobileNo];
+      values = [widget.selectedCategory, widget.hall, widget.parentMobileNo, widget.isVaccinated, widget.firstDose, widget.secondDose, widget.vaccineName];
   }
 
   @override

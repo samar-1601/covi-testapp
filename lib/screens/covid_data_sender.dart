@@ -8,6 +8,7 @@ import 'package:coviapp/shared_pref.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:coviapp/utilities/customAppBar.dart';
+import 'package:intl/intl.dart';
 
 class CovidDataSender extends StatefulWidget {
 
@@ -61,13 +62,14 @@ class _CovidDataSenderState extends State<CovidDataSender> {
     rollNo = await _checkLoggedIn.getRollNo();
     print(rollNo);
     print(token);
+
     Map data = {
       //"selectedCategory": widget.selectedCategory,
       //"rollNo" : rollNo,
       "supervisor_name" : widget.supervisorName,
       "supervisor_mobileno" : widget.supervisorMobileNo,
       "isolation_address": widget.isolationAddress,
-      "isolation_date": widget.isolationDate.toString(),
+      "isolation_date": DateFormat('dd-MM-yyyy').format(widget.isolationDate).toString(),
       "symptoms": widget.symptoms,
       "have_covid": "yes",
     };
@@ -79,7 +81,8 @@ class _CovidDataSenderState extends State<CovidDataSender> {
     print('Response body: ${response.body}');
     Map responseBody = json.decode(response.body) as Map;
     print(responseBody);
-    if (response.statusCode != 200) {
+    String status = responseBody['status'];
+    if (response.statusCode != 200 || status!='success') {
       valueFromBack = false;
     }
     else {
@@ -113,7 +116,10 @@ class _CovidDataSenderState extends State<CovidDataSender> {
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
     Map responseBody = json.decode(response.body) as Map;
-    if (response.statusCode == 200) {
+
+    String type = responseBody["type"];
+
+    if (response.statusCode == 200 && type == "PAT") {
       _checkLoggedIn.setVisitingFlag(true);
       _checkLoggedIn.setRollNo(rollNo);
     } else {
@@ -224,11 +230,14 @@ class _CovidDataSenderState extends State<CovidDataSender> {
 
     print(widget.selectedCategory);
       print(widget.isolationAddress);
-      print(widget.isolationDate);
+      print("date: =====");
+      print(DateFormat.yMd().format(widget.isolationDate));
+    print(DateFormat('dd-MM-yyyy').format(widget.isolationDate).toString());
+    print("date: =====");
       print(widget.supervisorName);
       print(widget.supervisorMobileNo);
       print(widget.symptoms);
-    values = [widget.isolationAddress, widget.isolationDate.toString(), widget.supervisorName, widget.supervisorMobileNo, widget.symptoms];
+    values = [widget.isolationAddress,DateFormat('dd-MM-yyyy').format(widget.isolationDate).toString(), widget.supervisorName, widget.supervisorMobileNo, widget.symptoms];
   }
 
 

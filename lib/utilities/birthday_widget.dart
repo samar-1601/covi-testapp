@@ -20,12 +20,23 @@ class BirthdayWidget extends StatefulWidget {
 class _BirthdayWidgetState extends State<BirthdayWidget> {
   final controller = TextEditingController();
   final focusNode = FocusNode();
+  var currDate;
+  var dateParse, currDay, currMonth, currYear;
+
 
   @override
   void initState() {
     super.initState();
-
     setDate();
+    setState(() {
+      currDate = new DateTime.now().toString();
+      dateParse = DateTime.parse(currDate);
+      var formattedDate = "${dateParse.day}-${dateParse.month}-${dateParse.year}";
+      currYear = dateParse.year;
+      currDay = dateParse.day;
+      currMonth = dateParse.month;
+      print(formattedDate);
+    });
   }
 
   @override
@@ -69,7 +80,9 @@ class _BirthdayWidgetState extends State<BirthdayWidget> {
       context: context,
       initialDate: widget.birthday ?? DateTime.now(),
       firstDate: DateTime(1950),
-      lastDate: DateTime(2100),
+      lastDate: DateTime(
+        currYear,currMonth, currDay,
+      ),
     );
 
     if (birthday == null) return;

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:coviapp/utilities/alert_box.dart';
 import 'package:coviapp/utilities/constants.dart';
@@ -120,7 +121,7 @@ class _DoYouHaveCovidState extends State<DoYouHaveCovid> {
 
 
   Future<void> _launched;
-  String _phone = "7061436275";
+  String _phone = "8695571404";
   Future<void> _makePhoneCall(String url) async {
     if (await canLaunch(url)) {
       await launch(url);
@@ -206,7 +207,7 @@ class _DoYouHaveCovidState extends State<DoYouHaveCovid> {
               ),
             ),
             SizedBox(
-              height: 150.0,
+              height: 120.0,
             ),
             Container(
               padding: EdgeInsets.only(left: 15, right: 15),
@@ -215,7 +216,7 @@ class _DoYouHaveCovidState extends State<DoYouHaveCovid> {
                   'Are you infected with Covid (or have symptoms)?',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 24.0,
+                    fontSize: 22.0,
                     fontWeight: FontWeight.bold,
                     color: kWeirdBlue,
                   ),
@@ -223,50 +224,145 @@ class _DoYouHaveCovidState extends State<DoYouHaveCovid> {
               ),
             ),
             SizedBox(
-              height: 50.0,
+              height: 40.0,
             ),
-            GestureDetector(
-              child: Align(
-                alignment: Alignment.center,
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.5,
-                  decoration: BoxDecoration(
-                    color: kWeirdBlue,
-                    borderRadius: BorderRadius.circular(25.0),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26.withOpacity(0.3),
-                        spreadRadius: 1,
-                        blurRadius: 2,
-                        offset: Offset(0, 1), // changes position of shadow
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                GestureDetector(
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.25,
+                      decoration: BoxDecoration(
+                        color: kWeirdBlue,
+                        borderRadius: BorderRadius.circular(25.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26.withOpacity(0.3),
+                            spreadRadius: 1,
+                            blurRadius: 2,
+                            offset: Offset(0, 1), // changes position of shadow
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Text(
-                        'YES',
-                        style: TextStyle(
-                          fontSize: 24.0,
-                          color: Colors.white,
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Text(
+                            'YES',
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
+                  onTap: () async{
+                    setState(() {
+                      Navigator.push(
+                          context,
+                          new MaterialPageRoute(
+                              builder: (BuildContext context) => CovidQuestions(
+                                chosenCategory: widget.selectedCategory,
+                                id : widget.id,
+                              )));
+                    });
+                  },
+                ),
+                GestureDetector(
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.25,
+                      decoration: BoxDecoration(
+                        color: kWeirdBlue,
+                        borderRadius: BorderRadius.circular(25.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26.withOpacity(0.3),
+                            spreadRadius: 1,
+                            blurRadius: 2,
+                            offset: Offset(0, 1), // changes position of shadow
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Text(
+                            'NO',
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  onTap: () {
+                    setState(() {
+                      AlertBox(
+                          context: context,
+                          alertContent:
+                          'Please update your status in the app if you feel any covid symptoms',
+                          alertTitle: 'Thank you for your cooperation ',
+                          rightActionText: 'Close',
+                          leftActionText: '',
+                          onPressingRightActionButton: () {
+                            Navigator.pop(context);
+                          }).showAlert();
+                    });
+                  },
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 50.0,
+            ),
+            Container(
+              color: Colors.blueGrey[100],
+              padding: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
+              child: Center(
+                child:RichText(
+                  textAlign: TextAlign.center,
+                  text: new TextSpan(
+                    children: [
+                      new TextSpan(
+                        text: 'If you want to make Tele-consultation with BCRTH doctors, you can use the following ',
+                        style: TextStyle(
+                          fontSize: 17.0,
+                          fontWeight: FontWeight.w300,
+                          color: Colors.grey[800],
+                        ),
+                      ),
+                      new TextSpan(
+                        text: 'iMedix website',
+                        style: TextStyle(
+                          fontSize: 17.0,
+                          fontWeight: FontWeight.w400,
+                          decoration: TextDecoration.underline,
+                          color: Colors.grey[900],
+                        ),
+                        recognizer: new TapGestureRecognizer()
+                          ..onTap = () { launch('https://imedixbcr.iitkgp.ac.in/iMediX/');
+                          },
+                      ),
+                      new TextSpan(
+                        text: ' and login using the same credentials.',
+                        style: TextStyle(
+                          fontSize: 17.0,
+                          fontWeight: FontWeight.w300,
+                          color: Colors.grey[800],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              onTap: () async{
-                setState(() {
-                  Navigator.push(
-                      context,
-                      new MaterialPageRoute(
-                          builder: (BuildContext context) => CovidQuestions(
-                            chosenCategory: widget.selectedCategory,
-                            id : widget.id,
-                          )));
-                });
-              },
             ),
             SizedBox(
               height: 50.0,
@@ -275,56 +371,7 @@ class _DoYouHaveCovidState extends State<DoYouHaveCovid> {
               child: Align(
                 alignment: Alignment.center,
                 child: Container(
-                  width: MediaQuery.of(context).size.width * 0.5,
-                  decoration: BoxDecoration(
-                    color: kWeirdBlue,
-                    borderRadius: BorderRadius.circular(25.0),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26.withOpacity(0.3),
-                        spreadRadius: 1,
-                        blurRadius: 2,
-                        offset: Offset(0, 1), // changes position of shadow
-                      ),
-                    ],
-                  ),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Text(
-                        'NO',
-                        style: TextStyle(
-                          fontSize: 24.0,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              onTap: () {
-                setState(() {
-                  AlertBox(
-                      context: context,
-                      alertContent:
-                      'Please update your status in the app if you feel any covid symptoms',
-                      alertTitle: 'Thank you for your cooperation ',
-                      rightActionText: 'Close',
-                      leftActionText: '',
-                      onPressingRightActionButton: () {
-                        Navigator.pop(context);
-                      }).showAlert();
-                });
-              },
-            ),
-            SizedBox(
-              height: 80.0,
-            ),
-            GestureDetector(
-              child: Align(
-                alignment: Alignment.center,
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.5,
+                  width: MediaQuery.of(context).size.width * 0.4,
                   decoration: BoxDecoration(
                     color: Colors.red,
                     borderRadius: BorderRadius.circular(25.0),
@@ -343,7 +390,7 @@ class _DoYouHaveCovidState extends State<DoYouHaveCovid> {
                       child: Text(
                         'LogOut',
                         style: TextStyle(
-                          fontSize: 24.0,
+                          fontSize: 20.0,
                           color: Colors.white,
                         ),
                       ),
@@ -367,10 +414,15 @@ class _DoYouHaveCovidState extends State<DoYouHaveCovid> {
                         _checkLoggedIn.setVisitingFlag(false);
                         _checkLoggedIn.setLoginIdValue(0);
                         _checkLoggedIn.setIfAnsweredBeforeFlag(false);
+                        _checkLoggedIn.setRollNo("Your RollNo");
+                        _checkLoggedIn.setNameToken(" Your Name");
+                        _checkLoggedIn.setParentMbNoToken("Parent's Contact Number");
+                        _checkLoggedIn.setParentNameToken("Parent's Name");
+                        _checkLoggedIn.setMbNoToken("Your Mobile Number");
+                        _checkLoggedIn.setHallToken("Your Hall of Residence");
                         Navigator.of(context)
                             .pushNamedAndRemoveUntil('/welcome', (Route<dynamic> route) => false);
                       }).showAlert();
-
                 });
               },
             ),
@@ -378,20 +430,41 @@ class _DoYouHaveCovidState extends State<DoYouHaveCovid> {
         ),
       ),
 
-      floatingActionButton:  FloatingActionButton.extended(
-          label: Text('SOS'),
-          heroTag: "sos",
-          icon: Icon(
-            Icons.call,
-            color: Colors.white,
-            size: 28,
-          ),
-          onPressed: () async{
-            setState(() {
-              _makePhoneCall('tel:$_phone');
-            });
-          }
-      ),
+        floatingActionButton: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            FloatingActionButton(
+                heroTag: "profile",
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Icon(
+                      Icons.person,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/profileView');
+                }
+            ),
+            FloatingActionButton.extended(
+                label: Text('SOS'),
+                heroTag: "sos",
+                icon: Icon(
+                  Icons.call,
+                  color: Colors.white,
+                  size: 28,
+                ),
+                onPressed: () async{
+                  setState(() {
+                    _makePhoneCall('tel:$_phone');
+                  });
+                }
+            ),
+          ],
+        )
     );
   }
 }

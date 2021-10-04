@@ -492,6 +492,12 @@ class _CovidQuestionsState extends State<CovidQuestions> {
   //==========================================setting already answered shared Preference===============
  // CheckLoggedIn _checkLoggedIn = CheckLoggedIn();
 
+  bool isNumeric(String s) {
+    if (s == "") {
+      return false;
+    }
+    return double.tryParse(s) != null;
+  }
 
   @override
   Widget build(BuildContext context) {
