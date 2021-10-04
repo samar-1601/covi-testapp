@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:coviapp/utilities/alert_box.dart';
 import 'package:coviapp/utilities/constants.dart';
 import 'package:coviapp/shared_pref.dart';
 import 'package:coviapp/screens/monitoring_questions.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:coviapp/utilities/customAppBar.dart';
 
@@ -40,7 +42,7 @@ Future getID() async
   rollNo = await _checkLoggedIn.getRollNo();
 }
   Future<void> _launched;
-  String _phone = "7061436275";
+  String _phone = "8695571404";
   Future<void> _makePhoneCall(String url) async {
     if (await canLaunch(url)) {
       await launch(url);
@@ -68,16 +70,16 @@ Future getID() async
           children: <Widget>[
            CustomAppBar(),
             SizedBox(
-              height: 150.0,
+              height: 100.0,
             ),
             Container(
               padding: EdgeInsets.only(left: 10, right: 10),
               child: Center(
                 child: Text(
-                  'Please Answer the required questions so that we can monitor you',
+                  'Please Answer the required questions for continuous monitoring',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 24.0,
+                    fontSize: 22.0,
                     fontWeight: FontWeight.bold,
                     color: kWeirdBlue,
                   ),
@@ -85,13 +87,13 @@ Future getID() async
               ),
             ),
             SizedBox(
-              height: 50.0,
+              height: 40.0,
             ),
             GestureDetector(
               child: Align(
                 alignment: Alignment.center,
                 child: Container(
-                  width: MediaQuery.of(context).size.width * 0.5,
+                  width: MediaQuery.of(context).size.width * 0.4,
                   decoration: BoxDecoration(
                     color: kWeirdBlue,
                     borderRadius: BorderRadius.circular(25.0),
@@ -110,7 +112,7 @@ Future getID() async
                       child: Text(
                         'Proceed',
                         style: TextStyle(
-                          fontSize: 24.0,
+                          fontSize: 20.0,
                           color: Colors.white,
                         ),
                       ),
@@ -130,13 +132,57 @@ Future getID() async
               },
             ),
             SizedBox(
-              height: 100.0,
+              height: 60.0,
+            ),
+            Container(
+              color: Colors.blueGrey[100],
+              padding: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
+              child: Center(
+                child:RichText(
+                  textAlign: TextAlign.center,
+                  text: new TextSpan(
+                    children: [
+                      new TextSpan(
+                        text: 'If you want to make Tele-consultation with BCRTH doctors, you can use the following ',
+                        style: TextStyle(
+                          fontSize: 17.0,
+                          fontWeight: FontWeight.w300,
+                          color: Colors.grey[800],
+                        ),
+                      ),
+                      new TextSpan(
+                        text: 'iMedix website',
+                        style: TextStyle(
+                          fontSize: 17.0,
+                          fontWeight: FontWeight.w400,
+                          decoration: TextDecoration.underline,
+                          color: Colors.grey[900],
+                        ),
+                        recognizer: new TapGestureRecognizer()
+                          ..onTap = () { launch('https://imedixbcr.iitkgp.ac.in/iMediX/');
+                          },
+                      ),
+                      new TextSpan(
+                        text: ' and login using the same credentials.',
+                        style: TextStyle(
+                          fontSize: 17.0,
+                          fontWeight: FontWeight.w300,
+                          color: Colors.grey[800],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 50.0,
             ),
             GestureDetector(
               child: Align(
                 alignment: Alignment.center,
                 child: Container(
-                  width: MediaQuery.of(context).size.width * 0.5,
+                  width: MediaQuery.of(context).size.width * 0.45,
                   decoration: BoxDecoration(
                     color: Colors.red,
                     borderRadius: BorderRadius.circular(25.0),
@@ -155,7 +201,7 @@ Future getID() async
                       child: Text(
                         'LogOut',
                         style: TextStyle(
-                          fontSize: 24.0,
+                          fontSize: 22.0,
                           color: Colors.white,
                         ),
                       ),

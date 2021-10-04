@@ -6,6 +6,8 @@ import 'package:coviapp/utilities/birthday_widget.dart';
 import 'package:coviapp/general_data_and_otp.dart';
 import 'package:coviapp/shared_pref.dart';
 import 'package:coviapp/utilities/customAppBar.dart';
+import 'package:coviapp/utilities/customDropDownButton.dart';
+import 'package:intl/intl.dart';
 
 class StudentChosen extends StatefulWidget {
   final String chosenCategory;
@@ -28,11 +30,20 @@ class _StudentChosenState extends State<StudentChosen> {
   String rollNo = '';
   String parentName = '';
   String parentMobileNo = '';
-  String emailID = '';
+  String isVaccinated = '';
+
   String password = '';
 
   DateTime birthday;
+  DateTime firstDose;
+  DateTime secondDose;
 
+  static List<String> categoryList = [
+    'Select Vaccine Name',
+    'Covishield',
+    'Covaxin',
+  ];
+  String vaccineName =categoryList[0];
 
   Widget buildName() => buildTitle(
     title: 'Name',
@@ -94,7 +105,7 @@ class _StudentChosenState extends State<StudentChosen> {
   Widget buildParentMobile() => buildTitle(
     title: 'Parent Contact No',
     child: TextFormField(
-      initialValue: name,
+      initialValue: parentMobileNo,
       keyboardType: TextInputType.phone,
       decoration: InputDecoration(
         border: OutlineInputBorder(),
@@ -126,16 +137,16 @@ class _StudentChosenState extends State<StudentChosen> {
     ),
   );
 
-  Widget buildEmail() => buildTitle(
-    title: 'Email ID',
+  Widget buildHaveYouBeenVaccinated() => buildTitle(
+    title: 'Have you been Vaccinated? (Yes/No)',
     child: TextFormField(
-      initialValue: emailID,
-      keyboardType: TextInputType.emailAddress,
+      initialValue: isVaccinated,
+      //keyboardType: TextInputType.emailAddress,
       decoration: InputDecoration(
         border: OutlineInputBorder(),
-        hintText: 'Frequently used mail ID',
+        hintText: 'Vaccinated?(Yes/No)',
       ),
-      onChanged: (emailID) => setState(() => this.emailID = emailID),
+      onChanged: (emailID) => setState(() => this.isVaccinated = emailID),
     ),
   );
 
@@ -148,6 +159,38 @@ class _StudentChosenState extends State<StudentChosen> {
     ),
   );
 
+  Widget buildDateForDose1() => buildTitle(
+    title: 'Date of Vaccination (First Dose)',
+    child: BirthdayWidget(
+      birthday: firstDose,
+      hinText: 'Enter Date',
+      onChangedBirthday: (birthday) =>
+          setState(() => this.firstDose = birthday),
+    ),
+  );
+
+  Widget buildDateForDose2() => buildTitle(
+    title: 'Date of Vaccination (Second Dose if taken)',
+    child: BirthdayWidget(
+      birthday: secondDose,
+      hinText: 'Enter Date',
+      onChangedBirthday: (birthday) =>
+          setState(() => this.secondDose = birthday),
+    ),
+  );
+
+  List<DropdownMenuItem> getDropDownItems(List dropDownList) {
+    List<DropdownMenuItem> dropDownItems = [];
+    for (int i = 0; i < dropDownList.length; i++) {
+      String listItem = dropDownList[i];
+      var newItem = DropdownMenuItem(
+        child: Text(listItem),
+        value: listItem,
+      );
+      dropDownItems.add(newItem);
+    }
+    return dropDownItems;
+  }
   // Widget buildPassword() => buildTitle(
   //   title: 'Choose your account password',
   //   child: TextFormField(
@@ -172,10 +215,11 @@ class _StudentChosenState extends State<StudentChosen> {
         children: [
           Row(
             children: [
-
-              Text(
-                title,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
               ),
               Text(
                 '*',
@@ -194,6 +238,15 @@ class _StudentChosenState extends State<StudentChosen> {
   int id ;
   String studentRollNo;
 
+  void printValue() {
+    print(vaccineName);
+  }
+  bool isNumeric(String s) {
+    if (s == "") {
+      return false;
+    }
+    return double.tryParse(s) != null;
+  }
 
   @override
   void initState() {
@@ -208,7 +261,7 @@ class _StudentChosenState extends State<StudentChosen> {
     buildMobile2();
     buildParentName();
     buildParentMobile();
-    buildEmail();
+    buildHaveYouBeenVaccinated();
     //buildPassword();
   }
 
@@ -259,13 +312,63 @@ class _StudentChosenState extends State<StudentChosen> {
                     // buildParentName(),
                     const SizedBox(height: 12),
                     buildParentMobile(),
-                    // const SizedBox(height: 12),
-                    // buildPassword(),
+                    const SizedBox(height: 12),
+                    buildHaveYouBeenVaccinated(),
+                    const SizedBox(height: 25),
+                    Center(
+                      child: Text(
+                        'Fill in the below details if you have been vaccinated. If not, you can later update it in the profile page after successfully logging into the Coviapp.',
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.w500,
+                          color: kWeirdBlue,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 25),
+                    buildDateForDose1(),
+                    const SizedBox(height: 12),
+                    buildDateForDose2(),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Select the vaccine you have taken',
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      margin: EdgeInsets.only(bottom: 16.0, right: 20.0),
+                      width: MediaQuery.of(context).size.width * 1,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                          border: Border.all(
+                            color: kWeirdBlue,
+                            width: 1.5,
+                          )),
+                      child: CustomDropDownButton(
+                        hintTextColor: Colors.black,
+                        dropDownColor: Colors.white,
+                        dropDownItemColor: Colors.black,
+                        buttonHintText: "Name of vaccine",
+                        items: getDropDownItems(categoryList),
+                        value: vaccineName,
+                        onTap: (value) {
+                          setState(() {
+                            vaccineName = value;
+                            //value = vaccineName;
+                          });
+                        },
+                      ),
+                    ),
                   ],
                 ),
               ),
               SizedBox(
-                height: 50.0,
+                height: 30.0,
               ),
               GestureDetector(
                 child: Align(
@@ -300,7 +403,9 @@ class _StudentChosenState extends State<StudentChosen> {
                 ),
                 onTap: () {
                   setState(() {
-                    if(parentMobileNo.length != 10)
+                    bool isNum = isNumeric(parentMobileNo);
+                    print("isNum = $isNum");
+                    if(parentMobileNo.length != 10 || isNum==false)
                     {
                       AlertBox(
                           context: context,
@@ -313,25 +418,86 @@ class _StudentChosenState extends State<StudentChosen> {
                             Navigator.pop(context);
                           }).showAlert();
                     }
+                    else if(isVaccinated.toLowerCase()=='')
+                      {
+                        AlertBox(
+                            context: context,
+                            alertContent:
+                            'Please Enter the Vaccinated status',
+                            alertTitle: 'Mandatory field not entered !!',
+                            rightActionText: 'Close',
+                            leftActionText: '',
+                            onPressingRightActionButton: () {
+                              Navigator.pop(context);
+                            }).showAlert();
+                      }
+                    else if(isVaccinated.toLowerCase()=='no' && (firstDose!=null||secondDose!=null))
+                      {
+                            AlertBox(
+                                context: context,
+                                alertContent:
+                                'You cannot enter vaccination date, if you are not vaccinated !',
+                                alertTitle: 'Invalid Entry !!',
+                                rightActionText: 'Close',
+                                leftActionText: '',
+                                onPressingRightActionButton: () {
+                                  Navigator.pop(context);
+                                }).showAlert();
+                      }
                     else
                     {
-                      Navigator.push(
-                          context,
-                          new MaterialPageRoute(
-                              builder: (BuildContext context) => GeneralDataSender(
-                                name: name,
-                                birthday: birthday,
-                                hall: hall,
-                                //room: roomNo,
-                                selectedCategory: widget.chosenCategory,
-                                parentMobileNo: parentMobileNo,
-                                parentName: parentName,
-                                mobileNo1: mobileNo1,
-                               // mobileNo2: mobileNo2,
-                                rollNo: rollNo,
-                                //email: emailID,
-                                password: password,
-                              )));
+                      if(isVaccinated.toLowerCase()=='yes' && (vaccineName=='Select Vaccine Name' || firstDose==null))
+                        {
+                          AlertBox(
+                              context: context,
+                              alertContent:
+                              'Please enter Vaccination Date and Vaccine Name',
+                              alertTitle: 'Invalid Entry !!',
+                              rightActionText: 'Close',
+                              leftActionText: '',
+                              onPressingRightActionButton: () {
+                                Navigator.pop(context);
+                              }).showAlert();
+                        }
+                      else
+                        {
+                          if(isVaccinated.toLowerCase()=='yes')
+                            {
+                              Navigator.push(
+                                  context,
+                                  new MaterialPageRoute(
+                                      builder: (BuildContext context) => GeneralDataSender(
+                                        name: name,
+                                        hall: hall,
+                                        selectedCategory: widget.chosenCategory,
+                                        parentMobileNo: parentMobileNo,
+                                        rollNo: rollNo,
+                                        isVaccinated: isVaccinated,
+                                        vaccineName: vaccineName=='Select Vaccine Name'?'Not applicable':vaccineName,
+                                        firstDose: firstDose==null?'First Dose not taken':DateFormat('dd-MM-yyyy').format(firstDose).toString(),
+                                        secondDose: secondDose==null?'Second Dose not taken':DateFormat('dd-MM-yyyy').format(secondDose).toString(),
+                                      )));
+                            }
+                          else
+                            {
+                              Navigator.push(
+                                  context,
+                                  new MaterialPageRoute(
+                                      builder: (BuildContext context) => GeneralDataSender(
+                                        name: name,
+                                        hall: hall,
+                                        selectedCategory: widget.chosenCategory,
+                                        parentMobileNo: parentMobileNo,
+                                        rollNo: rollNo,
+                                        isVaccinated: isVaccinated,
+                                        vaccineName: 'Not applicable',
+                                        firstDose:'First Dose not taken',
+                                        secondDose: 'Second Dose not taken',
+                                      )));
+                            }
+
+                        }
+
                     }
                   });
                 },

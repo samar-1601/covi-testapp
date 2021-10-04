@@ -21,13 +21,17 @@ class AlertBox
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(alertTitle??'Alert Title'),
-          content: Text(alertContent??'Alert Content'),
+          content: SingleChildScrollView(
+              physics: ScrollPhysics(),
+              child: Text(alertContent??'Alert Content')
+          ),
           actions: <Widget>[
             TextButton(
               child: Text(
                 leftActionText??' ',
                 style: TextStyle(
                   color: kWeirdBlue,
+                  fontSize: 12.0,
                 ),
               ),
               onPressed: onPressingLeftActionButton

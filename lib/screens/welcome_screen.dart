@@ -23,13 +23,13 @@ class WelcomeScreen extends StatelessWidget {
             children: <Widget>[
               Container(
                 child: Image.asset("assets/img/welcome1.png"),
-                height: mediaScreen.size.height * 0.4,
+                height: mediaScreen.size.height * 0.5,
                 width: mediaScreen.size.width * 0.5,
                 // child: Image.asset(),
               ),
               Container(
                 child: Text(
-                  " IIT Kharagpur \n Covid Helper app ",
+                  " IIT Kharagpur \n Covid Helper App ",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 24.0,
@@ -40,8 +40,8 @@ class WelcomeScreen extends StatelessWidget {
               ),
               Container(
                 margin: EdgeInsets.only(top: 40.0),
-                width: 60.0,
-                height: 60.0,
+                width: 65.0,
+                height: 65.0,
                 child: new RawMaterialButton(
                   fillColor: kWeirdBlue,
                   shape: new CircleBorder(),
@@ -84,7 +84,7 @@ class WelcomeScreen extends StatelessWidget {
               ),
               Container(
                 margin: EdgeInsets.only(top:40),
-                height: 100,
+                height: 120,
                color: Colors.grey[200],
                width:  mediaScreen.size.height * 0.95,
                child: Column(
@@ -106,7 +106,7 @@ class WelcomeScreen extends StatelessWidget {
                      child: Padding(
                        padding: const EdgeInsets.all(8.0),
                        child: Text(
-                         'CoviApp team : Samar Pratap Singh, Saksham Arya, Abhinandan De, Aryan Singh, Kunal Singh, Sayantan Das',
+                         'CoviApp team : Samar Pratap Singh, Saksham Arya, Abhinandan De, Aryan Agarwal, Kunal Singh, Suryam Arnav Kalra, Sayantan Das',
                          style: TextStyle(
                              fontWeight:FontWeight.w300,
                              fontSize: 12.0,

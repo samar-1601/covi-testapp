@@ -28,7 +28,7 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
   String spo2 = '';
   String extraHealthCondition = '';
   String haveFoodOrMedicalsupplies ='';
-
+  String pulseRate = '';
   DateTime isolationDate;
 
 
@@ -57,20 +57,33 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
     ),
   );
 
+  Widget buildPulseLevel() => buildTitle(
+    title: 'Enter Your Pulse Rate',
+    child: TextFormField(
+      initialValue: pulseRate,
+      keyboardType: TextInputType.number,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Write your Pulse Rate',
+      ),
+      onChanged: (data) => setState(() => this.pulseRate = data),
+    ),
+  );
+
   Widget buildExtraHealthConditions() => buildTitle(
-    title: 'How do you feel (any discomfort)?',
+    title: 'Add something in addition to above?',
     child: TextFormField(
       initialValue: extraHealthCondition,
       decoration: InputDecoration(
         border: OutlineInputBorder(),
-        hintText: 'Enter data',
+        hintText: 'Additional Discomforts',
       ),
       onChanged: (data) => setState(() => this.extraHealthCondition = data),
     ),
   );
 
   Widget buildHaveFoodOrMedicalSupplies() => buildTitle(
-    title: 'Do you have proper food and medical supplies? (Yes/No)',
+    title: 'Do you have proper food and medical supplies? (Yes/No).In case of No, please write your requirement.',
     child: TextFormField(
       initialValue: haveFoodOrMedicalsupplies,
       decoration: InputDecoration(
@@ -104,10 +117,25 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
         ],
       );
 
-  void printValues(List<String> answers)
-  {
-    print("----------------- Answers Values ------------------\n");
-    print("----------------- Answers Values End ------------------\n");
+
+  Map<String, bool> checkBoxValues = {
+    'Breathing Difficulty' : false,
+    'Body-ache' : false,
+    'Headache': false,
+    'Stomach disorder' : false,
+    'Anxiety' : false,
+  };
+
+  var tmpString = '';
+
+  getCheckboxItems(){
+
+    checkBoxValues.forEach((key, value) {
+      if(value == true)
+      {
+        tmpString += key + ', ';
+      }
+    });
   }
 
   CheckLoggedIn _checkLoggedIn = CheckLoggedIn();
@@ -115,7 +143,7 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
   String rollNo;
   String msg='';
 
-  Future putData(String feverTemp, String spo2, String extraHealthCondition, String haveFoodOrMedicalsupplies) async {
+  Future putData(String feverTemp, String spo2, String extraHealthCondition, String haveFoodOrMedicalsupplies, pulseRate) async {
     print("============inside PUTDATA in monitoring data\n");
     var url = Uri.parse('https://imedixbcr.iitkgp.ac.in/api/coviapp/add-data');
     rollNo = await _checkLoggedIn.getRollNo();
@@ -126,8 +154,8 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
       "fever":feverTemp,
       "spo2":spo2,
       "patient_condition" : extraHealthCondition.toLowerCase(),
-      //"rollNo" : rollNo,
       "food_supply":haveFoodOrMedicalsupplies,
+      "pulse_rate":pulseRate,
     };
     String body = json.encode(data);
     print(body);
@@ -143,7 +171,7 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
     else {
       valueFromBack = true;
     }
-    print("puData in general data_and_otp");
+    print("puData in monitoring screen");
     print(" == token : {$token}");
     msg = responseBody["message"];
     print(" == msg : {$msg}");
@@ -152,7 +180,7 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
 
 
   Future<void> _launched;
-  String _phone = "7061436275";
+  String _phone = "8695571404";
   Future<void> _makePhoneCall(String url) async {
     if (await canLaunch(url)) {
       await launch(url);
@@ -179,7 +207,9 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
     Map responseBody = json.decode(response.body) as Map;
-    if (response.statusCode == 200) {
+    String type = responseBody["type"];
+
+    if (response.statusCode == 200 && type == "PAT") {
       _checkLoggedIn.setVisitingFlag(true);
       _checkLoggedIn.setRollNo(rollNo);
     } else {
@@ -217,10 +247,13 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
   Future checkFromBackend() async{
     setState(() {
       _loading=true;
+      tmpString+= extraHealthCondition;
+      extraHealthCondition = tmpString;
+      print("tmpString : $tmpString");
     });
     await getID();
     await getToken();
-    bool value = await putData(feverTemp, spo2, extraHealthCondition,haveFoodOrMedicalsupplies);
+    bool value = await putData(feverTemp, spo2, extraHealthCondition,haveFoodOrMedicalsupplies, pulseRate);
     if(value==false)
     {
       if(msg=="token has expired")
@@ -236,7 +269,7 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
         print(" == New Token : {$token}");
         if(value2==true)
         {
-          value = await putData(feverTemp, spo2, extraHealthCondition,haveFoodOrMedicalsupplies);
+          value = await putData(feverTemp, spo2, extraHealthCondition,haveFoodOrMedicalsupplies, pulseRate);
           if(value == true)
           {
             setState(() {
@@ -286,6 +319,7 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
     buildExtraHealthConditions();
     buildSpO2Level();
     buildHaveFoodOrMedicalSupplies();
+    buildPulseLevel();
   }
 
   @override
@@ -317,7 +351,7 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
                     alignment: Alignment.center,
                     child: Container(
                       child: Text(
-                        'Your daily monitoring. The important vital signs will be transmitted in the real time to BCRTH doctor’s dashboard. In case of emergency, you can press SoS button. Kindly note that you will be prompted by the app to enter these details periodically. In case of standard values of these parameters, kindly enter.',
+                        'Your daily monitoring. The important vital signs will be transmitted in the real time to BCRTH doctor’s dashboard. In case of emergency, you can press SoS button. Kindly note that you will be prompted by the app to enter these details periodically. In case of standard values of these parameters, you must enter the same for the required period.',
                         textAlign: TextAlign.left,
                         style: TextStyle(
                           fontSize: 16.0,
@@ -331,6 +365,31 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
                   buildFeverLevel(),
                   const SizedBox(height: 12),
                   buildSpO2Level(),
+                  const SizedBox(height: 12),
+                  buildPulseLevel(),
+                  const SizedBox(height: 15),
+                  Text(
+                    "How Do you feel? (Any Discomfort)",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  SizedBox(height: 15),
+                  ListView(
+                    physics: ScrollPhysics(),
+                    shrinkWrap: true,
+                    children: checkBoxValues.keys.map((String key) {
+                      return new CheckboxListTile(
+                        title: new Text(key),
+                        value: checkBoxValues[key],
+                        activeColor: kWeirdBlue,
+                        checkColor: Colors.white,
+                        onChanged: (bool value) {
+                          setState(() {
+                            checkBoxValues[key] = value;
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
                   const SizedBox(height: 12),
                   buildExtraHealthConditions(),
                   const SizedBox(height: 12),
@@ -374,6 +433,7 @@ class _MonitoringQuestionsState extends State<MonitoringQuestions> {
                 ),
               ),
               onTap: () async{
+                getCheckboxItems();
                 if(feverTemp=='')
                 {
                   AlertBox(
